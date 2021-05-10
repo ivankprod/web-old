@@ -1,6 +1,6 @@
 # ivankprodru
 Сайт IVANKPROD.RU
-Go, Webpack
+(go, webpack)
 
 # TODOS:
 1. clean.sh
