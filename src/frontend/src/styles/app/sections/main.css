@@ -1,0 +1,29 @@
+/* 
+	MAIN STYLE: main
+
+	Author : IvanK Production
+*/
+
+html, body {
+	height: 100%;
+	width:  100%;
+	min-width: 230px;
+
+	font-family: FuturaBookC, system-ui !important;
+	font-size:   16px;
+	color:       #000;
+
+	background:  #fff;
+}
+
+.master-container  { position: relative; }
+header, footer     { position: relative; width: 100%; z-index: 2; }
+.container         { position: relative; margin: 0 auto; }
+section.container  { z-index: 1; }
+.stretch-container { width: 100%; }
+
+@media (min-width: 768px)  { .container { width:     90%;    } }
+/*@media (min-width: 992px)  {  }*/
+@media (min-width: 1200px) { .container { max-width: 1170px; } }
+
+h1 { font-size: 2rem; }

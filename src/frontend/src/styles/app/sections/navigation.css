@@ -1,0 +1,113 @@
+/* 
+	MAIN STYLE: navigation
+
+	Author : IvanK Production
+*/
+
+.nav-container {
+	font-size: 1rem;
+	font-family: FuturaDemiC;
+	letter-spacing: 0.06em;
+}
+
+.nav-container ul.mnav li   { display: inline-block; padding-left: 16px; }
+
+.nav-container ul.mnav li a {
+	display: block;
+
+	position: relative;
+	
+	padding-bottom: 16px;
+	
+	color: #000;
+}
+
+.nav-container ul.mnav li a:hover,
+.nav-container ul.mnav li a.hovered,
+.nav-container ul.snav li a:hover { color: var(--color-theme-green) !important; }
+
+.nav-container ul.mnav li a:before {
+	content: '';
+
+	position: absolute;
+	
+	display: block;
+	width:   100%;
+	
+	padding-top: 35px;
+
+	border-bottom: 0 solid transparent;
+
+	will-change: border-color, border-bottom-width, padding-top;
+	transition:  border-color 0.1s linear, border-bottom-width 0.1s linear, padding-top 0.1s linear;
+}
+
+.nav-container ul.mnav li a:hover:before,
+.nav-container ul.mnav li a.hovered:before { 
+	border-color: var(--color-theme-green);
+	border-bottom-width: 3px;
+
+	padding-top: 32px;
+}
+
+.nav-container ul.mnav li a.nav-item-active:before { 
+	border-color: var(--color-theme-green);
+	border-bottom-width: 3px;
+
+	padding-top: 32px;
+}
+
+.nav-container ul.mnav li a.subnav:after {
+	content: '\f107';
+	
+	display: inline-block;
+
+	left: 0;
+	top:  0;
+
+	margin-left: 4px;
+
+	font-family: 'Font Awesome 5 Free';
+	font-size:   0.9rem;
+	font-weight: 900;
+}
+
+.subnav-container {
+	display: none;
+
+	flex-direction: row;
+	align-items: start;
+	justify-content: space-between;
+
+	position: absolute;
+
+	left: 0;
+	top: 100%;
+
+	width: 100%;
+
+	padding: 24px;
+
+	background: #fff;
+
+	color: #4a4a4a;
+
+	border-top: 1px solid #dedede;
+
+	box-shadow: 0 3px 8px 0px rgba(0, 0, 0, 0.1);
+}
+
+.subnav-container.showed { display: flex; }
+
+.subnav-container .subnav-title {
+	margin-bottom:  12px;
+	padding-bottom: 8px;
+
+	border-bottom: 1px solid var(--color-theme-green);
+}
+
+.subnav-container .subnav-column { width: 30%; }
+
+.subnav-container ul.snav { margin-left: 12px; }
+
+.subnav-container ul.snav li { margin: 6px 0; }

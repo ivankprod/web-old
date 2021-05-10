@@ -1,0 +1,13 @@
+{{> 'partials/header' error=true noindex=true }}
+</header>
+<section class="container">
+	<div class="content">
+		<div class="error-box">
+			<div class="error-title">{{error.code}}</div>
+			<div class="error-message">{{error.msg}}</div>
+			<hr>
+			<button class="small rounded-all" data-href="/">На главную</button>
+		</div>
+	</div>
+</section>
+{{> 'partials/footer' }}

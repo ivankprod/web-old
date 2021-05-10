@@ -1,0 +1,84 @@
+/* 
+	MAIN STYLEL footer
+
+	Author : IvanK Production
+*/
+
+.footer-back {
+	position: absolute;
+	top:      0;
+	left:     0;
+	bottom:   0;
+	right:    0;
+
+	background: linear-gradient(to bottom, #f6fdf0, #ffffff);
+
+	border-top: 1px solid #e2e2e2;
+
+	opacity: 0.9;
+
+	box-shadow: 0 -6px 8px 0px rgba(0, 0, 0, 0.07);
+}
+
+.footer-back:after {
+	content: '';
+	display: block;
+
+	position: relative;
+	top:      100%;
+
+	width:  100%;
+	height: 10px;
+
+	background: #fff;
+
+	z-index: 2;
+}
+
+footer .container { padding-bottom: 22px; text-align: center; }
+
+.footer-block {
+	display: inline-block;
+
+	width: 33%;
+
+	padding:  0 12px;
+	margin-top: 34px;
+
+	font-size:     0.9rem;
+	vertical-align: top;
+	text-align:    left;
+}
+
+.footer-block.helper { display: none; }
+
+@media (min-width: 10px)  {
+	.footer-block { width: 100%; padding: 0 20px; }
+	.footer-block.helper { display: none; }
+}
+@media (min-width: 768px)  {
+	.footer-block { width: 48%; }
+	.footer-block.helper { display: inline-block; }
+}
+@media (min-width: 992px)  {
+	.footer-block { width: 33%; }
+	.footer-block.helper { display: none; }
+}
+@media (min-width: 1200px) {
+	.footer-block { width: 33%; }
+	.footer-block.helper { display: none; }
+}
+
+.footer-block-title {
+	padding-bottom: 6px;
+	margin-bottom:  12px;
+	
+	font-size: 1.3rem;
+	color: var(--color-theme-green);
+
+	border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.footer-block li   { margin-bottom: 6px; }
+.footer-block li a { font-size: 1rem; border-bottom: 1px solid transparent; }
+.footer-block li a:hover { border-color: var(--color-theme-green); }

@@ -1,0 +1,39 @@
+/* 
+	MAIN STYLEL social
+
+	Author : IvanK Production
+*/
+
+.social li {
+	display: inline-block;
+	
+	padding: 0;
+	margin:  0 4px 0 0;
+
+	list-style-type: none;
+}
+
+.social li a {
+	display:  block;
+	position: relative;
+
+	height: 32px;
+	width:  32px;
+
+	border: 0;
+
+	background-size: cover;
+
+	opacity: 1;
+
+	transition: opacity 0.1s linear;
+}
+
+.social li a:hover { opacity: 0.6; }
+
+.social li a.vk  { background-image: url('../images/social_new/vk_color_64px.png'); }
+.social li a.fb  { background-image: url('../images/social_new/facebook_color_64px.png'); }
+.social li a.tw  { background-image: url('../images/social_new/twitter_color_64px.png'); }
+.social li a.ig  { background-image: url('../images/social_new/instagram_color_64px.png'); }
+.social li a.sc  { background-image: url('../images/social_new/soundcloud_color_64px.png'); }
+.social li a.yt  { background-image: url('../images/social_new/youtube_color_64px.png'); }

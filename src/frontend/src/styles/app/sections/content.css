@@ -1,0 +1,94 @@
+/* 
+	MAIN STYLE: content
+
+	Author : IvanK Production
+*/
+
+section.container {
+	min-height: 400px;
+}
+
+.content {
+	display:     flex;
+	align-items: center;
+
+	padding: 32px 0;
+}
+
+.breadcrumbs {
+	padding: 8px 0;
+
+	background: #f7f7f7;
+	
+	overflow: hidden;
+}
+
+.breadcrumbs li   { display: inline-block }
+
+.breadcrumbs li a {
+	position: relative;
+
+	padding: 6px 10px 6px 6px;
+	margin:  0 0 0 6px;
+
+	font-size: 1rem;
+}
+
+.breadcrumbs li a span { cursor: pointer !important; }
+
+.breadcrumbs li a:before, .breadcrumbs li a:after {
+	position: absolute;
+	right:    0;
+
+	content: "";
+
+	height: 32px;
+	width:   5px;
+
+	background: #fff;
+}
+
+.breadcrumbs li a:before {
+	top: -12px;
+
+	transform: rotate(-30deg);
+}
+
+.breadcrumbs li a:after {
+	bottom: -14px;
+
+	transform: rotate(30deg);
+}
+
+.breadcrumbs .breadcrumbs-last { margin-left: 12px; }
+
+.error-box {
+	margin:  0 auto;
+	padding: 24px 0;
+
+	max-width: 50%;
+
+	font-size: 1.4rem;
+}
+
+.error-box .error-title {
+	padding: 0 24px;
+
+	font-size: 3rem;
+}
+
+.error-box .error-message { padding: 0 24px 24px 24px; }
+
+.error-box hr {
+	height: 2px;
+
+	margin: 0;
+
+	color: var(--color-theme-green);
+	background-color: var(--color-theme-green);
+
+	border: none;
+	border-radius: 6px;
+}
+
+.error-box button { margin: 24px auto 0 auto; text-transform: uppercase; }

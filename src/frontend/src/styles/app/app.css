@@ -1,0 +1,36 @@
+/* 
+	MAIN STYLE
+
+	Author : IvanK Production
+*/
+
+/*  RESET SECTION  */
+@import './sections/reset.css';
+/*  END RESET  */
+
+/*  CONTROLS & FORMS SECTION  */
+@import './sections/controls.css';
+/*  END CONTROLS & FORMS  */
+
+/*  MAIN SECTION  */
+@import './sections/main.css';
+/*  END MAIN  */
+
+/*  HEADER SECTION  */
+@import './sections/header.css';
+/*  NAVIGATION SUBSECTION  */
+@import './sections/navigation.css';
+/*  END NAVIGATION  */
+/*  END HEADER  */
+
+/*  CONTENT SECTION  */
+@import './sections/content.css';
+/*  END CONTENT  */
+
+/*  FOOTER SECTION  */
+@import './sections/footer.css';
+/*  END FOOTER  */
+
+/*  SOCIAL SECTION  */
+@import './sections/social.css';
+/*  END SOCIAL  */

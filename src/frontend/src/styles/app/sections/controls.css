@@ -1,0 +1,63 @@
+/* 
+	MAIN STYLE: controls and forms
+
+	Author : IvanK Production
+*/
+
+button {
+	-webkit-appearance: none;
+	   -moz-appearance: none;
+	        appearance: none;
+	outline:            none;
+
+	display: block;
+
+	padding: 13px 14px 12px 14px;
+	margin:  0;
+
+	border: 0;
+
+	font: inherit;
+	color: #fff;
+	cursor: pointer !important;
+
+	background-color: var(--color-theme-green);
+
+	box-shadow: 0 3px 10px #d8d8d8;
+
+	transition: opacity 0.1s;
+}
+
+button.small {
+	padding: 11px 12px 10px 12px;
+
+	font-size: 0.9rem;
+}
+
+button:hover {
+	opacity: 0.8;
+}
+
+button:active {
+	opacity: 0.6;
+}
+
+button[disabled] {
+	color: #c5c5c5;
+
+	background: #f9f9f9;
+
+	pointer-events: none;
+}
+
+button img.btn-icon {
+	display: none;
+	float:   left;
+
+	width:  20px;
+	height: 20px;
+
+	margin-right: 6px;
+}
+
+button span { cursor: pointer !important; }

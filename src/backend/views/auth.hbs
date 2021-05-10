@@ -1,0 +1,12 @@
+{{> 'partials/header' noindex=true }}
+</header>
+<section class="container">
+	<div class="content">
+		{{#if data.user}}
+			{{> 'partials/components/auth_user_info' user=data.user }}
+		{{else}}
+			<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a>
+		{{/if}}
+	</div>
+</section>
+{{> 'partials/footer' }}
