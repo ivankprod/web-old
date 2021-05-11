@@ -12,7 +12,11 @@ import (
 )
 
 func RouteAuthIndex(c *fiber.Ctx) error {
-	uAuth := c.Locals("user_auth")
+	uAuth, ok := c.Locals("user_auth").(*models.User)
+	if !ok {
+		uAuth = nil
+	}
+
 	data := make(fiber.Map)
 
 	if c.Query("code") != "" {
@@ -114,9 +118,9 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 		}
 	} else {
 		if uAuth == nil {
-			data = utils.GetAuthLinks()
+			data["links"] = utils.GetAuthLinks()
 		} else {
-			data = fiber.Map{"user": uAuth}
+			data["user"] = *uAuth
 		}
 	}
 
@@ -134,4 +138,24 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	}
 
 	return fiber.NewError(fiber.StatusNotFound, "Страница не найдена!")
+}
+
+func RouteAuthLogout(c *fiber.Ctx) error {
+	uAuth, ok := c.Locals("user_auth").(*models.User)
+	if !ok || uAuth == nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Вы не авторизованы!")
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "session",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   0,
+		Expires:  time.Now().Add(-(time.Hour * 1)),
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "strict",
+	})
+
+	return c.Redirect("/auth/", 303)
 }

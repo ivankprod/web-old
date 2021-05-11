@@ -99,15 +99,10 @@
 			<header>
 				<div class="container header-picture"><div class="header-picture-wrapper"></div></div>
 				<div class="stretch-container headtop">
-					<div class="container headline">
-						{{#if data.user}}
-							<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
-							<div><a href="/auth/logout/">Выйти</a></div>
-						{{else}}
-							<div>Добро пожаловать, гость!</div>
-							<div><a href="/auth/">Вход | Регистрация</a></div>
-						{{/if}}
-					</div>
+					{{#if data.user}}<div class="container headline">
+						<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
+						<div><a href="/auth/logout/">Выйти</a></div>
+					</div>{{/if}}
 				</div>
 				<div class="stretch-container headline">
 					<div class="container headline">

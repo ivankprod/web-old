@@ -48,7 +48,7 @@
 
 		<link type="text/css" rel="stylesheet" href="/static/fonts/fontawesome/css/solid.min.css">
 		
-		<link type="text/css" href="/static/css/app.bcaf8b5c33994949a5c2.css" rel="stylesheet">
+		<link type="text/css" href="/static/css/app.7f68eac5a5161e62cf01.css" rel="stylesheet">
 		
 		<script type="text/javascript">
 			window.tLoader = setTimeout(function() {
@@ -99,15 +99,10 @@
 			<header>
 				<div class="container header-picture"><div class="header-picture-wrapper"></div></div>
 				<div class="stretch-container headtop">
-					<div class="container headline">
-						{{#if data.user}}
-							<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
-							<div><a href="/auth/logout/">Выйти</a></div>
-						{{else}}
-							<div>Добро пожаловать, гость!</div>
-							<div><a href="/auth/">Вход | Регистрация</a></div>
-						{{/if}}
-					</div>
+					{{#if data.user}}<div class="container headline">
+						<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
+						<div><a href="/auth/logout/">Выйти</a></div>
+					</div>{{/if}}
 				</div>
 				<div class="stretch-container headline">
 					<div class="container headline">

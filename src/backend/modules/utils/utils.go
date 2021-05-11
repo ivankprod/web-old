@@ -35,12 +35,12 @@ func GetAuthLinks() fiber.Map {
 	(*query)["scope"] = "email"
 	(*query)["response_type"] = "code"
 
-	return fiber.Map{"links": fiber.Map{
+	return fiber.Map{
 		"vk": "https://oauth.vk.com/authorize" + (*query).ToString(),
-	}}
+	}
 }
 
-func IsEmptySctruct(object interface{}) bool {
+func IsEmptyStruct(object interface{}) bool {
 	if object == nil {
 		return true
 	} else if object == "" {

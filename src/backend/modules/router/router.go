@@ -3,20 +3,20 @@ package router
 import (
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"ivankprod.ru/src/backend/modules/models"
 	"ivankprod.ru/src/backend/modules/routes"
-	"ivankprod.ru/src/backend/modules/utils"
 )
 
 // All errors
 func HandleError(c *fiber.Ctx, err error) error {
-	uAuth := c.Locals("user_auth")
+	uAuth := c.Locals("user_auth").(*models.User)
 	data := make(fiber.Map)
 
-	if !utils.IsEmptySctruct(uAuth) {
-		data = fiber.Map{"user": uAuth}
+	if uAuth != nil {
+		data["user"] = *uAuth
 	}
 
 	code := fiber.StatusInternalServerError
@@ -50,7 +50,17 @@ func Router(app *fiber.App) {
 			}
 
 			if auth != nil {
-				c.Locals("user_auth", (*auth))
+				c.Locals("user_auth", auth)
+				c.Cookie(&fiber.Cookie{
+					Name:     "session",
+					Value:    c.Cookies("session"),
+					Path:     "/",
+					MaxAge:   86400 * 7,
+					Expires:  time.Now().Add(time.Hour * 168),
+					Secure:   true,
+					HTTPOnly: true,
+					SameSite: "strict",
+				})
 			}
 		}
 
@@ -61,14 +71,15 @@ func Router(app *fiber.App) {
 	app.Get("/projects/", routes.RouteProjectsIndex)
 	app.Get("/projects/:type/", routes.RouteProjectsView)
 	app.Get("/auth/", routes.RouteAuthIndex)
+	app.Get("/auth/logout/", routes.RouteAuthLogout)
 
 	// 404 error
 	app.Use(func(c *fiber.Ctx) error {
-		uAuth := c.Locals("user_auth")
+		uAuth := c.Locals("user_auth").(*models.User)
 		data := make(fiber.Map)
 
-		if !utils.IsEmptySctruct(uAuth) {
-			data = fiber.Map{"user": uAuth}
+		if uAuth != nil {
+			data["user"] = *uAuth
 		}
 
 		c.Status(fiber.StatusNotFound)

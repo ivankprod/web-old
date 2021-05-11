@@ -4,14 +4,19 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"ivankprod.ru/src/backend/modules/models"
 )
 
 func RouteProjectsIndex(c *fiber.Ctx) error {
-	uAuth := c.Locals("user_auth")
+	uAuth, ok := c.Locals("user_auth").(*models.User)
+	if !ok {
+		uAuth = nil
+	}
+
 	data := make(fiber.Map)
 
 	if uAuth != nil {
-		data = fiber.Map{"user": uAuth}
+		data["user"] = *uAuth
 	}
 
 	err := c.Render("projects", fiber.Map{
@@ -32,11 +37,15 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 }
 
 func RouteProjectsView(c *fiber.Ctx) error {
-	uAuth := c.Locals("user_auth")
+	uAuth, ok := c.Locals("user_auth").(*models.User)
+	if !ok {
+		uAuth = nil
+	}
+
 	data := make(fiber.Map)
 
 	if uAuth != nil {
-		data = fiber.Map{"user": uAuth}
+		data["user"] = *uAuth
 	}
 
 	var path = "projects_" + c.Params("type")
