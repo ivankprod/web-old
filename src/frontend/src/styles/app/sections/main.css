@@ -18,12 +18,12 @@ html, body {
 
 .master-container  { position: relative; }
 header, footer     { position: relative; width: 100%; z-index: 2; }
-.container         { position: relative; margin: 0 auto; }
+.container         { position: relative; width: 100%; margin: 0 auto; padding: 0 24px; }
 section.container  { z-index: 1; }
 .stretch-container { width: 100%; }
 
-@media (min-width: 768px)  { .container { width:     90%;    } }
+/*@media (min-width: 768px)  {  }*/
 /*@media (min-width: 992px)  {  }*/
-@media (min-width: 1200px) { .container { max-width: 1170px; } }
+@media (min-width: 1200px) { .container { max-width: 1200px; } }
 
 h1 { font-size: 2rem; }

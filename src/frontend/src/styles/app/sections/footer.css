@@ -35,38 +35,41 @@
 	z-index: 2;
 }
 
-footer .container { padding-bottom: 22px; text-align: center; }
+footer .container {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	flex-direction: row;
+
+	padding-bottom: 22px;
+
+	text-align: center;
+}
 
 .footer-block {
-	display: inline-block;
+	width: 30%;
 
-	width: 33%;
-
-	padding:  0 12px;
 	margin-top: 34px;
 
 	font-size:     0.9rem;
 	vertical-align: top;
 	text-align:    left;
+
+	order: 1;
 }
 
-.footer-block.helper { display: none; }
-
-@media (min-width: 10px)  {
-	.footer-block { width: 100%; padding: 0 20px; }
-	.footer-block.helper { display: none; }
+@media (max-width: 767px)  {
+	.footer-block { width: 100%; }
+	.footer-block.first { order: 3; }
 }
 @media (min-width: 768px)  {
-	.footer-block { width: 48%; }
-	.footer-block.helper { display: inline-block; }
+	.footer-block { width: 46%; }
+	.footer-block.first { order: 3; }
 }
 @media (min-width: 992px)  {
-	.footer-block { width: 33%; }
-	.footer-block.helper { display: none; }
-}
-@media (min-width: 1200px) {
-	.footer-block { width: 33%; }
-	.footer-block.helper { display: none; }
+	.footer-block { width: 30%; }
+	.footer-block.first { order: 1; }
 }
 
 .footer-block-title {
