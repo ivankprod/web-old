@@ -6,6 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const SitemapPlugin = require('sitemap-webpack-plugin').default;
+const DotEnv = require('dotenv-webpack');
 const babelConfig = require('./babel.config');
 const postcssConfig = require('./postcss.config');
 
@@ -94,7 +95,8 @@ module.exports = {
 				// 	}
 				// }
 			]
-		})
+		}),
+		new DotEnv({ path: path.resolve(__dirname, '../../.env') })
 	],
 	module: {
 		rules: [

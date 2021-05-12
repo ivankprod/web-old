@@ -13,7 +13,9 @@
 
 		<meta name="theme-color" content="#5fd025">
 
-		{{#unless noindex}}<link rel="canonical" href="{{urlCanonical}}">{{/unless}}{{#unless error}}
+		<meta property="app:scope" content="{{#if pageScope}}{{pageScope}}{{/if}}">
+
+		<link rel="canonical" href="{{urlCanonical}}">
 
 		<meta property="og:title"       content="{{ogTags.title}}">
 		<meta property="og:description" content="{{pageDesc}}">
@@ -28,7 +30,7 @@
 		<meta name="twitter:description" content="{{pageDesc}}">
 		<meta name="twitter:image"       content="{{ogTags.image}}">
 
-		{{/unless}}<title>{{pageTitle}}</title>
+		<title>{{pageTitle}}</title>
 
 		<style>
 			.master-container {
@@ -118,12 +120,12 @@
 					</div>
 					<nav class="nav-container">
 						<ul class="mnav">
-							<li><a href="/" class="{{#if activeHome}}nav-item-active{{/if}}">ГЛАВНАЯ</a></li>
-							<li><a href="/projects/" class="subnav {{#if activeProjects}}nav-item-active{{/if}}">ПРОЕКТЫ</a></li>
-							<li><a href="/services/" class="subnav {{#if activeServices}}nav-item-active{{/if}}">УСЛУГИ</a></li>
-							<li><a href="/blog/" class="{{#if activeBlog}}nav-item-active{{/if}}">БЛОГ</a></li>
-							<li><a href="/about/" class="{{#if activeAbout}}nav-item-active{{/if}}">О НАС</a></li>
-							<li><a href="/contacts/" class="{{#if activeContacts}}nav-item-active{{/if}}">КОНТАКТЫ</a></li>
+							<li><a href="/" data-scope="home" class="spa{{#if activeHome}} nav-item-active{{/if}}">ГЛАВНАЯ</a></li>
+							<li><a href="/projects/" data-scope="projects" class="spa subnav{{#if activeProjects}} nav-item-active{{/if}}">ПРОЕКТЫ</a></li>
+							<li><a href="/services/" data-scope="services" class="spa subnav{{#if activeServices}} nav-item-active{{/if}}">УСЛУГИ</a></li>
+							<li><a href="/blog/" data-scope="blog" class="spa{{#if activeBlog}} nav-item-active{{/if}}">БЛОГ</a></li>
+							<li><a href="/about/" data-scope="about" class="spa{{#if activeAbout}} nav-item-active{{/if}}">О НАС</a></li>
+							<li><a href="/contacts/" data-scope="contacts" class="spa{{#if activeContacts}} nav-item-active{{/if}}">КОНТАКТЫ</a></li>
 						</ul>
 						<div class="subnav-container animate-slidein-fadein-css">
 							<div class="subnav-column">

@@ -23,6 +23,7 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
+		"pageScope":    "projects",
 		"ogTags": fiber.Map{
 			"title": "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		},
@@ -54,6 +55,7 @@ func RouteProjectsView(c *fiber.Ctx) error {
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
+		"pageScope":    "projects",
 		"ogTags": fiber.Map{
 			"title": "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		},
