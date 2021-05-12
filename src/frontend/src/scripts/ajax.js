@@ -59,7 +59,7 @@ export async function newAjax(url, params = {}, type = 'json') {
 	if (ajaxController) ajaxController.abort();
 
 	ajaxController   = new AbortController();
-    const ajaxSignal = ajaxController.signal;
+	const ajaxSignal = ajaxController.signal;
 
 	//params['r'] = Math.floor(Math.random() * (1000 - 1) + 1);
 
