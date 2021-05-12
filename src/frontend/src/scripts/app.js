@@ -6,23 +6,20 @@
 
 import '../styles/bundle.css';
 
+import utils from './utils.js';
+
 //  Elements
-let   elemSubnavWrappers    = document.querySelectorAll('.subnav-container');
-/*const elemFooterBlockFirst  = document.querySelector(".footer-block.first");
-const elemFooterBlockSecond = document.querySelector(".footer-block.second");
-const elemFooterBlockThird  = document.querySelector(".footer-block.third");
-const elemFooterBlockHelper = document.querySelector(".footer-block.helper");
-let   elemFooterContainer   = elemFooterBlockThird.parentNode;*/
+let elemSubnavWrappers = document.querySelectorAll('.subnav-container');
 
 //  Animations: Animate function
 function animate(opts) {
-	var start = performance.now();
+	let start = performance.now();
 
 	requestAnimationFrame(function animate(time) {
-		var timeFraction = (time - start) / opts.duration;
+		let timeFraction = (time - start) / opts.duration;
 		if (timeFraction > 1) timeFraction = 1;
 
-		var progress = opts.timing(timeFraction);
+		let progress = opts.timing(timeFraction);
 
 		if (opts.draw) opts.draw(progress);
 		if (opts.move) opts.move(progress);
@@ -46,7 +43,7 @@ function makeEaseInOut(timing) {
 }
 
 //  Animations: Complete timing function
-var makeLinearEaseInOut = makeEaseInOut(makeLinear);
+const makeLinearEaseInOut = makeEaseInOut(makeLinear);
 
 //  Animations: Opacity 
 function drawOpacity(elem, value, grd = 100) {
@@ -55,19 +52,6 @@ function drawOpacity(elem, value, grd = 100) {
 	elem.style['-moz-opacity']    = value / 100 * grd;
 	elem.style['opacity']         = value / 100 * grd;
 }
-
-//  swapping footer blocks
-/*function fixFooterBlocks() {
-	if (window.matchMedia("(min-width: 1200px)").matches) {
-		elemFooterContainer.append(elemFooterBlockFirst, elemFooterBlockSecond, elemFooterBlockThird, elemFooterBlockHelper);
-	} else if (window.matchMedia("(min-width: 992px)").matches) {
-		elemFooterContainer.append(elemFooterBlockFirst, elemFooterBlockSecond, elemFooterBlockThird, elemFooterBlockHelper);
-	} else if (window.matchMedia("(min-width: 768px)").matches) {
-		elemFooterContainer.append(elemFooterBlockSecond, elemFooterBlockThird, elemFooterBlockFirst, elemFooterBlockHelper);
-	} else if (window.matchMedia("(min-width: 10px)").matches) {
-		elemFooterContainer.append(elemFooterBlockSecond, elemFooterBlockThird, elemFooterBlockFirst, elemFooterBlockHelper);
-	}
-}*/
 
 //
 //  MAIN PAGE EVENTS:
@@ -122,25 +106,29 @@ document.addEventListener("DOMContentLoaded", function() {
 			});
 		});
 	});
-
-	//fixFooterBlocks();
 });
 
 //  onResize
 window.onresize = function() {
-	//fixFooterBlocks();
+	//
 };
 
 //  onLoad
 window.onload = function() {
 	document.body.classList.remove('preload');
 
-	/* FOR TEST
-	setTimeout(function() {*/
 	clearTimeout(window.tLoader);
 	document.getElementById('loader').style.display = 'none';
 	document.getElementById('master-container').style.opacity = '1';
-	/*}, 2000);*/
+
+	/*utils.rewriteMetas({
+		docSource: document,
+		docDest:   document,
+		metas: [
+			'description',
+			'og:type'
+		]
+	});*/
 };
 
 // Buttons onClick

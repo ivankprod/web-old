@@ -37,7 +37,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 		"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 		"error": fiber.Map{
 			"code": strCode,
-			"msg":  err.Error(),
+			"msg":  "Ошибка: " + err.Error(),
 		},
 		"data": data,
 	})
@@ -50,7 +50,7 @@ func Router(app *fiber.App) {
 		if c.Cookies("session") != "" {
 			auth, err := models.IsAuthenticated(c.Cookies("session"), c.Get("user-agent"))
 			if err != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "Ошибка модуля аутентификации!")
+				return err
 			}
 
 			if auth != nil {
