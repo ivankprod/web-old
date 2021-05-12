@@ -12,7 +12,11 @@ import (
 
 // All errors
 func HandleError(c *fiber.Ctx, err error) error {
-	uAuth := c.Locals("user_auth").(*models.User)
+	uAuth, ok := c.Locals("user_auth").(*models.User)
+	if !ok {
+		uAuth = nil
+	}
+
 	data := make(fiber.Map)
 
 	if uAuth != nil {
@@ -75,7 +79,11 @@ func Router(app *fiber.App) {
 
 	// 404 error
 	app.Use(func(c *fiber.Ctx) error {
-		uAuth := c.Locals("user_auth").(*models.User)
+		uAuth, ok := c.Locals("user_auth").(*models.User)
+		if !ok {
+			uAuth = nil
+		}
+
 		data := make(fiber.Map)
 
 		if uAuth != nil {
