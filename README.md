@@ -1,4 +1,4 @@
-# ivankprodru
+# ivankprod.ru
 Сайт IVANKPROD.RU
 (go, webpack)
 
