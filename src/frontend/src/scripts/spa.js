@@ -29,7 +29,7 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	let res = await newAjax(strHref, params, 'text');
 
 	if (res.error && res.error.error_type == 'client') {
-		ajaxErr(res.error.error_code, res.error.error_desc);
+		ajaxErr(res.error.error_code, res.error.error_desc); return;
 	}
 
 	if (res.error && res.error.error_type == 'server') {
