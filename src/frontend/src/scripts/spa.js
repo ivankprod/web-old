@@ -10,6 +10,9 @@ import { sleep, fadeOut, queryParse, queryStringify, getMeta, setMeta, rewriteMe
 //  Hostname var
 const strServerHost = String('https://' + (process.env.SERVER_HOST != '' ? process.env.SERVER_HOST : 'ivankprod.ru'));
 
+//  Extras Data
+let dataExtras = null;
+
 //  HistoryAPI: state
 const intHrefStart  = strServerHost.length;
 let loc     = window.location.href;
@@ -23,57 +26,59 @@ let hState  = {
 
 //  Loads ajax page
 export async function loadPage(strHref, params = {}, changeAddress = false, callback = null) {
-	const res = await newAjax(strHref, params, 'text');
+	let res = await newAjax(strHref, params, 'text');
 
-	if (res.error) {
+	if (res.error && res.error.error_type == 'client') {
 		ajaxErr(res.error.error_code, res.error.error_desc);
-	} else {
-		const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
-		if (elemActiveNavItem) elemActiveNavItem.classList.remove('nav-item-active');
-
-		const oParser    = new DOMParser();
-		const oDoc       = oParser.parseFromString(res, 'text/html');
-		const newContent = oDoc.getElementById('content');
-		let   oldContent = document.getElementById('content');
-		document.title   = oDoc.title;
-
-		rewriteMetas({
-			docSource: oDoc,
-			docDest:   document,
-			metas: [
-				'robots',
-				'og:title', 'og:description', 'og:type', 'og:image', 'og:url', 'og:site_name', 'og:locale',
-				'twitter:card', 'twitter:title', 'twitter:description', 'twitter:image'
-			],
-			withCanonical: true
-		});
-
-		const elemDataExtras = oDoc.getElementById('data-extras');
-		if (elemDataExtras) dataExtras = JSON.parse(elemDataExtras.textContent);
-
-		hState.href   = strHref;
-		hState.params = params;
-		hState.title  = oDoc.title;
-		hState.url    = strHref + queryStringify(params);
-
-		if (changeAddress) window.history.pushState(hState, hState.title, hState.url);
-
-		console.log(hState);
-
-		fadeOut(oldContent).then(() => {
-			sleep(110).then(() => {
-				oldContent.parentNode.replaceChild(newContent, oldContent); //window.onPageLoaded();
-			});
-		});
-
-		const scope = getMeta(oDoc, 'app:scope');
-		setMeta(document, 'app:scope', scope);
-
-		let itemActive = document.querySelector('ul.mnav li a[data-scope="' + scope + '"]');
-		if (itemActive) itemActive.classList.add('nav-item-active');
-
-		if (callback) callback();
 	}
+
+	if (res.error && res.error.error_type == 'server') {
+		res = res.response;
+	}
+	
+	const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
+	if (elemActiveNavItem) elemActiveNavItem.classList.remove('nav-item-active');
+
+	const oParser    = new DOMParser();
+	const oDoc       = oParser.parseFromString(res, 'text/html');
+	const newContent = oDoc.getElementById('content');
+	let   oldContent = document.getElementById('content');
+	document.title   = oDoc.title;
+
+	rewriteMetas({
+		docSource: oDoc,
+		docDest:   document,
+		metas: [
+			'robots',
+			'og:title', 'og:description', 'og:type', 'og:image', 'og:url', 'og:site_name', 'og:locale',
+			'twitter:card', 'twitter:title', 'twitter:description', 'twitter:image'
+		],
+		withCanonical: true
+	});
+
+	const elemDataExtras = oDoc.getElementById('data-extras');
+	if (elemDataExtras) dataExtras = JSON.parse(elemDataExtras.textContent);
+
+	hState.href   = strHref;
+	hState.params = params;
+	hState.title  = oDoc.title;
+	hState.url    = strHref + queryStringify(params);
+
+	if (changeAddress) window.history.pushState(hState, hState.title, hState.url);
+
+	fadeOut(oldContent).then(() => {
+		sleep(110).then(() => {
+			oldContent.parentNode.replaceChild(newContent, oldContent); window.onPageLoaded(dataExtras);
+		});
+	});
+
+	const scope = getMeta(oDoc, 'app:scope');
+	setMeta(document, 'app:scope', scope);
+
+	let itemActive = document.querySelector('ul.mnav li a[data-scope="' + scope + '"]');
+	if (itemActive) itemActive.classList.add('nav-item-active');
+
+	if (callback) callback();
 }
 
 //  HistoryAPI: replace state on load

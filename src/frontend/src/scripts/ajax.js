@@ -70,10 +70,14 @@ export async function newAjax(url, params = {}, type = 'json') {
 			ajaxController = null;
 
 			return (type == 'json' ? await req.json() : await req.text());
-		} else { return { error: { error_code: req.status, error_desc: req.statusText } }; }
+		} else {
+			const serverResponse = await req.text();
+
+			return { error: { error_code: req.status, error_desc: req.statusText, error_type: 'server' }, response: serverResponse };
+		}
 	} catch (err) {
 		if (err.name !== 'AbortError') {
-			return { error: { error_code: 500, error_desc: err.message } };
+			return { error: { error_code: 500, error_desc: err.message, error_type: 'client' }, response: null };
 		}
 	}
 }

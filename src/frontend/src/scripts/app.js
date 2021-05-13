@@ -12,10 +12,6 @@ import spa from './spa.js';
 //  Elements
 let elemSubnavWrappers = document.querySelectorAll('.subnav-container');
 
-//
-//  MAIN PAGE EVENTS:
-//
-
 //  DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function() {
 	spa.init();
@@ -69,6 +65,50 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
+//  Buttons onClick
+function fillButtonsOnClick() {
+	document.querySelectorAll('button').forEach(elem => {
+		if (elem.classList.contains('spa')) {
+			elem.onclick = function(e) {
+				let dest   = e.target.dataset.href;
+				let params = {}
+
+				if (dest.indexOf('?') !== -1) {
+					const arr = dest.split('?');
+
+					dest   = arr[0];
+					params = utils.queryParse(arr[1]);
+				}
+
+				spa.loadPage(dest, params, true);
+			};
+		} else { elem.onclick = function(e) { window.location.href = e.target.dataset.href; }; }
+	});
+}
+
+//  Links onClick
+function fillLinksOnClick() {
+	document.querySelectorAll('a.spa').forEach(elem => {
+		elem.onclick = function(e) {
+			e.preventDefault();
+
+			let dest   = elem.getAttribute('href');
+			let params = {}
+
+			if (dest.indexOf('?') !== -1) {
+				const arr = dest.split('?');
+
+				dest   = arr[0];
+				params = utils.queryParse(arr[1]);
+			}
+
+			spa.loadPage(dest, params, true);
+
+			return false;
+		};
+	});
+}
+
 //  onResize
 window.onresize = function() {
 	//
@@ -81,45 +121,16 @@ window.onload = function() {
 	clearTimeout(window.tLoader);
 	document.getElementById('loader').style.display = 'none';
 	document.getElementById('master-container').style.opacity = '1';
+
+	fillButtonsOnClick();
+	fillLinksOnClick();
 };
+
+//  onSPAPageLoaded
+window.onPageLoaded = dataExtras => {
+	fillButtonsOnClick();
+	fillLinksOnClick();
+}
 
 //  onPopState
 window.onpopstate = spa.popstate;
-
-//  Buttons onClick
-[...document.getElementsByTagName('button')].forEach(elem => {
-	elem.addEventListener('click', function(e) {
-		let dest   = e.target.dataset.href;
-		let params = {}
-
-		if (dest.indexOf('?') !== -1) {
-			const arr = dest.split('?');
-
-			dest   = arr[0];
-			params = utils.queryParse(arr[1]);
-		}
-
-		spa.loadPage(dest, params, true);
-	});
-});
-
-//  Links onClick
-document.querySelectorAll('a.spa').forEach(elem => {
-	elem.addEventListener('click', function(e) {
-		e.preventDefault();
-
-		let dest   = elem.getAttribute('href');
-		let params = {}
-
-		if (dest.indexOf('?') !== -1) {
-			const arr = dest.split('?');
-
-			dest   = arr[0];
-			params = utils.queryParse(arr[1]);
-		}
-
-		spa.loadPage(dest, params, true);
-
-		return false;
-	});
-});
