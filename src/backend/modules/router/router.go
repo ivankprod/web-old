@@ -18,6 +18,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 	}
 
 	data := make(fiber.Map)
+	msgPrefix := ""
 
 	if uAuth != nil {
 		data["user"] = *uAuth
@@ -29,6 +30,10 @@ func HandleError(c *fiber.Ctx, err error) error {
 		code = e.Code
 	}
 
+	if code != 404 {
+		msgPrefix = "Ошибка: "
+	}
+
 	c.Status(code)
 	strCode := strconv.Itoa(code)
 
@@ -37,7 +42,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 		"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 		"error": fiber.Map{
 			"code": strCode,
-			"msg":  "Ошибка: " + err.Error(),
+			"msg":  msgPrefix + err.Error(),
 		},
 		"data": data,
 	})

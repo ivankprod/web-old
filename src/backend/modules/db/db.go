@@ -22,7 +22,7 @@ func Connect() (*sqlx.DB, error) {
 	// Define database connection:
 	db, err := sqlx.Connect("mysql", fmt.Sprintf("%s@%s", dbCredentials, dbConnStr))
 	if err != nil {
-		return nil, fmt.Errorf("error, not connected to database, %w", err)
+		return nil, err
 	}
 
 	// Set database connection settings:
@@ -32,8 +32,8 @@ func Connect() (*sqlx.DB, error) {
 
 	// Try to ping database:
 	if err := db.Ping(); err != nil {
-		defer db.Close() // close database connection
-		return nil, fmt.Errorf("error, not sent ping to database, %w", err)
+		defer db.Close()
+		return nil, err
 	}
 
 	// Return normal connection
