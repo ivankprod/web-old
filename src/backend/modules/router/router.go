@@ -79,6 +79,10 @@ func Router(app *fiber.App) {
 	app.Get("/", routes.RouteHomeIndex)
 	app.Get("/projects/", routes.RouteProjectsIndex)
 	app.Get("/projects/:type/", routes.RouteProjectsView)
+	app.Get("/services/", routes.RouteServicesIndex)
+	app.Get("/blog/", routes.RouteBlogIndex)
+	app.Get("/about/", routes.RouteAboutIndex)
+	app.Get("/contacts/", routes.RouteContactsIndex)
 	app.Get("/auth/", routes.RouteAuthIndex)
 	app.Get("/auth/logout/", routes.RouteAuthLogout)
 
