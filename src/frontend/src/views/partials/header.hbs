@@ -17,6 +17,8 @@
 
 		<link rel="canonical" href="{{urlCanonical}}">
 
+		<!--link rel="dns-prefetch" href="https://fonts.gstatic.com/"-->
+
 		<meta property="og:title"       content="{{ogTags.title}}">
 		<meta property="og:description" content="{{pageDesc}}">
 		<meta property="og:type"        content="{{ogTags.type}}">
@@ -103,7 +105,7 @@
 		<div class="stretch-container headtop">
 			{{#if data.user}}<div class="container headline">
 				<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
-				<div><a href="/auth/logout/">Выйти</a></div>
+				<div><a class="spa" href="/auth/">Личный кабинет</a> | <a href="/auth/logout/">Выйти</a></div>
 			</div>{{/if}}
 		</div>
 		<div class="stretch-container headline">

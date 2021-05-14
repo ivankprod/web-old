@@ -3,7 +3,7 @@
 <section id="content-holder" class="container">
 	<div id="content" class="content animate-fadein-css">
 		{{#if data.user}}
-			{{> 'partials/components/auth_user_info' user=data.user }}
+			{{> 'partials/components/auth_user_cabinet' user=data.user }}
 		{{else}}
 			<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a>
 		{{/if}}

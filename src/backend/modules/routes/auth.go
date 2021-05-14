@@ -18,6 +18,7 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	}
 
 	data := make(fiber.Map)
+	title := "Авторизация"
 
 	if c.Query("code") != "" {
 		if uAuth == nil {
@@ -121,13 +122,14 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 			data["links"] = utils.GetAuthLinks()
 		} else {
 			data["user"] = *uAuth
+			title = "Личный кабинет"
 		}
 	}
 
 	err := c.Render("auth", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "Авторизация - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    title + " - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"ogTags": fiber.Map{
 			"title": os.Getenv("INFO_TITLE_BASE"),
