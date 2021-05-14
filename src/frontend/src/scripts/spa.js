@@ -39,11 +39,14 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
 	if (elemActiveNavItem) elemActiveNavItem.classList.remove('nav-item-active');
 
-	const oParser    = new DOMParser();
-	const oDoc       = oParser.parseFromString(res, 'text/html');
-	const newContent = oDoc.getElementById('content');
-	let   oldContent = document.getElementById('content');
-	document.title   = oDoc.title;
+	const oParser        = new DOMParser();
+	const oDoc           = oParser.parseFromString(res, 'text/html');
+	const newContent     = oDoc.getElementById('content');
+	let   oldContent     = document.getElementById('content');
+	const newBreadcrumbs = oDoc.getElementById('breadcrumbs');
+	let   oldBreadcrumbs = document.getElementById('breadcrumbs');
+	let   container      = oldContent.parentNode;
+	document.title       = oDoc.title;
 
 	rewriteMetas({
 		docSource: oDoc,
@@ -66,9 +69,16 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 
 	if (changeAddress) window.history.pushState(hState, hState.title, hState.url);
 
+	if (newBreadcrumbs) {
+		if (oldBreadcrumbs) { container.replaceChild(newBreadcrumbs, oldBreadcrumbs); }
+		else { oldContent.parentNode.insertBefore(newBreadcrumbs, container.firstChild); }
+	} else {
+		if (oldBreadcrumbs) { oldBreadcrumbs.remove(); }
+	}
+
 	fadeOut(oldContent).then(() => {
 		sleep(110).then(() => {
-			oldContent.parentNode.replaceChild(newContent, oldContent); window.onPageLoaded(dataExtras);
+			container.replaceChild(newContent, oldContent); window.onPageLoaded(dataExtras);
 		});
 	});
 

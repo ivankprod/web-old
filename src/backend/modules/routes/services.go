@@ -19,7 +19,8 @@ func RouteServicesIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("index", fiber.Map{
+	err := c.Render("services", fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Сервисы - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),

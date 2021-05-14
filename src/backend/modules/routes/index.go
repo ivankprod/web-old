@@ -20,6 +20,7 @@ func RouteHomeIndex(c *fiber.Ctx) error {
 	}
 
 	err := c.Render("index", fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Главная - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),

@@ -20,6 +20,7 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 	}
 
 	err := c.Render("projects", fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
@@ -52,6 +53,7 @@ func RouteProjectsView(c *fiber.Ctx) error {
 	var path = "projects_" + c.Params("type")
 
 	err := c.Render(path, fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),

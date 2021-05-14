@@ -125,6 +125,7 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	}
 
 	err := c.Render("auth", fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Авторизация - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),

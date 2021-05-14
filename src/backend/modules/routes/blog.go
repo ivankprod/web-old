@@ -19,7 +19,8 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("index", fiber.Map{
+	err := c.Render("blog", fiber.Map{
+		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    "Блог - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
