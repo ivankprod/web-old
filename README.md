@@ -1,6 +1,7 @@
 # ivankprod.ru
 Сайт IVANKPROD.RU
-(go, webpack)
+(golang, webpack)
 
 # TODOS:
-1. clean.sh
+1. user profile page
+2. user auth cabinet
