@@ -12,6 +12,7 @@ import (
 // User struct
 type User struct {
 	ID             int    `db:"user_id"           json:"userID"`
+	SocialID       string `db:"user_social_id"    json:"userSocialID"`
 	NameFirst      string `db:"user_name_first"   json:"userNameFirst"`
 	NameLast       string `db:"user_name_last"    json:"userNameLast"`
 	ProfileLink    string `db:"user_profile_link" json:"userProfileLink"`
@@ -76,9 +77,9 @@ func AddUser(user *User) error {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
-		query = "INSERT INTO users (user_id, user_role, user_access_token, user_profile_link, " +
+		query = "INSERT INTO users (user_social_id, user_role, user_access_token, user_profile_link, " +
 			"user_avatar_path, user_email, user_name_first, user_name_last, user_last_access, user_type) " +
-			"VALUES (:user_id, :user_role, :user_access_token, :user_profile_link, :user_avatar_path, " +
+			"VALUES (:user_social_id, :user_role, :user_access_token, :user_profile_link, :user_avatar_path, " +
 			":user_email, :user_name_first, :user_name_last, :user_last_access, :user_type)"
 	)
 
@@ -176,38 +177,39 @@ func getUserCredentials(uID int) (*User, error) {
 }
 
 // Check if user exists
-func ExistsUser(uID int) (bool, error) {
+func ExistsUser(uSocialID string, uSocialType int) (int, error) {
 	type PQuery struct {
-		ID int
+		ID   string
+		Type int
 	}
 
 	var (
-		query = "SELECT count(*) FROM users WHERE users.user_id = :id"
+		query = "SELECT user_id FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
 
-		pqs = &PQuery{ID: uID}
+		pqs = &PQuery{ID: uSocialID, Type: uSocialType}
 
-		result = 0
+		result = &User{}
 	)
 
 	db, err := db.Connect()
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	rows, err := db.NamedQuery(query, pqs)
+	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	defer rows.Close()
+	defer row.Close()
 
-	for rows.Next() {
-		if err := rows.Scan(&result); err != nil {
-			return result > 0, err
+	for row.Next() {
+		if err := row.StructScan(result); err != nil {
+			return 0, err
 		}
 	}
 
-	return result > 0, nil
+	return (*result).ID, nil
 }
 
 // Get all users by args
@@ -287,7 +289,7 @@ func SignInUser(u *User) error {
 
 		query = "UPDATE users SET user_access_token = :user_access_token, user_avatar_path = :user_avatar_path, user_email = :user_email, " +
 			"user_name_first = :user_name_first, user_name_last = :user_name_last, user_last_access = :user_last_access " +
-			"WHERE user_id = :user_id"
+			"WHERE user_social_id = :user_social_id AND user_type = :user_type"
 	)
 
 	(*u).LastAccessTime = tNow
@@ -352,7 +354,7 @@ func IsAuthenticated(uAuth string, uAgent string) (*User, error) {
 		return nil, nil
 	}
 
-	uSessionHash := utils.HashSHA512(strconv.Itoa((*result).ID) + (*result).AccessToken + uAgent)
+	uSessionHash := utils.HashSHA512(strconv.Itoa((*result).ID) + (*result).SocialID + (*result).AccessToken + uAgent)
 	if uSessionHash == (*uAuthParsed).Hash {
 		(*result).AccessToken = "<restricted>"
 		return result, nil

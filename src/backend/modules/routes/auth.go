@@ -48,10 +48,10 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 			}
 
 			userID := strconv.FormatFloat((*ress1)["user_id"].(float64), 'f', 0, 64)
-			userIDint, err := strconv.Atoi(userID)
+			/*userIDint, err := strconv.Atoi(userID)
 			if err != nil {
 				return err
-			}
+			}*/
 
 			if (*ress1)["access_token"] != nil {
 				query := &utils.URLParams{}
@@ -79,7 +79,7 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 
 				resp := (((*ress)["response"]).([]interface{})[0]).(map[string]interface{})
 				user := &models.User{
-					ID:          userIDint,
+					SocialID:    userID,
 					NameFirst:   (resp["first_name"]).(string),
 					NameLast:    (resp["last_name"]).(string),
 					AvatarPath:  (resp["photo_big"]).(string),
@@ -88,12 +88,12 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 					Type:        0,
 				}
 
-				b, err := models.ExistsUser((*user).ID)
+				b, err := models.ExistsUser((*user).SocialID, 0)
 				if err != nil {
 					return err
 				}
 
-				if b {
+				if b > 0 {
 					if err := models.SignInUser(user); err != nil {
 						return err
 					}
@@ -105,7 +105,7 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 
 				c.Cookie(&fiber.Cookie{
 					Name:     "session",
-					Value:    userID + ":" + utils.HashSHA512(userID+(*user).AccessToken+c.Get("user-agent")),
+					Value:    strconv.Itoa(b) + ":" + utils.HashSHA512(strconv.Itoa(b)+userID+(*user).AccessToken+c.Get("user-agent")),
 					Path:     "/",
 					MaxAge:   86400 * 7,
 					Expires:  time.Now().Add(time.Hour * 168),
