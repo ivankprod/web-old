@@ -11,11 +11,10 @@ import (
 
 // User struct
 type User struct {
-	ID             int    `db:"user_id"           json:"userID"`
+	ID             int64  `db:"user_id"           json:"userID"`
 	SocialID       string `db:"user_social_id"    json:"userSocialID"`
 	NameFirst      string `db:"user_name_first"   json:"userNameFirst"`
 	NameLast       string `db:"user_name_last"    json:"userNameLast"`
-	ProfileLink    string `db:"user_profile_link" json:"userProfileLink"`
 	AvatarPath     string `db:"user_avatar_path"  json:"userAvatarPath"`
 	Email          string `db:"user_email"        json:"userEmail"`
 	AccessToken    string `db:"user_access_token" json:"-"`
@@ -61,7 +60,7 @@ func (users *Users) ToJSON() string {
 
 // User auth struct
 type UserAuth struct {
-	ID   int
+	ID   int64
 	Hash string
 }
 
@@ -73,37 +72,43 @@ type ArgsGetUsers struct {
 }
 
 // Add new user
-func AddUser(user *User) error {
+func AddUser(user *User) (int64, error) {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
-		query = "INSERT INTO users (user_social_id, user_role, user_access_token, user_profile_link, " +
+		query = "INSERT INTO users (user_social_id, user_role, user_access_token, " +
 			"user_avatar_path, user_email, user_name_first, user_name_last, user_last_access, user_type) " +
-			"VALUES (:user_social_id, :user_role, :user_access_token, :user_profile_link, :user_avatar_path, " +
+			"VALUES (:user_social_id, :user_role, :user_access_token, :user_avatar_path, " +
 			":user_email, :user_name_first, :user_name_last, :user_last_access, :user_type)"
 	)
 
 	(*user).LastAccessTime = tNow
-	(*user).ProfileLink = "/user/" + strconv.Itoa((*user).ID) + "/"
-	(*user).Role = 1
+	if (*user).Role == 0 {
+		(*user).Role = 2
+	}
 
 	db, err := db.Connect()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = db.NamedExec(query, user)
+	res, err := db.NamedExec(query, user)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 // Get user
-func GetUser(uID int) (*User, error) {
+func GetUser(uID int64) (*User, error) {
 	type PQuery struct {
-		ID int
+		ID int64
 	}
 
 	var (
@@ -140,9 +145,9 @@ func GetUser(uID int) (*User, error) {
 }
 
 // Get user credentials
-func getUserCredentials(uID int) (*User, error) {
+func getUserCredentials(uID int64) (*User, error) {
 	type PQuery struct {
-		ID int
+		ID int64
 	}
 
 	var (
@@ -177,14 +182,14 @@ func getUserCredentials(uID int) (*User, error) {
 }
 
 // Check if user exists
-func ExistsUser(uSocialID string, uSocialType int) (int, error) {
+func ExistsUser(uSocialID string, uSocialType int) (int64, int, error) {
 	type PQuery struct {
 		ID   string
 		Type int
 	}
 
 	var (
-		query = "SELECT user_id FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
+		query = "SELECT user_id, user_role FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
 
 		pqs = &PQuery{ID: uSocialID, Type: uSocialType}
 
@@ -193,23 +198,23 @@ func ExistsUser(uSocialID string, uSocialType int) (int, error) {
 
 	db, err := db.Connect()
 	if err != nil {
-		return 0, err
+		return 0, -1, err
 	}
 
 	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
-		return 0, err
+		return 0, -1, err
 	}
 
 	defer row.Close()
 
 	for row.Next() {
 		if err := row.StructScan(result); err != nil {
-			return 0, err
+			return 0, -1, err
 		}
 	}
 
-	return (*result).ID, nil
+	return (*result).ID, (*result).Role, nil
 }
 
 // Get all users by args
@@ -326,7 +331,7 @@ func userAuthParse(str string) (*UserAuth, error) {
 		return nil, nil
 	}
 
-	(*result).ID, err = strconv.Atoi(strarr[0])
+	(*result).ID, err = strconv.ParseInt(strarr[0], 10, 64)
 	if err != nil {
 		return result, err
 	}
@@ -354,7 +359,7 @@ func IsAuthenticated(uAuth string, uAgent string) (*User, error) {
 		return nil, nil
 	}
 
-	uSessionHash := utils.HashSHA512(strconv.Itoa((*result).ID) + (*result).SocialID + (*result).AccessToken + uAgent)
+	uSessionHash := utils.HashSHA512(strconv.FormatInt(((*result).ID), 10) + (*result).SocialID + (*result).AccessToken + uAgent)
 	if uSessionHash == (*uAuthParsed).Hash {
 		(*result).AccessToken = "<restricted>"
 		return result, nil

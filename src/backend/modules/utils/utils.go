@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"net/url"
 	"os"
 	"reflect"
 	"time"
@@ -12,11 +13,15 @@ import (
 
 type URLParams map[string]string
 
-func (p *URLParams) ToString() string {
+func (p *URLParams) ToString(escaped bool) string {
 	object := *p
 	result := ""
 
 	for key, value := range object {
+		if escaped {
+			value = url.QueryEscape(value)
+		}
+
 		result += "&" + key + "=" + value
 	}
 
@@ -28,15 +33,25 @@ func (p *URLParams) ToString() string {
 }
 
 func GetAuthLinks() fiber.Map {
-	query := &URLParams{}
+	query_vk := &URLParams{}
+	(*query_vk)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
+	(*query_vk)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
+	(*query_vk)["scope"] = "email"
+	(*query_vk)["response_type"] = "code"
+	(*query_vk)["state"] = "vk"
 
-	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
-	(*query)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query)["scope"] = "email"
-	(*query)["response_type"] = "code"
+	query_gl := &URLParams{}
+	(*query_gl)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
+	(*query_gl)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
+	(*query_gl)["scope"] = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+	(*query_gl)["access_type"] = "online"
+	(*query_gl)["include_granted_scopes"] = "false"
+	(*query_gl)["response_type"] = "code"
+	(*query_gl)["state"] = "google"
 
 	return fiber.Map{
-		"vk": "https://oauth.vk.com/authorize" + (*query).ToString(),
+		"vk": "https://oauth.vk.com/authorize" + (*query_vk).ToString(true),
+		"gl": "https://accounts.google.com/o/oauth2/v2/auth" + (*query_gl).ToString(true),
 	}
 }
 
