@@ -12,6 +12,7 @@ import (
 // User struct
 type User struct {
 	ID             int64  `db:"user_id"           json:"userID"`
+	Group          int64  `db:"user_group"        json:"userGroup"`
 	SocialID       string `db:"user_social_id"    json:"userSocialID"`
 	NameFirst      string `db:"user_name_first"   json:"userNameFirst"`
 	NameLast       string `db:"user_name_last"    json:"userNameLast"`
@@ -76,13 +77,14 @@ func AddUser(user *User) (int64, error) {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
-		query = "INSERT INTO users (user_social_id, user_role, user_access_token, " +
+		query = "INSERT INTO users (user_social_id, user_group, user_role, user_access_token, " +
 			"user_avatar_path, user_email, user_name_first, user_name_last, user_last_access, user_type) " +
-			"VALUES (:user_social_id, :user_role, :user_access_token, :user_avatar_path, " +
+			"VALUES (:user_social_id, :user_group, :user_role, :user_access_token, :user_avatar_path, " +
 			":user_email, :user_name_first, :user_name_last, :user_last_access, :user_type)"
 	)
 
 	(*user).LastAccessTime = tNow
+
 	if (*user).Role == 0 {
 		(*user).Role = 2
 	}
@@ -102,7 +104,37 @@ func AddUser(user *User) (int64, error) {
 		return 0, err
 	}
 
+	if (*user).ID == 0 && (*user).Group == 0 {
+		setUserGroup(id, id)
+	}
+
 	return id, nil
+}
+
+// User sign in
+func setUserGroup(uID int64, uGroup int64) error {
+	type PQuery struct {
+		ID    int64
+		Group int64
+	}
+
+	var (
+		query = "UPDATE users SET user_group = :group WHERE user_id = :id"
+
+		pqs = &PQuery{ID: uID, Group: uGroup}
+	)
+
+	db, err := db.Connect()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NamedExec(query, pqs)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Get user
@@ -182,14 +214,14 @@ func getUserCredentials(uID int64) (*User, error) {
 }
 
 // Check if user exists
-func ExistsUser(uSocialID string, uSocialType int) (int64, int, error) {
+func ExistsUser(uSocialID string, uSocialType int) (int64, int64, int, error) {
 	type PQuery struct {
 		ID   string
 		Type int
 	}
 
 	var (
-		query = "SELECT user_id, user_role FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
+		query = "SELECT user_id, user_group, user_role FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
 
 		pqs = &PQuery{ID: uSocialID, Type: uSocialType}
 
@@ -198,23 +230,23 @@ func ExistsUser(uSocialID string, uSocialType int) (int64, int, error) {
 
 	db, err := db.Connect()
 	if err != nil {
-		return 0, -1, err
+		return 0, 0, 0, err
 	}
 
 	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
-		return 0, -1, err
+		return 0, 0, 0, err
 	}
 
 	defer row.Close()
 
 	for row.Next() {
 		if err := row.StructScan(result); err != nil {
-			return 0, -1, err
+			return 0, 0, 0, err
 		}
 	}
 
-	return (*result).ID, (*result).Role, nil
+	return (*result).ID, (*result).Group, (*result).Role, nil
 }
 
 // Get all users by args

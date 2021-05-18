@@ -4,10 +4,16 @@
 	<div id="content" class="content animate-fadein-css">
 		{{#if data.user}}
 			{{> 'partials/components/auth_user_cabinet' user=data.user }}
-		{{else}}
-			<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a>
+		{{/if}}{{!--else}}
+			<div>
+				<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a><br>
+				<a href="{{data.links.gl}}">Войти с помощью Google</a>
+			</div>
+		{{/if--}}
+		<div>
+			<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a><br>
 			<a href="{{data.links.gl}}">Войти с помощью Google</a>
-		{{/if}}
+		</div>
 	</div>
 </section>
 {{> 'partials/footer' }}

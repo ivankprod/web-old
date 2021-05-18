@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -13,7 +14,7 @@ import (
 )
 
 //  VK authentication
-func authVK(c *fiber.Ctx) error {
+func authVK(c *fiber.Ctx, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
@@ -78,41 +79,46 @@ func authVK(c *fiber.Ctx) error {
 			Type:        0,
 		}
 
-		id, role, err := models.ExistsUser((*user).SocialID, 0)
+		id, _, _, err := models.ExistsUser((*user).SocialID, 0)
 		if err != nil {
 			return err
 		}
-
-		(*user).Role = role
 
 		if id > 0 {
 			if err := models.SignInUser(user); err != nil {
 				return err
 			}
 		} else {
+			if userExisting != nil {
+				(*user).Group = (*userExisting).Group
+				(*user).Role = (*userExisting).Role
+			}
+
 			id, err = models.AddUser(user)
 			if err != nil {
 				return err
 			}
 		}
 
-		c.Cookie(&fiber.Cookie{
-			Name:     "session",
-			Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+userID+(*user).AccessToken+c.Get("user-agent")),
-			Path:     "/",
-			MaxAge:   86400 * 7,
-			Expires:  time.Now().Add(time.Hour * 168),
-			Secure:   true,
-			HTTPOnly: true,
-			SameSite: "strict",
-		})
+		if userExisting == nil {
+			c.Cookie(&fiber.Cookie{
+				Name:     "session",
+				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+userID+(*user).AccessToken+c.Get("user-agent")),
+				Path:     "/",
+				MaxAge:   86400 * 7,
+				Expires:  time.Now().Add(time.Hour * 168),
+				Secure:   true,
+				HTTPOnly: true,
+				SameSite: "Strict",
+			})
+		}
 	}
 
 	return nil
 }
 
 //  Google authentication
-func authGoogle(c *fiber.Ctx) error {
+func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
@@ -177,34 +183,39 @@ func authGoogle(c *fiber.Ctx) error {
 			Type:        3,
 		}
 
-		id, role, err := models.ExistsUser((*user).SocialID, 3)
+		id, _, _, err := models.ExistsUser((*user).SocialID, 3)
 		if err != nil {
 			return err
 		}
-
-		(*user).Role = role
 
 		if id > 0 {
 			if err := models.SignInUser(user); err != nil {
 				return err
 			}
 		} else {
+			if userExisting != nil {
+				(*user).Group = (*userExisting).Group
+				(*user).Role = (*userExisting).Role
+			}
+
 			id, err = models.AddUser(user)
 			if err != nil {
 				return err
 			}
 		}
 
-		c.Cookie(&fiber.Cookie{
-			Name:     "session",
-			Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
-			Path:     "/",
-			MaxAge:   86400 * 7,
-			Expires:  time.Now().Add(time.Hour * 168),
-			Secure:   true,
-			HTTPOnly: true,
-			SameSite: "strict",
-		})
+		if userExisting == nil {
+			c.Cookie(&fiber.Cookie{
+				Name:     "session",
+				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Path:     "/",
+				MaxAge:   86400 * 7,
+				Expires:  time.Now().Add(time.Hour * 168),
+				Secure:   true,
+				HTTPOnly: true,
+				SameSite: "Strict",
+			})
+		}
 	}
 
 	return nil
@@ -219,26 +230,33 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	data := make(fiber.Map)
 	title := "Авторизация"
 
-	if c.Query("code") != "" && c.Query("state") != "" {
-		if uAuth == nil {
-			if c.Query("state") == "vk" {
-				if err := authVK(c); err != nil {
-					return err
-				}
-			} else if c.Query("state") == "google" {
-				if err := authGoogle(c); err != nil {
-					return err
-				}
-			}
+	if uAuth != nil {
+		fmt.Println(*uAuth)
+	} else {
+		fmt.Println("uAuth is nil")
+	}
 
-			c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-			return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
+	if c.Query("code") != "" && c.Query("state") != "" {
+		//if uAuth == nil {
+		if c.Query("state") == "vk" {
+			if err := authVK(c, uAuth); err != nil {
+				return err
+			}
+		} else if c.Query("state") == "google" {
+			if err := authGoogle(c, uAuth); err != nil {
+				return err
+			}
 		}
+
+		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+		return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
+		//}
 	} else {
 		if uAuth == nil {
 			data["links"] = utils.GetAuthLinks()
 		} else {
 			data["user"] = *uAuth
+			data["links"] = utils.GetAuthLinks()
 			title = "Личный кабинет"
 		}
 	}
