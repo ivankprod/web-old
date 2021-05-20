@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -230,12 +229,6 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	data := make(fiber.Map)
 	title := "Авторизация"
 
-	if uAuth != nil {
-		fmt.Println(*uAuth)
-	} else {
-		fmt.Println("uAuth is nil")
-	}
-
 	if c.Query("code") != "" && c.Query("state") != "" {
 		//if uAuth == nil {
 		if c.Query("state") == "vk" {
@@ -258,6 +251,15 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 			data["user"] = *uAuth
 			data["links"] = utils.GetAuthLinks()
 			title = "Личный кабинет"
+
+			userAccounts, err := models.GetUsersGroup((*uAuth).Group, (*uAuth).ID)
+			if err != nil {
+				return err
+			}
+
+			if userAccounts != nil {
+				data["user_accounts"] = *userAccounts
+			}
 		}
 	}
 

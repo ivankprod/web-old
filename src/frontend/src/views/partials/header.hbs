@@ -103,10 +103,10 @@
 	<header>
 		<div class="container header-picture"><div class="header-picture-wrapper"></div></div>
 		<div class="stretch-container headtop">
-			{{#if data.user}}<div class="container headline">
-				<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
-				<div><a class="spa" href="/auth/">Личный кабинет</a> | <a href="/auth/logout/">Выйти</a></div>
-			</div>{{/if}}
+			<div id="user-auth-info" class="container headline">
+				{{#if data.user}}<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
+				<div><a class="spa" href="/auth/">Личный кабинет</a> | <a href="/auth/logout/">Выйти</a></div>{{/if}}
+			</div>
 		</div>
 		<div class="stretch-container headline">
 			<div class="container headline">

@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gofiber/fiber/v2 v2.8.0
+	github.com/gofiber/fiber/v2 v2.10.0
 	github.com/gofiber/helmet/v2 v2.1.1
 	github.com/gofiber/template v1.6.8
 	github.com/jmoiron/sqlx v1.3.3

@@ -41,9 +41,7 @@ func (user *User) ToJSON() string {
 }
 
 // Users struct
-type Users struct {
-	Users []User `db:"users" json:"users"`
-}
+type Users []User
 
 // Stringify users struct
 func (users *Users) ToJSON() string {
@@ -52,7 +50,7 @@ func (users *Users) ToJSON() string {
 		err    error
 	)
 
-	if result, err = json.Marshal(users.Users); err != nil {
+	if result, err = json.Marshal(users); err != nil {
 		return err.Error()
 	}
 
@@ -111,7 +109,7 @@ func AddUser(user *User) (int64, error) {
 	return id, nil
 }
 
-// User sign in
+// Update user group if it's new user
 func setUserGroup(uID int64, uGroup int64) error {
 	type PQuery struct {
 		ID    int64
@@ -208,6 +206,50 @@ func getUserCredentials(uID int64) (*User, error) {
 		if err := row.StructScan(result); err != nil {
 			return result, err
 		}
+	}
+
+	return result, nil
+}
+
+// Get users by specified group
+func GetUsersGroup(uGroup int64, uExcludedID int64) (*Users, error) {
+	type PQuery struct {
+		Group int64
+		ID    int64
+	}
+
+	var (
+		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
+			"INNER JOIN users_roles INNER JOIN users_types ON " +
+			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_group = :group AND users.user_id != :id LIMIT 3"
+
+		pqs = &PQuery{Group: uGroup, ID: uExcludedID}
+
+		result = &Users{}
+	)
+
+	db, err := db.Connect()
+	if err != nil {
+		return result, err
+	}
+
+	rows, err := db.NamedQuery(query, pqs)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		user := &User{}
+
+		if err := rows.StructScan(user); err != nil {
+			return result, err
+		}
+
+		(*user).AccessToken = "<restricted>"
+
+		(*result) = append((*result), (*user))
 	}
 
 	return result, nil
@@ -313,7 +355,7 @@ func GetUsers(args *ArgsGetUsers) (*Users, error) {
 
 		(*user).AccessToken = "<restricted>"
 
-		(*result).Users = append((*result).Users, (*user))
+		(*result) = append((*result), (*user))
 	}
 
 	return result, nil
@@ -345,7 +387,7 @@ func SignInUser(u *User) error {
 }
 
 // User auth string parser
-// (format: userID:hash)
+// (format: userID:userGroup:hash)
 func userAuthParse(str string) (*UserAuth, error) {
 	var err error
 
@@ -391,9 +433,22 @@ func IsAuthenticated(uAuth string, uAgent string) (*User, error) {
 		return nil, nil
 	}
 
+	/*resultArr, err := getUsersGroup((*result).Group, (*result).ID)
+	if err != nil {
+		return nil, err
+	}*/
+
 	uSessionHash := utils.HashSHA512(strconv.FormatInt(((*result).ID), 10) + (*result).SocialID + (*result).AccessToken + uAgent)
 	if uSessionHash == (*uAuthParsed).Hash {
 		(*result).AccessToken = "<restricted>"
+
+		/*r := &Users{}
+		(*r) = append([]User{}, *result)
+
+		if resultArr != nil {
+			(*r) = append((*r), (*resultArr)...)
+		}*/
+
 		return result, nil
 	}
 

@@ -43,6 +43,9 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	const oDoc           = oParser.parseFromString(res, 'text/html');
 	const newContent     = oDoc.getElementById('content');
 	let   oldContent     = document.getElementById('content');
+	const newAuthInfo    = oDoc.getElementById('user-auth-info');
+	let   oldAuthInfo    = document.getElementById('user-auth-info');
+	let   containerAuth  = oldAuthInfo.parentNode;
 	const newBreadcrumbs = oDoc.getElementById('breadcrumbs');
 	let   oldBreadcrumbs = document.getElementById('breadcrumbs');
 	let   container      = oldContent.parentNode;
@@ -69,9 +72,16 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 
 	if (changeAddress) window.history.pushState(hState, hState.title, hState.url);
 
+	if (newAuthInfo) {
+		if (oldAuthInfo) { containerAuth.replaceChild(newAuthInfo, oldAuthInfo); }
+		else { containerAuth.append(newAuthInfo); }
+	} else {
+		if (oldAuthInfo) { oldAuthInfo.remove(); }
+	}
+
 	if (newBreadcrumbs) {
 		if (oldBreadcrumbs) { container.replaceChild(newBreadcrumbs, oldBreadcrumbs); }
-		else { oldContent.parentNode.insertBefore(newBreadcrumbs, container.firstChild); }
+		else { container.insertBefore(newBreadcrumbs, container.firstChild); }
 	} else {
 		if (oldBreadcrumbs) { oldBreadcrumbs.remove(); }
 	}

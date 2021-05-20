@@ -52,7 +52,7 @@
 
 		<link type="text/css" rel="stylesheet" href="/static/fonts/fontawesome/css/solid.min.css">
 		
-		<link type="text/css" href="/static/css/app.7c27fc591162c399edd3.css" rel="stylesheet">
+		<link type="text/css" href="/static/css/app.f3b642a72b098d33c0e6.css" rel="stylesheet">
 		
 		<script type="text/javascript">
 			window.tLoader = setTimeout(function() {
@@ -103,10 +103,10 @@
 	<header>
 		<div class="container header-picture"><div class="header-picture-wrapper"></div></div>
 		<div class="stretch-container headtop">
-			{{#if data.user}}<div class="container headline">
-				<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
-				<div><a class="spa" href="/auth/">Личный кабинет</a> | <a href="/auth/logout/">Выйти</a></div>
-			</div>{{/if}}
+			<div id="user-auth-info" class="container headline">
+				{{#if data.user}}<div>Вы вошли как: {{data.user.NameFirst}} {{data.user.NameLast}} [{{data.user.RoleDesc}}]</div>
+				<div><a class="spa" href="/auth/">Личный кабинет</a> | <a href="/auth/logout/">Выйти</a></div>{{/if}}
+			</div>
 		</div>
 		<div class="stretch-container headline">
 			<div class="container headline">
