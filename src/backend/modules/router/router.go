@@ -68,7 +68,7 @@ func Router(app *fiber.App) {
 					Expires:  time.Now().Add(time.Hour * 168),
 					Secure:   true,
 					HTTPOnly: true,
-					SameSite: "strict",
+					SameSite: "Lax",
 				})
 			}
 		}

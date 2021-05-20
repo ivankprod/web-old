@@ -109,7 +109,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 				Expires:  time.Now().Add(time.Hour * 168),
 				Secure:   true,
 				HTTPOnly: true,
-				SameSite: "Strict",
+				SameSite: "Lax",
 			})
 		}
 	}
@@ -213,7 +213,7 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 				Expires:  time.Now().Add(time.Hour * 168),
 				Secure:   true,
 				HTTPOnly: true,
-				SameSite: "Strict",
+				SameSite: "Lax",
 			})
 		}
 	}
