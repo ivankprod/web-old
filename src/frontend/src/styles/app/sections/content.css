@@ -16,6 +16,8 @@ section.container {
 	padding: 32px 0;
 }
 
+.content h1 { align-self: flex-start; }
+
 .breadcrumbs {
 	padding: 8px 0;
 

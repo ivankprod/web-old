@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
 	"ivankprod.ru/src/backend/modules/db"
 	"ivankprod.ru/src/backend/modules/utils"
 )
@@ -55,6 +56,26 @@ func (users *Users) ToJSON() string {
 	}
 
 	return string(result)
+}
+
+// Get users conditions by type to map
+func (users *Users) GetCondsByType(aType int) fiber.Map {
+	result := make(fiber.Map)
+
+	for _, v := range *users {
+		switch t := v.Type; t {
+		case 0:
+			result["vk"] = aType == 0 || true
+		case 1:
+			result["ok"] = aType == 1 || true
+		case 2:
+			result["fb"] = aType == 2 || true
+		case 3:
+			result["gl"] = aType == 3 || true
+		}
+	}
+
+	return result
 }
 
 // User auth struct
@@ -212,18 +233,17 @@ func getUserCredentials(uID int64) (*User, error) {
 }
 
 // Get users by specified group
-func GetUsersGroup(uGroup int64, uExcludedID int64) (*Users, error) {
+func GetUsersGroup(uGroup int64) (*Users, error) {
 	type PQuery struct {
 		Group int64
-		ID    int64
 	}
 
 	var (
 		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
 			"INNER JOIN users_roles INNER JOIN users_types ON " +
-			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_group = :group AND users.user_id != :id LIMIT 3"
+			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_group = :group LIMIT 4"
 
-		pqs = &PQuery{Group: uGroup, ID: uExcludedID}
+		pqs = &PQuery{Group: uGroup}
 
 		result = &Users{}
 	)

@@ -252,13 +252,13 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 			data["links"] = utils.GetAuthLinks()
 			title = "Личный кабинет"
 
-			userAccounts, err := models.GetUsersGroup((*uAuth).Group, (*uAuth).ID)
+			userAccounts, err := models.GetUsersGroup((*uAuth).Group)
 			if err != nil {
 				return err
 			}
 
 			if userAccounts != nil {
-				data["user_accounts"] = *userAccounts
+				data["user_accounts"] = (*userAccounts).GetCondsByType((*uAuth).Type)
 			}
 		}
 	}

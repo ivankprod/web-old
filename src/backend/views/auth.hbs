@@ -1,19 +1,32 @@
 {{> 'partials/header' noindex=true }}
 	</header>
 <section id="content-holder" class="container">
+	<div id="breadcrumbs" class="breadcrumbs rounded-bottom">
+		<div><ul itemscope itemtype="http://schema.org/BreadcrumbList">
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<a itemscope itemtype="http://schema.org/WebPage" itemprop="item" id="{{urlBase}}" class="spa" href="/">
+					<span itemprop="name">Главная</span>
+				</a>
+				<meta itemprop="position" content="1">
+			</li>
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<span itemscope itemtype="http://schema.org/WebPage" itemprop="item" class="breadcrumbs-last">
+					<span itemprop="name">{{#if data.user}}Личный кабинет{{else}}Авторизация{{/if}}</span>
+				</span>
+				<meta itemprop="position" content="2">
+			</li>
+		</ul></div>
+	</div>
 	<div id="content" class="content animate-fadein-css">
+		<h1>Личный кабинет пользователя</h1>
 		{{#if data.user}}
-			{{> 'partials/components/auth_user_cabinet' user=data.user }}
-		{{/if}}{{!--else}}
+			{{> 'partials/components/auth_user_cabinet' user=data.user user_accounts=data.user_accounts links=data.links }}
+		{{else}}
 			<div>
 				<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a><br>
 				<a href="{{data.links.gl}}">Войти с помощью Google</a>
 			</div>
-		{{/if--}}
-		<div>
-			<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a><br>
-			<a href="{{data.links.gl}}">Войти с помощью Google</a>
-		</div>
+		{{/if}}
 	</div>
 </section>
 {{> 'partials/footer' }}
