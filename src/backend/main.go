@@ -91,7 +91,7 @@ func main() {
 	}()
 
 	// HTTPS certs
-	cer, err := tls.LoadX509KeyPair("./cert/server.crt", "./cert/server.key")
+	cer, err := tls.LoadX509KeyPair("./certs/ivankprod.ru/ivankprod.crt", "./certs/ivankprod.ru/ivankprod.key")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,5 +103,6 @@ func main() {
 		panic(err)
 	}
 
+	// LISTEN
 	log.Fatal(app.Listener(ln))
 }

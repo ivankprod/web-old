@@ -16,11 +16,11 @@ html, body {
 	background:  #fff;
 }
 
-.master-container  { position: relative; }
-header, footer     { position: relative; width: 100%; z-index: 2; }
+.master-container  { position: relative; display: flex; flex-direction: column; min-height: 100%; }
+header, footer     { position: relative; width: 100%; flex: 0 0 auto; z-index: 2; }
 .container         { position: relative; width: 100%; margin: 0 auto; padding: 0 24px; }
-section.container  { z-index: 1; }
 .stretch-container { width: 100%; }
+#content-holder    { flex: 1 0 auto; min-height: 400px; z-index: 1; }
 
 /*@media (min-width: 768px)  {  }*/
 /*@media (min-width: 992px)  {  }*/

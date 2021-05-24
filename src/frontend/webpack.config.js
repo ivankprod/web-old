@@ -81,8 +81,8 @@ module.exports = {
 					to:   './static/fonts'
 				},
 				{
-					from: path.resolve(__dirname, '../backend/cert'),
-					to:   './cert'
+					from: path.resolve(__dirname, '../backend/certs/ivankprod.ru/'),
+					to:   './certs/ivankprod.ru/'
 				},
 				// {
 				// 	from: path.resolve(__dirname, '../backend/views'),

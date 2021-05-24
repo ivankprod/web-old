@@ -4,10 +4,6 @@
 	Author : IvanK Production
 */
 
-section.container {
-	min-height: 400px;
-}
-
 .content {
 	display:        flex;
 	flex-direction: column;
@@ -26,7 +22,7 @@ section.container {
 	overflow: hidden;
 }
 
-.breadcrumbs li   { display: inline-block }
+.breadcrumbs li { display: inline-block }
 
 .breadcrumbs li a {
 	position: relative;
