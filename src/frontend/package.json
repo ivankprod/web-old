@@ -9,10 +9,17 @@
 	"author": "IvanK Production",
 	"license": "ISC",
 	"private": true,
-	"browserslist": [
-		"since 2015",
-		"not ie <= 11"
-	],
+	"browserslist": {
+		"production": [
+			"since 2010",
+			"not op_mini all",
+			"not ie >= 6"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version"
+		]
+	},
 	"devDependencies": {
 		"@babel/core": "^7.13.15",
 		"@babel/preset-env": "^7.13.15",
@@ -35,7 +42,6 @@
 		"webpack-cli": "^4.6.0"
 	},
 	"dependencies": {
-		"@babel/polyfill": "^7.12.1",
 		"core-js": "^3.10.1"
 	}
 }

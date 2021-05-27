@@ -6,14 +6,14 @@
  * or disable the default devtool with "devtool: false".
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
-/******/ (function() { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ "./scripts/admin.js":
 /*!**************************!*\
   !*** ./scripts/admin.js ***!
   \**************************/
-/***/ (function() {
+/***/ (() => {
 
 eval("console.log('admin');\n\n//# sourceURL=webpack:///./scripts/admin.js?");
 
