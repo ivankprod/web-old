@@ -230,7 +230,6 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	title := "Авторизация"
 
 	if c.Query("code") != "" && c.Query("state") != "" {
-		//if uAuth == nil {
 		if c.Query("state") == "vk" {
 			if err := authVK(c, uAuth); err != nil {
 				return err
@@ -243,7 +242,6 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
 		return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
-		//}
 	} else {
 		if uAuth == nil {
 			data["links"] = utils.GetAuthLinks()
@@ -294,7 +292,7 @@ func RouteAuthLogout(c *fiber.Ctx) error {
 		Expires:  time.Now().Add(-(time.Hour * 1)),
 		Secure:   true,
 		HTTPOnly: true,
-		SameSite: "strict",
+		SameSite: "Lax",
 	})
 
 	return c.Redirect("/auth/", 303)

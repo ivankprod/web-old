@@ -406,6 +406,34 @@ func SignInUser(u *User) error {
 	return nil
 }
 
+// User update access time
+func UpdateUserAccessTime(uID int64) error {
+	type PQuery struct {
+		ID   int64
+		Time string
+	}
+
+	var (
+		tNow = utils.TimeMSK_ToString()
+
+		query = "UPDATE users SET user_last_access = :time WHERE user_id = :id"
+
+		pqs = &PQuery{ID: uID, Time: tNow}
+	)
+
+	db, err := db.Connect()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NamedExec(query, pqs)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // User auth string parser
 // (format: userID:userGroup:hash)
 func userAuthParse(str string) (*UserAuth, error) {

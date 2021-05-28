@@ -70,6 +70,11 @@ func Router(app *fiber.App) {
 					HTTPOnly: true,
 					SameSite: "Lax",
 				})
+
+				// Update access time
+				go func() {
+					models.UpdateUserAccessTime((*auth).ID)
+				}()
 			}
 		}
 
