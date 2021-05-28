@@ -67,10 +67,14 @@ func main() {
 	// Compression middleware
 	app.Use(compress.New(compress.Config{Level: compress.LevelBestSpeed}))
 
-	// HTTP->HTTPS middleware
+	// HTTP->HTTPS & sitemap.xml middleware
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Protocol() == "http" {
 			return c.Redirect("https://"+c.Hostname()+c.OriginalURL(), 301)
+		}
+
+		if c.OriginalURL() == "/sitemap.xml" {
+			return c.SendFile("./sitemap.xml", true)
 		}
 
 		return c.Next()
