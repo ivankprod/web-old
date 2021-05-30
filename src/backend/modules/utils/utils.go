@@ -3,9 +3,11 @@ package utils
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"log"
 	"net/url"
 	"os"
 	"reflect"
+	"runtime"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -88,10 +90,42 @@ func TimeMSK_ToString() string {
 	return TimeMSK_ToTime().Format("2006-01-02 15:04:05")
 }
 
+func TimeMSK_ToLocaleString() string {
+	return TimeMSK_ToTime().Format("02.01.2006 15:04:05")
+}
+
+func DateMSK_ToLocaleString() string {
+	return TimeMSK_ToTime().Format("02.01.2006")
+}
+
+func DateMSK_ToLocaleSepString() string {
+	return TimeMSK_ToTime().Format("02-01-2006")
+}
+
+// SHA512 hash
 func HashSHA512(str string) string {
 	hash := sha512.New()
 
 	hash.Write([]byte(str))
 
 	return hex.EncodeToString(hash.Sum(nil))
+}
+
+// Logger
+func Logger(uri string, ip string, status int) {
+	memStats := &runtime.MemStats{}
+	runtime.ReadMemStats(memStats)
+
+	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	if err != nil {
+		log.Printf("Error opening file: %v", err)
+	} else {
+		log.SetOutput(f)
+		log.Printf("\nREQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",
+			TimeMSK_ToLocaleString(), uri, ip, status,
+			memStats.Alloc/1024, memStats.TotalAlloc/1024, memStats.Sys/1024, memStats.NumGC)
+
+		defer f.Close()
+	}
 }

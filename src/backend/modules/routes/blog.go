@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"ivankprod.ru/src/backend/modules/models"
+	"ivankprod.ru/src/backend/modules/utils"
 )
 
 func RouteBlogIndex(c *fiber.Ctx) error {
@@ -32,6 +33,8 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		"data":       data,
 	})
 	if err == nil {
+		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+
 		return nil
 	}
 

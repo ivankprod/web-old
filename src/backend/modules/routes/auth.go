@@ -272,6 +272,8 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 		"data": data,
 	})
 	if err == nil {
+		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+
 		return nil
 	}
 
@@ -294,6 +296,8 @@ func RouteAuthLogout(c *fiber.Ctx) error {
 		HTTPOnly: true,
 		SameSite: "Lax",
 	})
+
+	go utils.Logger(c.Request().URI().String(), c.IP(), 200)
 
 	return c.Redirect("/auth/", 303)
 }

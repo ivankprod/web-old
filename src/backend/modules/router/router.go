@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"ivankprod.ru/src/backend/modules/models"
 	"ivankprod.ru/src/backend/modules/routes"
+	"ivankprod.ru/src/backend/modules/utils"
 )
 
 // All errors
@@ -37,7 +38,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 	c.Status(code)
 	strCode := strconv.Itoa(code)
 
-	return c.Render("error", fiber.Map{
+	rerr := c.Render("error", fiber.Map{
 		"pageTitle": strCode + " - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 		"error": fiber.Map{
@@ -46,6 +47,10 @@ func HandleError(c *fiber.Ctx, err error) error {
 		},
 		"data": data,
 	})
+
+	go utils.Logger(c.Request().URI().String(), c.IP(), code)
+
+	return rerr
 }
 
 // Router
@@ -72,15 +77,16 @@ func Router(app *fiber.App) {
 				})
 
 				// Update access time
-				go func() {
-					models.UpdateUserAccessTime((*auth).ID)
-				}()
+				go func(id int64) {
+					models.UpdateUserAccessTime(id)
+				}((*auth).ID)
 			}
 		}
 
 		return c.Next()
 	})
 
+	// Routes
 	app.Get("/", routes.RouteHomeIndex)
 	app.Get("/projects/", routes.RouteProjectsIndex)
 	app.Get("/projects/:type/", routes.RouteProjectsView)
@@ -106,7 +112,7 @@ func Router(app *fiber.App) {
 
 		c.Status(fiber.StatusNotFound)
 
-		return c.Render("error", fiber.Map{
+		err := c.Render("error", fiber.Map{
 			"pageTitle": "404 - " + os.Getenv("INFO_TITLE_BASE"),
 			"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 			"error": fiber.Map{
@@ -115,5 +121,9 @@ func Router(app *fiber.App) {
 			},
 			"data": data,
 		})
+
+		go utils.Logger(c.Request().URI().String(), c.IP(), fiber.StatusNotFound)
+
+		return err
 	})
 }

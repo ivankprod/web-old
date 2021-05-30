@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"ivankprod.ru/src/backend/modules/models"
+	"ivankprod.ru/src/backend/modules/utils"
 )
 
 func RouteProjectsIndex(c *fiber.Ctx) error {
@@ -32,6 +33,8 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 		"data":           data,
 	})
 	if err == nil {
+		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+
 		return nil
 	}
 
@@ -65,6 +68,8 @@ func RouteProjectsView(c *fiber.Ctx) error {
 		"data":           data,
 	})
 	if err == nil {
+		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+
 		return nil
 	}
 

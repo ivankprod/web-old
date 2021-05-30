@@ -17,4 +17,6 @@ cd ../backend/
 
 cd ../../
 
+mkdir -p build_"$mode"/logs
+
 echo "Building webapp done!"
