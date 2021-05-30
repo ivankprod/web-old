@@ -5,3 +5,5 @@
 .eslintcache
 package-lock.json
 /tmp
+/build_dev/server*
+/build_prod/server*
