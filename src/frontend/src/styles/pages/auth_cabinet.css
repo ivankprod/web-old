@@ -21,15 +21,14 @@
 }
 
 .user-info-avatar {
-	display: flex;
-    align-items: center;
-
 	width:  200px;
 	height: 200px;
 
     overflow: hidden;
 
     border-radius: 50%;
+
+	background-color: #f7f7f7;
 }
 
 .user-info-avatar img { width: 100%; text-align: center; }

@@ -13,8 +13,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// URL params: type
 type URLParams map[string]string
 
+// URL params: toString
 func (p *URLParams) ToString(escaped bool) string {
 	object := *p
 	result := ""
@@ -34,6 +36,7 @@ func (p *URLParams) ToString(escaped bool) string {
 	return result
 }
 
+// OAuth links
 func GetAuthLinks() fiber.Map {
 	query_vk := &URLParams{}
 	(*query_vk)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
@@ -57,6 +60,7 @@ func GetAuthLinks() fiber.Map {
 	}
 }
 
+// Check for empty
 func IsEmptyStruct(object interface{}) bool {
 	if object == nil {
 		return true
@@ -77,6 +81,7 @@ func IsEmptyStruct(object interface{}) bool {
 	return false
 }
 
+// Time functions: to time
 func TimeMSK_ToTime() time.Time {
 	loc, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
@@ -86,18 +91,22 @@ func TimeMSK_ToTime() time.Time {
 	return time.Now().In(loc)
 }
 
+// Time functions: to string
 func TimeMSK_ToString() string {
 	return TimeMSK_ToTime().Format("2006-01-02 15:04:05")
 }
 
+// Time functions: to locale string
 func TimeMSK_ToLocaleString() string {
 	return TimeMSK_ToTime().Format("02.01.2006 15:04:05")
 }
 
+// Time functions: date to locale string
 func DateMSK_ToLocaleString() string {
 	return TimeMSK_ToTime().Format("02.01.2006")
 }
 
+// Time functions: date to locale string with - separator
 func DateMSK_ToLocaleSepString() string {
 	return TimeMSK_ToTime().Format("02-01-2006")
 }
