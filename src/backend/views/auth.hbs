@@ -18,13 +18,21 @@
 		</ul></div>
 	</div>
 	<div id="content" class="content animate-fadein-css">
-		<h1>Личный кабинет пользователя</h1>
+		<h1>{{#if data.user}}Личный кабинет пользователя{{else}}Войти на сайт{{/if}}</h1><br>
 		{{#if data.user}}
 			{{> 'partials/components/auth_user_cabinet' user=data.user user_accounts=data.user_accounts links=data.links }}
 		{{else}}
-			<div>
-				<a href="{{data.links.vk}}">Войти с помощью ВКонтакте</a><br>
-				<a href="{{data.links.gl}}">Войти с помощью Google</a>
+			<div class="auth-form rounded-all">
+				<div class="auth-form-image"></div>
+				<div class="auth-form-buttons">
+					<div class="auth-form-caption">Авторизуйтесь с помощью<br>социальной сети</div>
+					<button class="rounded-all btn-auth" href="{{data.links.vk}}">
+						<img src="/static/images/auth-icons/auth-vk.png" draggable="false"><span>Войти с помощью ВКонтакте</span>
+					</button>
+					<button class="rounded-all btn-auth" href="{{data.links.gl}}">
+						<img src="/static/images/auth-icons/auth-gl.png" draggable="false"><span>Войти с помощью Google</span>
+					</button>
+				</div>
 			</div>
 		{{/if}}
 	</div>
