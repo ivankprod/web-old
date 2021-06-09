@@ -99,6 +99,8 @@ button span { cursor: pointer !important; }
 
 	height: 200px;
 
+	margin-top: 16px;
+
 	box-shadow: 0 3px 10px #d8d8d8;
 
 	overflow: hidden;

@@ -82,7 +82,7 @@ function fillButtonsOnClick() {
 
 				spa.loadPage(dest, params, true);
 			};
-		} else { elem.onclick = function(e) { window.location.href = e.target.dataset.href; }; }
+		} else { elem.onclick = function(e) { window.location.href = this.dataset.href; }; }
 	});
 }
 
