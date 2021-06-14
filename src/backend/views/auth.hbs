@@ -23,7 +23,7 @@
 			{{> 'partials/components/auth_user_cabinet' user=data.user user_accounts=data.user_accounts links=data.links }}
 		{{else}}
 			<div class="auth-form rounded-all">
-				<div class="auth-form-image"></div>
+				<div class="auth-form-image"><img src="/static/images/profile_180px.png" draggable="false"></div>
 				<div class="auth-form-buttons">
 					<div class="auth-form-caption">Авторизуйтесь с помощью<br>социальной сети</div>
 					<button class="rounded-all btn-auth" data-href="{{data.links.vk}}">

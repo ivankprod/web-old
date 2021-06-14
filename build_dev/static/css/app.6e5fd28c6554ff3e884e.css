@@ -224,6 +224,10 @@ button span { cursor: pointer !important; }
 	overflow: hidden;
 }
 .auth-form-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
 	width:  200px;
 	height: 200px;
 
