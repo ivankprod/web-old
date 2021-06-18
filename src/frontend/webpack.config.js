@@ -6,6 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const SitemapPlugin = require('sitemap-webpack-plugin').default;
+const SriPlugin = require('webpack-subresource-integrity');
 const DotEnv = require('dotenv-webpack');
 const babelConfig = require('./babel.config');
 const postcssConfig = require('./postcss.config');
@@ -31,11 +32,13 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, '../../build_' + (isDEV ? 'dev' : 'prod')),
-		filename: 'static/js/[name].[contenthash].js'
+		filename: 'static/js/[name].[contenthash].js',
+		crossOriginLoading: 'anonymous'
 	},
 	optimization: isPROD ? { minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()] } : { minimize: false },
 	cache: false,
 	plugins: [
+		new SriPlugin({ hashFuncNames: ['sha256'] }),
 		new SitemapPlugin({
 			base: 'https://ivankprod.ru',
 			paths: sitemapPaths,

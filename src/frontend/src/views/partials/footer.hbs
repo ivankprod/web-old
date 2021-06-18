@@ -35,7 +35,7 @@
 </footer>
 </div>
 <% for (var js in htmlWebpackPlugin.files.js) { %>
-<script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[js] %>" defer="true"></script>
+<script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[js] %>" integrity="<%= htmlWebpackPlugin.files.jsIntegrity[js] %>" crossorigin="<%= webpackConfig.output.crossOriginLoading %>" defer="true"></script>
 <% } %>
 </body>
 </html>
