@@ -81,7 +81,9 @@ func main() {
 	})
 
 	// favicon middleware
-	app.Use(favicon.New(favicon.Config{}))
+	app.Use(favicon.New(favicon.Config{
+		File: "./favicon.ico",
+	}))
 
 	// Static files middleware
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
