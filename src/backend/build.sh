@@ -20,5 +20,6 @@ echo "MODE: $mode"
 windres -o server-res.syso ./resources_win/server.rc
 pkger
 GOOS=windows GOARCH=amd64 GOMAXPROCS=4 go build -o ../../build_$mode/server.exe -v -ldflags="-s -w"
+cp ../../.env ../../build_$mode/
 
 echo "Backend build done!"
