@@ -33,7 +33,9 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 		"data":           data,
 	})
 	if err == nil {
-		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+		if os.Getenv("STAGE_MODE") == "dev" {
+			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+		}
 
 		return nil
 	}
@@ -68,7 +70,9 @@ func RouteProjectsView(c *fiber.Ctx) error {
 		"data":           data,
 	})
 	if err == nil {
-		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+		if os.Getenv("STAGE_MODE") == "dev" {
+			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+		}
 
 		return nil
 	}

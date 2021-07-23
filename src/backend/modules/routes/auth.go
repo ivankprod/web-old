@@ -272,7 +272,9 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 		"data": data,
 	})
 	if err == nil {
-		go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+		if os.Getenv("STAGE_MODE") == "dev" {
+			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+		}
 
 		return nil
 	}
@@ -297,7 +299,9 @@ func RouteAuthLogout(c *fiber.Ctx) error {
 		SameSite: "Lax",
 	})
 
-	go utils.Logger(c.Request().URI().String(), c.IP(), 200)
+	if os.Getenv("STAGE_MODE") == "dev" {
+		go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+	}
 
 	return c.Redirect("/auth/", 303)
 }

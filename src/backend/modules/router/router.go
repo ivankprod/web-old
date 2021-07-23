@@ -48,7 +48,9 @@ func HandleError(c *fiber.Ctx, err error) error {
 		"data": data,
 	})
 
-	go utils.Logger(c.Request().URI().String(), c.IP(), code)
+	if os.Getenv("STAGE_MODE") == "dev" {
+		go utils.DevLogger(c.Request().URI().String(), c.IP(), code)
+	}
 
 	return rerr
 }
@@ -122,7 +124,9 @@ func Router(app *fiber.App) {
 			"data": data,
 		})
 
-		go utils.Logger(c.Request().URI().String(), c.IP(), fiber.StatusNotFound)
+		if os.Getenv("STAGE_MODE") == "dev" {
+			go utils.DevLogger(c.Request().URI().String(), c.IP(), fiber.StatusNotFound)
+		}
 
 		return err
 	})

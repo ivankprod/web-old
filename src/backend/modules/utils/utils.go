@@ -120,15 +120,15 @@ func HashSHA512(str string) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-// Logger
-func Logger(uri string, ip string, status int) {
+// Logger (for dev only)
+func DevLogger(uri string, ip string, status int) {
 	memStats := &runtime.MemStats{}
 	runtime.ReadMemStats(memStats)
 
-	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+"_dev.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	if err != nil {
-		log.Printf("Error opening file: %v", err)
+		log.Printf("Error opening devlog file: %v", err)
 	} else {
 		log.SetOutput(f)
 		log.Printf("\nREQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",

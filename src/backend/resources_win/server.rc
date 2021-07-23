@@ -12,11 +12,11 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "CompanyName",        "IvanK Production\0"
-            VALUE "FileDescription",    "ivankprod.ru server exe\0"
+            VALUE "FileDescription",    "ivankprod.ru server app\0"
             VALUE "FileVersion",        "1.0.0.0\0"
             VALUE "LegalCopyright",     "© 2021 IvanK Production. All Rights Reserved\0"
             VALUE "OriginalFilename",   "server.exe\0"
-            VALUE "ProductName",        "ivankprod.ru server exe\0"
+            VALUE "ProductName",        "ivankprod.ru server app\0"
             VALUE "ProductVersion",     "1.0.0.0\0"
         END
     END

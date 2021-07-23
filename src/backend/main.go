@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
@@ -15,6 +16,7 @@ import (
 	"github.com/markbates/pkger"
 
 	"ivankprod.ru/src/backend/modules/router"
+	"ivankprod.ru/src/backend/modules/utils"
 )
 
 var (
@@ -50,6 +52,20 @@ func main() {
 
 	// Safe panic
 	app.Use(recover.New())
+
+	// Logger
+	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Error opening log file: %v", err)
+	}
+	defer f.Close()
+
+	app.Use(logger.New(logger.Config{
+		Format:     "IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
+		TimeFormat: "02.01.2006 15:04:05",
+		TimeZone:   "Russia/Moscow",
+		Output:     f,
+	}))
 
 	// ContentSecurityPolicy middleware
 	var csp string
