@@ -47,7 +47,7 @@ module.exports = {
 		new HTMLWebpackPlugin({
 			chunks: ['app'],
 			template: path.resolve(__dirname, './src/views/partials/footer.hbs'),
-			filename: path.resolve(__dirname, '../backend/views/partials/footer.hbs'),
+			filename: path.resolve(__dirname, '../server/views/partials/footer.hbs'),
 			publicPath: '/',
 			inject: false,
 			scriptLoading: 'defer',
@@ -56,7 +56,7 @@ module.exports = {
 		new HTMLWebpackPlugin({
 			chunks: ['app'],
 			template: path.resolve(__dirname, './src/views/partials/header.hbs'),
-			filename: path.resolve(__dirname, '../backend/views/partials/header.hbs'),
+			filename: path.resolve(__dirname, '../server/views/partials/header.hbs'),
 			publicPath: '/',
 			inject: false,
 			scriptLoading: 'defer',
@@ -79,11 +79,11 @@ module.exports = {
 					to:   './static/fonts'
 				},
 				{
-					from: path.resolve(__dirname, '../backend/certs/ivankprod.ru/'),
+					from: path.resolve(__dirname, '../server/certs/ivankprod.ru/'),
 					to:   './certs/ivankprod.ru/'
 				},
 				// {
-				// 	from: path.resolve(__dirname, '../backend/views'),
+				// 	from: path.resolve(__dirname, '../server/views'),
 				// 	to:   './views',
 				// 	globOptions: {
 				// 		ignore: [

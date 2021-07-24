@@ -1,4 +1,4 @@
-module ivankprod.ru/src/backend
+module ivankprod.ru/src/server
 
 go 1.16
 

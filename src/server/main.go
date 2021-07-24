@@ -15,8 +15,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
 
-	"ivankprod.ru/src/backend/modules/router"
-	"ivankprod.ru/src/backend/modules/utils"
+	"ivankprod.ru/src/server/modules/router"
+	"ivankprod.ru/src/server/modules/utils"
 )
 
 var (

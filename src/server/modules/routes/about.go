@@ -4,11 +4,11 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"ivankprod.ru/src/backend/modules/models"
-	"ivankprod.ru/src/backend/modules/utils"
+	"ivankprod.ru/src/server/modules/models"
+	"ivankprod.ru/src/server/modules/utils"
 )
 
-func RouteContactsIndex(c *fiber.Ctx) error {
+func RouteAboutIndex(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil
@@ -20,17 +20,17 @@ func RouteContactsIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("contacts", fiber.Map{
+	err := c.Render("about", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "Контакты - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    "О нас - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-		"pageScope":    "contacts",
+		"pageScope":    "about",
 		"ogTags": fiber.Map{
 			"title": os.Getenv("INFO_TITLE_BASE"),
 		},
-		"activeContacts": true,
-		"data":           data,
+		"activeAbout": true,
+		"data":        data,
 	})
 	if err == nil {
 		if os.Getenv("STAGE_MODE") == "dev" {

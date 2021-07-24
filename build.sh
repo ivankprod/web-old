@@ -12,7 +12,7 @@ fi
 cd src/frontend/
 ./build.sh "$mode"
 
-cd ../backend/
+cd ../server/
 ./build.sh "$mode"
 
 cd ../../

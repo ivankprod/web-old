@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"ivankprod.ru/src/backend/modules/db"
-	"ivankprod.ru/src/backend/modules/utils"
+	"ivankprod.ru/src/server/modules/db"
+	"ivankprod.ru/src/server/modules/utils"
 )
 
 // User struct

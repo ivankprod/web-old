@@ -1,7 +1,7 @@
 {
-	"name": "ivankprod.local",
+	"name": "ivankprod.ru",
 	"version": "1.0.0",
-	"description": "ivankprod.ru local repo",
+	"description": "ivankprod.ru webapp",
 	"scripts": {
 		"dev": "npx webpack --mode development --progress",
 		"prod": "npx webpack --mode production --progress"
