@@ -45,6 +45,13 @@ func GetAuthLinks() fiber.Map {
 	(*query_vk)["response_type"] = "code"
 	(*query_vk)["state"] = "vk"
 
+	query_fb := &URLParams{}
+	(*query_fb)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
+	(*query_fb)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
+	(*query_fb)["scope"] = "email"
+	(*query_fb)["response_type"] = "code"
+	(*query_fb)["state"] = "facebook"
+
 	query_gl := &URLParams{}
 	(*query_gl)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
 	(*query_gl)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
@@ -56,6 +63,7 @@ func GetAuthLinks() fiber.Map {
 
 	return fiber.Map{
 		"vk": "https://oauth.vk.com/authorize" + (*query_vk).ToString(true),
+		"fb": "https://www.facebook.com/v11.0/dialog/oauth" + (*query_fb).ToString(true),
 		"gl": "https://accounts.google.com/o/oauth2/v2/auth" + (*query_gl).ToString(true),
 	}
 }

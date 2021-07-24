@@ -305,7 +305,7 @@ button span { cursor: pointer !important; }
 	align-items: flex-start;
 	justify-content: space-around;
 
-	height: 200px;
+	height: 240px;
 
 	margin-top: 16px;
 
@@ -320,7 +320,7 @@ button span { cursor: pointer !important; }
 	justify-content: center;
 
 	width:  200px;
-	height: 200px;
+	height: 100%;
 
 	background-color: #f7f7f7;
 

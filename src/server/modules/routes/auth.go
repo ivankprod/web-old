@@ -116,6 +116,107 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 	return nil
 }
 
+//  Facebook authentication
+func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
+	query := &utils.URLParams{}
+
+	(*query)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
+	(*query)["client_secret"] = os.Getenv("AUTH_FB_CLIENT_SECRET")
+	(*query)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
+	(*query)["auth_type"] = "rerequest"
+	(*query)["code"] = c.Query("code")
+
+	req := &fiber.Client{NoDefaultUserAgentHeader: false}
+	code, res, errs := (*req).Get("https://graph.facebook.com/v11.0/oauth/access_token" + (*query).ToString(true)).String()
+
+	if code != 200 && code != 400 {
+		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+"Аутентификация не выполнена!")
+	}
+	for _, v := range errs {
+		if v != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+v.Error())
+		}
+	}
+
+	ress1 := new(map[string]interface{})
+	err := json.Unmarshal([]byte(res), ress1)
+	if err != nil {
+		return err
+	}
+	if (*ress1)["error"] != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+(((*ress1)["error"]).(map[string]interface{})["message"]).(string))
+	}
+
+	if (*ress1)["access_token"] != nil {
+		query := &utils.URLParams{}
+
+		(*query)["access_token"] = (*ress1)["access_token"].(string)
+		(*query)["fields"] = "id,email,first_name,last_name,picture.width(400)"
+
+		_, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).String()
+		for _, v := range errs {
+			if v != nil {
+				return v
+			}
+		}
+
+		ress := new(map[string]interface{})
+		err := json.Unmarshal([]byte(res), ress)
+		if err != nil {
+			return err
+		}
+		if (*ress)["error"] != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
+		}
+
+		user := &models.User{
+			SocialID:    ((*ress)["id"]).(string),
+			NameFirst:   ((*ress)["first_name"]).(string),
+			NameLast:    ((*ress)["last_name"]).(string),
+			AvatarPath:  ((*ress)["picture"]).(map[string]interface{})["data"].(map[string]interface{})["url"].(string),
+			Email:       ((*ress)["email"]).(string),
+			AccessToken: ((*ress1)["access_token"]).(string),
+			Type:        2,
+		}
+
+		id, _, _, err := models.ExistsUser((*user).SocialID, 2)
+		if err != nil {
+			return err
+		}
+
+		if id > 0 {
+			if err := models.SignInUser(user); err != nil {
+				return err
+			}
+		} else {
+			if userExisting != nil {
+				(*user).Group = (*userExisting).Group
+				(*user).Role = (*userExisting).Role
+			}
+
+			id, err = models.AddUser(user)
+			if err != nil {
+				return err
+			}
+		}
+
+		if userExisting == nil {
+			c.Cookie(&fiber.Cookie{
+				Name:     "session",
+				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Path:     "/",
+				MaxAge:   86400 * 7,
+				Expires:  time.Now().Add(time.Hour * 168),
+				Secure:   true,
+				HTTPOnly: true,
+				SameSite: "Lax",
+			})
+		}
+	}
+
+	return nil
+}
+
 //  Google authentication
 func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	query := &utils.URLParams{}
@@ -232,6 +333,10 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 	if c.Query("code") != "" && c.Query("state") != "" {
 		if c.Query("state") == "vk" {
 			if err := authVK(c, uAuth); err != nil {
+				return err
+			}
+		} else if c.Query("state") == "facebook" {
+			if err := authFacebook(c, uAuth); err != nil {
 				return err
 			}
 		} else if c.Query("state") == "google" {
