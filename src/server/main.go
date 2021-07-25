@@ -67,7 +67,7 @@ func main() {
 		Output:     f,
 	}))
 
-	// ContentSecurityPolicy middleware
+	// ContentSecurityPolicy
 	var csp string
 
 	if MODE_DEV {
@@ -80,10 +80,10 @@ func main() {
 		ContentSecurityPolicy: csp,
 	}))
 
-	// Compression middleware
+	// Compression
 	app.Use(compress.New(compress.Config{Level: compress.LevelBestSpeed}))
 
-	// HTTP->HTTPS & sitemap.xml middleware
+	// HTTP->HTTPS & sitemap.xml
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Protocol() == "http" {
 			return c.Redirect("https://"+c.Hostname()+c.OriginalURL(), 301)
@@ -96,12 +96,12 @@ func main() {
 		return c.Next()
 	})
 
-	// favicon middleware
+	// favicon
 	app.Use(favicon.New(favicon.Config{
 		File: "./favicon.ico",
 	}))
 
-	// Static files middleware
+	// Static files
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
