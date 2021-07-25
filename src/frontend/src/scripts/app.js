@@ -23,6 +23,12 @@ document.addEventListener("DOMContentLoaded", function() {
 			utils.drawOpacity(elemSubnavWrappers[i], 1);
 		});
 
+		elem.addEventListener('mousemove', function() {
+			if (!elemSubnavWrappers[i].classList.contains('showed')) {
+				elem.dispatchEvent(new Event('mouseover'));
+			}
+		});
+
 		elem.addEventListener('mouseleave', function(event) {
 			if (event.relatedTarget != elemSubnavWrappers[i]) {
 				elem.classList.remove('hovered');

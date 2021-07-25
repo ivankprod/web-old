@@ -89,6 +89,11 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	fadeOut(oldContent).then(() => {
 		sleep(110).then(() => {
 			container.replaceChild(newContent, oldContent); window.onPageLoaded(dataExtras);
+
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			document.querySelectorAll('.subnav-container').forEach(elem => {
+				elem.classList.remove("showed");
+			});
 		});
 	});
 
