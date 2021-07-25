@@ -217,6 +217,119 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 	return nil
 }
 
+//  Yandex authentication
+func authYandex(c *fiber.Ctx, userExisting *models.User) error {
+	query := &utils.URLParams{}
+
+	(*query)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
+	(*query)["client_secret"] = os.Getenv("AUTH_YA_CLIENT_SECRET")
+	(*query)["grant_type"] = "authorization_code"
+	(*query)["code"] = c.Query("code")
+
+	a := fiber.AcquireAgent()
+	req := a.Request()
+	req.Header.SetMethod(fiber.MethodPost)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("accept", "application/json")
+	req.SetBodyString((*query).ToString(true)[1:])
+	req.SetRequestURI("https://oauth.yandex.ru/token")
+
+	if err := a.Parse(); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+err.Error())
+	}
+
+	code, res, errs := a.Bytes()
+
+	if code != 200 && code != 400 {
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+"Аутентификация не выполнена!")
+	}
+	for _, v := range errs {
+		if v != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+v.Error())
+		}
+	}
+
+	ress1 := new(map[string]interface{})
+	err := json.Unmarshal(res, ress1)
+	if err != nil {
+		return err
+	}
+
+	if (*ress1)["error"] != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+(*ress1)["error_description"].(string))
+	}
+
+	/*
+		if (*ress1)["access_token"] != nil {
+			query := &utils.URLParams{}
+
+			(*query)["access_token"] = (*ress1)["access_token"].(string)
+			(*query)["fields"] = "id,email,first_name,last_name,picture.width(400)"
+
+			_, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).String()
+			for _, v := range errs {
+				if v != nil {
+					return v
+				}
+			}
+
+			ress := new(map[string]interface{})
+			err := json.Unmarshal([]byte(res), ress)
+			if err != nil {
+				return err
+			}
+			if (*ress)["error"] != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
+			}
+
+			user := &models.User{
+				SocialID:    ((*ress)["id"]).(string),
+				NameFirst:   ((*ress)["first_name"]).(string),
+				NameLast:    ((*ress)["last_name"]).(string),
+				AvatarPath:  ((*ress)["picture"]).(map[string]interface{})["data"].(map[string]interface{})["url"].(string),
+				Email:       ((*ress)["email"]).(string),
+				AccessToken: ((*ress1)["access_token"]).(string),
+				Type:        2,
+			}
+
+			id, _, _, err := models.ExistsUser((*user).SocialID, 2)
+			if err != nil {
+				return err
+			}
+
+			if id > 0 {
+				if err := models.SignInUser(user); err != nil {
+					return err
+				}
+			} else {
+				if userExisting != nil {
+					(*user).Group = (*userExisting).Group
+					(*user).Role = (*userExisting).Role
+				}
+
+				id, err = models.AddUser(user)
+				if err != nil {
+					return err
+				}
+			}
+
+			if userExisting == nil {
+				c.Cookie(&fiber.Cookie{
+					Name:     "session",
+					Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+					Path:     "/",
+					MaxAge:   86400 * 7,
+					Expires:  time.Now().Add(time.Hour * 168),
+					Secure:   true,
+					HTTPOnly: true,
+					SameSite: "Lax",
+				})
+			}
+		}*/
+
+	return nil
+}
+
 //  Google authentication
 func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	query := &utils.URLParams{}
@@ -337,6 +450,10 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 			}
 		} else if c.Query("state") == "facebook" {
 			if err := authFacebook(c, uAuth); err != nil {
+				return err
+			}
+		} else if c.Query("state") == "yandex" {
+			if err := authYandex(c, uAuth); err != nil {
 				return err
 			}
 		} else if c.Query("state") == "google" {
