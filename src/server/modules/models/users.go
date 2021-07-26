@@ -67,7 +67,7 @@ func (users *Users) GetCondsByType(aType int) fiber.Map {
 		case 0:
 			result["vk"] = aType == 0 || true
 		case 1:
-			result["ok"] = aType == 1 || true
+			result["ya"] = aType == 1 || true
 		case 2:
 			result["fb"] = aType == 2 || true
 		case 3:

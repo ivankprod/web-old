@@ -97,9 +97,9 @@ button span { cursor: pointer !important; }
 	align-items: flex-start;
 	justify-content: space-around;
 
-	height: 240px;
+	height: 300px;
 
-	margin-top: 16px;
+	margin: 16px 0;
 
 	box-shadow: 0 3px 10px #d8d8d8;
 

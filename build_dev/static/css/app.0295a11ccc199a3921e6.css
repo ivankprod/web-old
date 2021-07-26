@@ -70,7 +70,7 @@
 	--color-theme-green: #6dab1e;
 }
 
-.preload { transition: none !important; }
+.preload { transition: none !important; overflow: hidden; }
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -305,9 +305,9 @@ button span { cursor: pointer !important; }
 	align-items: flex-start;
 	justify-content: space-around;
 
-	height: 240px;
+	height: 300px;
 
-	margin-top: 16px;
+	margin: 16px 0;
 
 	box-shadow: 0 3px 10px #d8d8d8;
 
