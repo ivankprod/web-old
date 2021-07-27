@@ -6,7 +6,7 @@
 
 import '../styles/bundle.css';
 
-import utils from './utils.js';
+import utils, { onScrollPB } from './utils.js';
 import spa from './spa.js';
 
 //  Elements
@@ -118,6 +118,11 @@ function fillLinksOnClick() {
 //  onResize
 window.onresize = function() {
 	//
+};
+
+//  onScroll
+window.onscroll = function() {
+	onScrollPB();
 };
 
 //  onLoad

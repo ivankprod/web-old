@@ -27,3 +27,21 @@ header, footer     { position: relative; width: 100%; flex: 0 0 auto; z-index: 2
 @media (min-width: 1200px) { .container { max-width: 1200px; } }
 
 h1 { font-size: 2rem; }
+
+#progress-bar {
+	position: fixed;
+	top:      24px;
+
+	height: 3px;
+	width:  10%;
+
+	background: #bbde8e;
+
+	opacity:    0;
+	transition: opacity 0.4s linear;
+
+	z-index: 20;
+
+	backface-visibility: hidden;
+	will-change: width, opacity;
+}

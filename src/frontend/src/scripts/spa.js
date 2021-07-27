@@ -4,8 +4,9 @@
     Author : IvanK Production
 */
 
-import { newAjax, ajaxErr } from './ajax.js';
-import { sleep, fadeOut, queryParse, queryStringify, getMeta, setMeta, rewriteMetas } from './utils.js';
+import { newAjax, ajaxErr, ProgressBar } from './ajax.js';
+import { sleep, animate, makeLinear, completeProgress, fadeOut,
+         queryParse, queryStringify, getMeta, setMeta, rewriteMetas } from './utils.js';
 
 //  Hostname var
 const strServerHost = String('https://' + (process.env.SERVER_HOST != '' ? process.env.SERVER_HOST : 'ivankprod.ru'));
@@ -24,9 +25,14 @@ let hState  = {
 	url:    loc.substring(intHrefStart)
 };
 
+let elemProgressBar = document.getElementById('progress-bar');
+
 //  Loads ajax page
 export async function loadPage(strHref, params = {}, changeAddress = false, callback = null) {
-	let res = await newAjax(strHref, params, 'text');
+	let progress = new ProgressBar(); progress.start();
+	let res      = await newAjax(strHref, params, 'text');
+
+	if (res.error && res.error.error_type == 'aborted') { return; }
 
 	if (res.error && res.error.error_type == 'client') {
 		ajaxErr(res.error.error_code, res.error.error_desc); return;
@@ -94,6 +100,8 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 			document.querySelectorAll('.subnav-container').forEach(elem => {
 				elem.classList.remove("showed");
 			});
+
+			progress.finish();
 		});
 	});
 

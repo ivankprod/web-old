@@ -13,6 +13,22 @@ export function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+//  ProgressBar onScroll
+export function onScrollPB() {
+	let elemProgressBar = document.getElementById('progress-bar');
+	if (!elemProgressBar) return;
+
+	const scrolled = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+
+	if (scrolled > 24) {
+		elemProgressBar.style.position = 'fixed';
+		elemProgressBar.style.top      = '0';
+	} else {
+		elemProgressBar.style.position = 'absolute';
+		elemProgressBar.style.top      = '24px';
+	}
+}
+
 //////////////////////////
 //  ANIMATIONS SECTION  //
 //////////////////////////
@@ -20,6 +36,8 @@ export function sleep(ms) {
 //  Animations: main function
 export function animate(opts) {
 	let start = performance.now();
+
+	if (opts.stoppable) { window.lastRAF = null; }
 
 	requestAnimationFrame(function animate(time) {
 		let timeFraction = (time - start) / opts.duration;
@@ -31,8 +49,12 @@ export function animate(opts) {
 		if (opts.draw) { opts.draw(progress); }
 		if (opts.move) { opts.move(progress); }
 
-		if (timeFraction < 1) { requestAnimationFrame(animate); }
-		else { if (opts.callback) { opts.callback(); } }
+		if (timeFraction < 1) {
+			if (opts.stoppable) { window.lastRAF = requestAnimationFrame(animate); }
+			else { requestAnimationFrame(animate); }
+		} else {
+			if (opts.callback) { opts.callback(); }
+		}
 	});
 }
 
@@ -81,7 +103,7 @@ export async function fadeOut(elem) {
 	elem.style.opacity = '0';
 };
 
-//  Animations: height 
+//  Animations: height
 export function drawHeight(elem, value) {
 	elem.style.height = value + 'px';
 }
@@ -89,6 +111,11 @@ export function drawHeight(elem, value) {
 //  Animations: move by pixel parameter
 export function movePX(elem, style, value) {
 	elem.style[style] = value + 'px';
+}
+
+//  Animations: complete progress bar animation
+export function completeProgress(elem, start, value) {
+	elem.style.width = (value > start ? value : start) + '%';
 }
 
 /////////////////////
@@ -178,5 +205,5 @@ export default {
 
 	queryStringify, queryParse, rewriteMetas,
 
-	sleep
+	sleep, onScrollPB
 }

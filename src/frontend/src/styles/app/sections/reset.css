@@ -47,15 +47,9 @@ time, mark, audio, video {
 	        user-select: none;
 }
 
-.rounded-all {
-	border-radius: 6px;
-}
-.rounded-top {
-	border-radius: 6px 6px 0 0;
-}
-.rounded-bottom {
-	border-radius: 0 0 6px 6px;
-}
+.rounded-all    { border-radius: 6px; }
+.rounded-top    { border-radius: 6px 6px 0 0; }
+.rounded-bottom { border-radius: 0 0 6px 6px; }
 
 a, a:link, a:active, a:hover, a:visited {
 	color: #000;
@@ -79,13 +73,10 @@ p {
 }
 
 p::-moz-selection { background: #4a9fce; }
-
-p::selection { background: #4a9fce; }
+p::selection      { background: #4a9fce; }
 
 article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
+footer, header, hgroup, menu, nav, section { display: block; }
 
 ol, ul { list-style: none; }
 
@@ -101,14 +92,8 @@ table {
 	border-spacing:  0;
 }
 
-.clearfix:before,
-.clearfix:after {
-	content: " ";
-	display: table;
-}
-.clearfix:after, .clear {
-	clear: both;
-}
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after,  .clear          { clear:  both; }
 
 .sfix { display: inline-block; position: relative; top: -1px; }
 

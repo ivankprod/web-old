@@ -4,10 +4,63 @@
     Author : IvanK Production
 */
 
-import { sleep, animate, makeLinear, drawOpacity, queryStringify } from './utils.js';
+import { sleep, onScrollPB, animate, makeLinear, drawOpacity, completeProgress, queryStringify } from './utils.js';
 
 let elemMasterContainer = document.getElementById('master-container');
 let ajaxController;
+
+//  Progress Bar class
+export class ProgressBar {
+	constructor() {
+		this.loadFinished = false;
+
+		this.elem    = document.createElement('div');
+		this.elem.id = 'progress-bar';
+
+		let elemOld = document.getElementById('progress-bar');
+		if (elemOld) {
+			elemOld.remove(); this.elem.style.opacity = '1';
+			if (window.lastRAF) { cancelAnimationFrame(window.lastRAF); }
+		}
+
+		document.body.insertBefore(this.elem, elemMasterContainer);
+		onScrollPB();
+	}
+
+	start() {
+		animate({
+			"stoppable": true,
+			"duration": 10000,
+			"timing": makeLinear,
+			"draw": perc => {
+				completeProgress(this.elem, 0, perc * 100);
+			}
+		});
+
+		sleep(1000).then(() => {
+			if (!this.loadFinished) { this.elem.style.opacity = '1'; }
+		});
+	}
+
+	finish() {
+		if (window.lastRAF) { cancelAnimationFrame(window.lastRAF); }
+
+		animate({
+			"elem": this.elem,
+			"duration": 400,
+			"timing": makeLinear,
+			"draw": function(perc) {
+				completeProgress(this.elem, parseInt(this.elem.style.width), perc * 100);
+			},
+			"callback": () => {
+				this.loadFinished = true;
+				this.elem.style.opacity = '0';
+
+				sleep(400).then(() => { this.elem.remove(); });
+			}
+		});
+	}
+}
 
 //  AJAX window class
 class AjaxWindow {
@@ -78,6 +131,8 @@ export async function newAjax(url, params = {}, type = 'json') {
 	} catch (err) {
 		if (err.name !== 'AbortError') {
 			return { error: { error_code: 500, error_desc: err.message, error_type: 'client' }, response: null };
+		} else {
+			return { error: { error_code: 409, error_desc: 'request aborted', error_type: 'aborted' }, response: null };
 		}
 	}
 }
