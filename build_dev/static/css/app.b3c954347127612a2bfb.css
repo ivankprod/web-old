@@ -317,14 +317,17 @@ button span { cursor: pointer !important; }
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
-	justify-content: space-evenly;
+	justify-content: space-between;
 
 	height: 100%;
 
-	margin: 0 32px;
+	margin:  0 32px;
+	padding: 24px 0;
 }
 
 .auth-form-caption {
+	margin-bottom: 8px;
+
 	color:      var(--color-theme-green);
 	font-size:  1.2rem;
 	text-align: center;
