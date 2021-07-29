@@ -83,10 +83,10 @@ func main() {
 	// Compression
 	app.Use(compress.New(compress.Config{Level: compress.LevelBestSpeed}))
 
-	// HTTP->HTTPS & sitemap.xml
+	// HTTP->HTTPS, without www & sitemap.xml
 	app.Use(func(c *fiber.Ctx) error {
-		if c.Protocol() == "http" {
-			return c.Redirect("https://"+c.Hostname()+c.OriginalURL(), 301)
+		if c.Protocol() == "http" || (c.Subdomains() != nil && c.Subdomains(0)[0] == "www") {
+			return c.Redirect("https://"+os.Getenv("SERVER_HOST")+c.OriginalURL(), 301)
 		}
 
 		if c.OriginalURL() == "/sitemap.xml" {
