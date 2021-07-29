@@ -1,11 +1,13 @@
 package router
 
 import (
+	"encoding/json"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/routes"
 	"ivankprod.ru/src/server/modules/utils"
@@ -56,7 +58,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App) {
+func Router(app *fiber.App, bytesSitemapJSON *[]byte) {
 	// Authentication
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Cookies("session") != "" {
@@ -98,6 +100,50 @@ func Router(app *fiber.App) {
 	app.Get("/contacts/", routes.RouteContactsIndex)
 	app.Get("/auth/", routes.RouteAuthIndex)
 	app.Get("/auth/logout/", routes.RouteAuthLogout)
+
+	// Sitemap route
+	app.Get("/sitemap/", func(c *fiber.Ctx) error {
+		uAuth, ok := c.Locals("user_auth").(*models.User)
+		if !ok {
+			uAuth = nil
+		}
+
+		data := make(fiber.Map)
+
+		if uAuth != nil {
+			data["user"] = *uAuth
+		}
+
+		sitemap := &utils.Sitemap{}
+		err := json.Unmarshal(*bytesSitemapJSON, sitemap)
+		if err != nil {
+			fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
+
+		sitemap.Nest()
+		data["sitemap"] = *sitemap
+
+		err = c.Render("sitemap", fiber.Map{
+			"urlBase":      c.BaseURL(),
+			"urlCanonical": c.BaseURL() + c.Path(),
+			"pageTitle":    "Карта сайта - " + os.Getenv("INFO_TITLE_BASE"),
+			"pageDesc":     os.Getenv("INFO_DESC_BASE"),
+			"pageScope":    "sitemap",
+			"ogTags": fiber.Map{
+				"title": os.Getenv("INFO_TITLE_BASE"),
+			},
+			"data": data,
+		})
+		if err == nil {
+			if os.Getenv("STAGE_MODE") == "dev" {
+				go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+			}
+
+			return nil
+		}
+
+		return fiber.NewError(fiber.StatusNotFound, "Страница не найдена!")
+	})
 
 	// 404 error
 	app.Use(func(c *fiber.Ctx) error {

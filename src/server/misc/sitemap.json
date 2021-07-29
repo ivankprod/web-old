@@ -1,0 +1,45 @@
+[
+	{
+		"id": 1,
+		"path": "/",
+		"priority": 1,
+		"title": "Главная"
+	},
+	{
+		"id": 2,
+		"path": "/projects/",
+		"priority": 0.9,
+		"title": "Проекты"
+	},
+	{
+		"id": 3,
+		"path": "/services/",
+		"priority": 0.9,
+		"title": "Сервисы"
+	},
+	{
+		"id": 4,
+		"path": "/blog/",
+		"priority": 0.9,
+		"title": "Блог"
+	},
+	{
+		"id": 5,
+		"path": "/about/",
+		"priority": 0.9,
+		"title": "О нас"
+	},
+	{
+		"id": 6,
+		"path": "/contacts/",
+		"priority": 0.9,
+		"title": "Контакты"
+	},
+	{
+		"id": 7,
+		"parent_id": 2,
+		"path": "/projects/it/",
+		"priority": 0.8,
+		"title": "IT-технологии"
+	}
+]

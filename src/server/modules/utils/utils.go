@@ -13,6 +13,46 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Sitemap: SitemapPath type
+type SitemapPath struct {
+	ID       int64         `json:"id"`
+	ParentID int64         `json:"parent_id"`
+	Title    string        `json:"title"`
+	Path     string        `json:"path"`
+	Priority float64       `json:"priority"`
+	Children []SitemapPath `json:"children"`
+}
+
+// Sitemap: type
+type Sitemap []SitemapPath
+
+// Sitemap: get path index by ID
+func (p *Sitemap) GetPathIndexByID(id int64) int {
+	for i, v := range *p {
+		if v.ID == id {
+			return i
+		}
+	}
+
+	return -1
+}
+
+// Sitemap: remove path by index
+func (p *Sitemap) RemovePath(index int) {
+	*p = append((*p)[:index], (*p)[index+1:]...)
+}
+
+// Sitemap: nest sitemap
+func (p *Sitemap) Nest() {
+	for i, v := range *p {
+		if v.ParentID != 0 {
+			parentIndex := p.GetPathIndexByID(v.ParentID)
+			(*p)[parentIndex].Children = append((*p)[parentIndex].Children, v)
+			p.RemovePath(i)
+		}
+	}
+}
+
 // URL params: type
 type URLParams map[string]string
 

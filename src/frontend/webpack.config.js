@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -14,15 +15,7 @@ const postcssConfig = require('./postcss.config');
 const MODE  = process.argv[process.argv.indexOf('--mode') + 1];
 const isDEV = MODE === 'development', isPROD = !isDEV;
 
-const sitemapPaths = [
-	{ path: '/', priority: 1 },
-	{ path: '/projects/', priority: 0.9 },
-	{ path: '/services/', priority: 0.9 },
-	{ path: '/blog/', priority: 0.9 },
-	{ path: '/about/', priority: 0.9 },
-	{ path: '/contacts/', priority: 0.9 },
-	{ path: '/projects/it/', priority: 0.8 }
-];
+const sitemapPaths = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../server/misc/sitemap.json')));
 
 module.exports = {
 	context: path.resolve(__dirname, './src'),

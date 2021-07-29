@@ -40,9 +40,26 @@ func main() {
 		MODE_PROD = true
 	}
 
+	// Sitemap JSON file
+	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
+	if err != nil {
+		log.Fatalf("Error opening sitemap.json file: %v", err)
+	}
+
+	infoSitemapJSON, err := fileSitemapJSON.Stat()
+	if err != nil {
+		log.Fatalf("Error reading sitemap.json file: %v", err)
+	}
+
+	bytesSitemapJSON := make([]byte, infoSitemapJSON.Size())
+	_, err = fileSitemapJSON.Read(bytesSitemapJSON)
+	if err != nil {
+		log.Fatalf("Error reading sitemap.json file: %v", err)
+	}
+
 	// App & template engine
-	box := pkger.Dir("/views")
-	engine := handlebars.NewFileSystem(box, ".hbs")
+	views := pkger.Dir("/views")
+	engine := handlebars.NewFileSystem(views, ".hbs")
 	app := fiber.New(fiber.Config{
 		Prefork:       false,
 		ErrorHandler:  router.HandleError,
@@ -105,7 +122,7 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app)
+	router.Router(app, &bytesSitemapJSON)
 
 	// HTTP listener
 	go func() {

@@ -967,7 +967,7 @@ footer .container {
 /*
 	AUTH USER CABINET STYLE
 
-	Author     : IvanK Production
+	Author : IvanK Production
 */
 
 .user-info-container {
@@ -1023,3 +1023,11 @@ footer .container {
 .user-info-check:before   { content: '\f00c'; color: var(--color-theme-green); }
 
 .user-info-uncheck:before { content: '\f00d'; color: #f44336; }
+
+/*
+	SITEMAP PAGE STYLE
+
+	Author : IvanK Production
+*/
+
+.content-links { align-self: flex-start; font-size: 1.2rem; }
