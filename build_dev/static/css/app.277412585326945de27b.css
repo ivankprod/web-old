@@ -321,8 +321,7 @@ button span { cursor: pointer !important; }
 
 	height: 100%;
 
-	margin:  0 32px;
-	padding: 24px 0;
+	padding: 24px;
 }
 
 .auth-form-caption {
