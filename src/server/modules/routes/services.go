@@ -27,7 +27,8 @@ func RouteServicesIndex(c *fiber.Ctx) error {
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"pageScope":    "services",
 		"ogTags": fiber.Map{
-			"title": os.Getenv("INFO_TITLE_BASE"),
+			"title": "Услуги - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeServices": true,
 		"data":           data,

@@ -497,6 +497,7 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"ogTags": fiber.Map{
 			"title": os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"data": data,
 	})

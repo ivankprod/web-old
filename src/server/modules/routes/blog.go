@@ -27,7 +27,8 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"pageScope":    "blog",
 		"ogTags": fiber.Map{
-			"title": os.Getenv("INFO_TITLE_BASE"),
+			"title": "Блог - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeBlog": true,
 		"data":       data,

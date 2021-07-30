@@ -28,6 +28,7 @@ func RouteHomeIndex(c *fiber.Ctx) error {
 		"pageScope":    "home",
 		"ogTags": fiber.Map{
 			"title": os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeHome": true,
 		"data":       data,

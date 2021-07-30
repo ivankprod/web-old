@@ -28,6 +28,7 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 		"pageScope":    "projects",
 		"ogTags": fiber.Map{
 			"title": "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeProjects": true,
 		"data":           data,
@@ -55,16 +56,24 @@ func RouteProjectsView(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	var path = "projects_" + c.Params("type")
+	title := "Проекты"
+
+	switch c.Params("type") {
+	case "it":
+		title += ": IT-технологии"
+	}
+
+	path := "projects_" + c.Params("type")
 
 	err := c.Render(path, fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    title + " - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"pageScope":    "projects",
 		"ogTags": fiber.Map{
-			"title": "Проекты - " + os.Getenv("INFO_TITLE_BASE"),
+			"title": title + " - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeProjects": true,
 		"data":           data,

@@ -23,11 +23,12 @@ func RouteAboutIndex(c *fiber.Ctx) error {
 	err := c.Render("about", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "О нас - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    "О компании - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"pageScope":    "about",
 		"ogTags": fiber.Map{
-			"title": os.Getenv("INFO_TITLE_BASE"),
+			"title": "О компании - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeAbout": true,
 		"data":        data,

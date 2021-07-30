@@ -27,7 +27,8 @@ func RouteContactsIndex(c *fiber.Ctx) error {
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
 		"pageScope":    "contacts",
 		"ogTags": fiber.Map{
-			"title": os.Getenv("INFO_TITLE_BASE"),
+			"title": "Контакты - " + os.Getenv("INFO_TITLE_BASE"),
+			"type":  "website",
 		},
 		"activeContacts": true,
 		"data":           data,
