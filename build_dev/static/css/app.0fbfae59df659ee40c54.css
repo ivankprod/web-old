@@ -1030,4 +1030,8 @@ footer .container {
 	Author : IvanK Production
 */
 
-.content-links { align-self: flex-start; font-size: 1.2rem; }
+.content-links         { align-self: flex-start; font-size: 1.2rem; }
+
+.content-links a       { display: block; margin: 8px 0; }
+
+.content-links li > ul { margin-left: 24px; }

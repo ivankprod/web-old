@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"log"
 	"os"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/gofiber/template/handlebars"
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
+	"github.com/markbates/pkger/pkging"
 
 	"ivankprod.ru/src/server/modules/router"
 	"ivankprod.ru/src/server/modules/utils"
@@ -23,6 +25,28 @@ var (
 	MODE_DEV  bool
 	MODE_PROD bool
 )
+
+// Sitemap JSON to HTML
+func loadSitemap(fileSitemapJSON *pkging.File) *string {
+	infoSitemapJSON, err := (*fileSitemapJSON).Stat()
+	if err != nil {
+		log.Fatalf("Error reading sitemap.json file: %v", err)
+	}
+
+	bytesSitemapJSON := make([]byte, infoSitemapJSON.Size())
+	_, err = (*fileSitemapJSON).Read(bytesSitemapJSON)
+	if err != nil {
+		log.Fatalf("Error reading sitemap.json file: %v", err)
+	}
+
+	sitemap := &utils.Sitemap{}
+	err = json.Unmarshal(bytesSitemapJSON, sitemap)
+	if err != nil {
+		log.Fatalf("Error unmarshalling sitemap.json file: %v", err)
+	}
+
+	return sitemap.Nest().ToHTMLString()
+}
 
 func main() {
 	// Load .env configuration
@@ -40,21 +64,10 @@ func main() {
 		MODE_PROD = true
 	}
 
-	// Sitemap JSON file
+	// Open sitemap.json file for reading
 	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
 	if err != nil {
 		log.Fatalf("Error opening sitemap.json file: %v", err)
-	}
-
-	infoSitemapJSON, err := fileSitemapJSON.Stat()
-	if err != nil {
-		log.Fatalf("Error reading sitemap.json file: %v", err)
-	}
-
-	bytesSitemapJSON := make([]byte, infoSitemapJSON.Size())
-	_, err = fileSitemapJSON.Read(bytesSitemapJSON)
-	if err != nil {
-		log.Fatalf("Error reading sitemap.json file: %v", err)
 	}
 
 	// App & template engine
@@ -122,7 +135,7 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app, &bytesSitemapJSON)
+	router.Router(app, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
@@ -130,7 +143,7 @@ func main() {
 	}()
 
 	// HTTPS certs
-	cer, err := tls.LoadX509KeyPair("./certs/ivankprod.ru/ivankprod.crt", "./certs/ivankprod.ru/ivankprod.key")
+	cer, err := tls.LoadX509KeyPair("C:/Certbot/live/ivankprod.ru/fullchain.pem", "C:/Certbot/live/ivankprod.ru/privkey.pem")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,7 +1,6 @@
 package router
 
 import (
-	"encoding/json"
 	"os"
 	"strconv"
 	"time"
@@ -58,7 +57,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App, bytesSitemapJSON *[]byte) {
+func Router(app *fiber.App, sitemap *string) {
 	// Authentication
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Cookies("session") != "" {
@@ -114,16 +113,9 @@ func Router(app *fiber.App, bytesSitemapJSON *[]byte) {
 			data["user"] = *uAuth
 		}
 
-		sitemap := &utils.Sitemap{}
-		err := json.Unmarshal(*bytesSitemapJSON, sitemap)
-		if err != nil {
-			fiber.NewError(fiber.StatusInternalServerError, err.Error())
-		}
-
-		sitemap.Nest()
 		data["sitemap"] = *sitemap
 
-		err = c.Render("sitemap", fiber.Map{
+		err := c.Render("sitemap", fiber.Map{
 			"urlBase":      c.BaseURL(),
 			"urlCanonical": c.BaseURL() + c.Path(),
 			"pageTitle":    "Карта сайта - " + os.Getenv("INFO_TITLE_BASE"),

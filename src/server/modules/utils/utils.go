@@ -23,34 +23,94 @@ type SitemapPath struct {
 	Children []SitemapPath `json:"children"`
 }
 
-// Sitemap: type
-type Sitemap []SitemapPath
+// Sitemap: add child to path
+func (p *SitemapPath) addChild(parentID int64, child *SitemapPath) bool {
+	for i, v := range (*p).Children {
+		if v.ID == parentID {
+			(*p).Children[i].Children = append((*p).Children[i].Children, *child)
 
-// Sitemap: get path index by ID
-func (p *Sitemap) GetPathIndexByID(id int64) int {
-	for i, v := range *p {
-		if v.ID == id {
-			return i
+			return true
+		} else if len(v.Children) > 0 {
+			return (*p).Children[i].addChild(parentID, child)
 		}
 	}
 
-	return -1
+	return false
+}
+
+// Sitemap: type
+type Sitemap []SitemapPath
+
+// Sitemap: add child to path (top level)
+func (p *Sitemap) addChild(parentID int64, child *SitemapPath) bool {
+	for i, v := range *p {
+		if v.ID == parentID {
+			(*p)[i].Children = append((*p)[i].Children, *child)
+
+			return true
+		} else if len(v.Children) > 0 {
+			return (*p)[i].addChild(parentID, child)
+		}
+	}
+
+	return false
 }
 
 // Sitemap: remove path by index
-func (p *Sitemap) RemovePath(index int) {
+func (p *Sitemap) removePath(index int) {
 	*p = append((*p)[:index], (*p)[index+1:]...)
 }
 
 // Sitemap: nest sitemap
-func (p *Sitemap) Nest() {
-	for i, v := range *p {
+func (p *Sitemap) Nest() *Sitemap {
+	var added []int64
+
+	// insert childs
+	for _, v := range *p {
 		if v.ParentID != 0 {
-			parentIndex := p.GetPathIndexByID(v.ParentID)
-			(*p)[parentIndex].Children = append((*p)[parentIndex].Children, v)
-			p.RemovePath(i)
+			(*p).addChild(v.ParentID, &v)
+
+			added = append(added, v.ID)
 		}
 	}
+
+	// remove added childs from top level paths
+	for _, id := range added {
+		for i, v := range *p {
+			if v.ID == id {
+				p.removePath(i)
+
+				break
+			}
+		}
+	}
+
+	return p
+}
+
+// Sitemap: returns path's child html
+func childLookup(item *SitemapPath) string {
+	html := "\n				<li><a href=\"" + item.Path + "\" class=\"spa\">" + item.Title + "</a>"
+
+	if len(item.Children) > 0 {
+		for _, v := range item.Children {
+			html += "<ul>" + childLookup(&v) + "</ul>"
+		}
+	}
+
+	return html + "</li>"
+}
+
+// Sitemap: convert sitemap to HTML
+func (p *Sitemap) ToHTMLString() *string {
+	output := "<ul>"
+
+	for i := range *p {
+		output += childLookup(&(*p)[i])
+	}
+
+	output += "\n			</ul>"
+	return &output
 }
 
 // URL params: type
