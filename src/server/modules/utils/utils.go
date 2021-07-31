@@ -243,7 +243,7 @@ func DevLogger(uri string, ip string, status int) {
 	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+"_dev.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	if err != nil {
-		log.Printf("Error opening devlog file: %v", err)
+		log.Printf("Error opening devlog file: %v\n", err)
 	} else {
 		log.SetOutput(f)
 		log.Printf("\nREQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",

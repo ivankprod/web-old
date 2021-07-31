@@ -49,10 +49,21 @@ func loadSitemap(fileSitemapJSON *pkging.File) *string {
 }
 
 func main() {
-	// Load .env configuration
-	err := godotenv.Load(".env")
+	// Logging file
+	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error opening log file: %v\n", err)
+	}
+	defer f.Close()
+
+	// Server base logging
+	log.SetOutput(f)
+	log.Println("-- Server starting...")
+
+	// Load .env configuration
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatalln("Error loading .env file")
 	}
 
 	// Load STAGE_MODE configuration
@@ -67,7 +78,7 @@ func main() {
 	// Open sitemap.json file for reading
 	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
 	if err != nil {
-		log.Fatalf("Error opening sitemap.json file: %v", err)
+		log.Fatalf("Error opening sitemap.json file: %v\n", err)
 	}
 
 	// App & template engine
@@ -84,12 +95,6 @@ func main() {
 	app.Use(recover.New())
 
 	// Logger
-	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("Error opening log file: %v", err)
-	}
-	defer f.Close()
-
 	app.Use(logger.New(logger.Config{
 		Format:     "IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
 		TimeFormat: "02.01.2006 15:04:05",
@@ -139,22 +144,24 @@ func main() {
 
 	// HTTP listener
 	go func() {
-		log.Fatal(app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")))
+		log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
+		log.Fatalln(app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")))
 	}()
 
 	// HTTPS certs
 	cer, err := tls.LoadX509KeyPair("C:/Certbot/live/ivankprod.ru/fullchain.pem", "C:/Certbot/live/ivankprod.ru/privkey.pem")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 
 	// HTTPS listener
 	config := &tls.Config{Certificates: []tls.Certificate{cer}}
 	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	// LISTEN
-	log.Fatal(app.Listener(ln))
+	log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
+	log.Fatalln(app.Listener(ln))
 }
