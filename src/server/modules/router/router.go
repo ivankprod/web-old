@@ -21,6 +21,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 
 	data := make(fiber.Map)
 	msgPrefix := ""
+	msgStatus := "Неизвестная ошибка"
 
 	if uAuth != nil {
 		data["user"] = *uAuth
@@ -39,12 +40,17 @@ func HandleError(c *fiber.Ctx, err error) error {
 	c.Status(code)
 	strCode := strconv.Itoa(code)
 
+	if s, ok := utils.ErrorStatus[strCode]; ok {
+		msgStatus = s
+	}
+
 	rerr := c.Render("error", fiber.Map{
 		"pageTitle": strCode + " - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 		"error": fiber.Map{
-			"code": strCode,
-			"msg":  msgPrefix + err.Error(),
+			"code":   strCode,
+			"status": msgStatus,
+			"msg":    msgPrefix + err.Error(),
 		},
 		"data": data,
 	})
@@ -134,7 +140,7 @@ func Router(app *fiber.App, sitemap *string) {
 			return nil
 		}
 
-		return fiber.NewError(fiber.StatusNotFound, "Страница не найдена!")
+		return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
 	})
 
 	// 404 error
@@ -156,8 +162,9 @@ func Router(app *fiber.App, sitemap *string) {
 			"pageTitle": "404 - " + os.Getenv("INFO_TITLE_BASE"),
 			"pageDesc":  os.Getenv("INFO_DESC_BASE"),
 			"error": fiber.Map{
-				"code": fiber.StatusNotFound,
-				"msg":  "Страница не найдена!",
+				"code":   fiber.StatusNotFound,
+				"status": utils.ErrorStatus["404"],
+				"msg":    "Запрашиваемая страница не найдена либо ещё не создана",
 			},
 			"data": data,
 		})

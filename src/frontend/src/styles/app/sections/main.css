@@ -26,7 +26,8 @@ header, footer     { position: relative; width: 100%; flex: 0 0 auto; z-index: 2
 /*@media (min-width: 992px)  {  }*/
 @media (min-width: 1200px) { .container { max-width: 1200px; } }
 
-h1 { font-size: 2rem; }
+h1 { font-size: 2.4rem; }
+h2 { font-size: 2rem; }
 
 #progress-bar {
 	position: fixed;

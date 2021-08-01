@@ -25,11 +25,11 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 	code, res, errs := (*req).Get("https://oauth.vk.com/access_token" + (*query).ToString(true)).Bytes()
 
 	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth <br>"+"Код ошибки: "+strconv.Itoa(code))
+		return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 	for _, v := range errs {
 		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth <br>"+v.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
 		}
 	}
 
@@ -39,7 +39,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 		return err
 	}
 	if (*ress1)["error"] != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "ВКонтакте OAuth <br>"+((*ress1)["error_description"]).(string))
+		return fiber.NewError(fiber.StatusBadRequest, "ВКонтакте OAuth - "+((*ress1)["error_description"]).(string))
 	}
 
 	userID := strconv.FormatFloat((*ress1)["user_id"].(float64), 'f', 0, 64)
@@ -55,7 +55,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 		_, res, errs := (*req).Get("https://api.vk.com/method/users.get" + (*query).ToString(true)).Bytes()
 		for _, v := range errs {
 			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth <br>"+v.Error())
+				return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
 			}
 		}
 
@@ -65,7 +65,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 			return err
 		}
 		if (*ress)["error"] != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "ВКонтакте OAuth <br>"+((*ress)["error_description"]).(string))
+			return fiber.NewError(fiber.StatusBadRequest, "ВКонтакте OAuth - "+((*ress)["error_description"]).(string))
 		}
 
 		resp := (((*ress)["response"]).([]interface{})[0]).(map[string]interface{})
@@ -131,11 +131,11 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 	code, res, errs := (*req).Get("https://graph.facebook.com/v11.0/oauth/access_token" + (*query).ToString(true)).Bytes()
 
 	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+"Код ошибки: "+strconv.Itoa(code))
+		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 	for _, v := range errs {
 		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+v.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
 		}
 	}
 
@@ -145,7 +145,7 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 		return err
 	}
 	if (*ress1)["error"] != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Facebook OAuth <br>"+(((*ress1)["error"]).(map[string]interface{})["message"]).(string))
+		return fiber.NewError(fiber.StatusBadRequest, "Facebook OAuth - "+(((*ress1)["error"]).(map[string]interface{})["message"]).(string))
 	}
 
 	if (*ress1)["access_token"] != nil {
@@ -157,7 +157,7 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 		_, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).Bytes()
 		for _, v := range errs {
 			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth <br>"+v.Error())
+				return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
 			}
 		}
 
@@ -167,7 +167,7 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 			return err
 		}
 		if (*ress)["error"] != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Facebook OAuth <br>"+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
+			return fiber.NewError(fiber.StatusBadRequest, "Facebook OAuth - "+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
 		}
 
 		user := &models.User{
@@ -236,17 +236,17 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 	req.SetRequestURI("https://oauth.yandex.ru/token")
 
 	if err := a.Parse(); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+err.Error())
 	}
 
 	code, res, errs := a.Bytes()
 
 	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+"Код ошибки: "+strconv.Itoa(code))
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 	for _, v := range errs {
 		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+v.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
 		}
 	}
 
@@ -257,7 +257,7 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 	}
 
 	if (*ress1)["error"] != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Яндекс OAuth <br>"+(*ress1)["error_description"].(string))
+		return fiber.NewError(fiber.StatusBadRequest, "Яндекс OAuth - "+(*ress1)["error_description"].(string))
 	}
 
 	if (*ress1)["access_token"] != nil {
@@ -269,14 +269,14 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 		req.SetRequestURI("https://login.yandex.ru/info?format=json")
 
 		if err := a.Parse(); err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+err.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+err.Error())
 		}
 
 		_, res, errs := a.Bytes()
 
 		for _, v := range errs {
 			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth <br>"+v.Error())
+				return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
 			}
 		}
 
@@ -285,7 +285,7 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 			return err
 		}
 		if (*ress)["error"] != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Яндекс OAuth <br>"+((*ress)["error_description"]).(string))
+			return fiber.NewError(fiber.StatusBadRequest, "Яндекс OAuth - "+((*ress)["error_description"]).(string))
 		}
 
 		user := &models.User{
@@ -350,11 +350,11 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	code, res, errs := (*req).Post("https://oauth2.googleapis.com/token" + (*query).ToString(true)).Bytes()
 
 	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth <br>"+"Код ошибки: "+strconv.Itoa(code))
+		return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 	for _, v := range errs {
 		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth <br>"+v.Error())
+			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+v.Error())
 		}
 	}
 
@@ -365,7 +365,7 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	}
 
 	if (*ress1)["error"] != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Google OAuth <br>"+(*ress1)["error_description"].(string))
+		return fiber.NewError(fiber.StatusBadRequest, "Google OAuth - "+(*ress1)["error_description"].(string))
 	}
 
 	if (*ress1)["access_token"] != nil {
@@ -375,7 +375,7 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 		code, res, errs := a.Bytes()
 
 		if code != 200 && code != 400 {
-			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth <br>"+"Код ошибки: "+strconv.Itoa(code))
+			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
 		}
 		for _, v := range errs {
 			if v != nil {
@@ -390,7 +390,7 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 		}
 
 		if (*ress)["error"] != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Google OAuth <br>"+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
+			return fiber.NewError(fiber.StatusBadRequest, "Google OAuth - "+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
 		}
 
 		user := &models.User{
@@ -509,13 +509,13 @@ func RouteAuthIndex(c *fiber.Ctx) error {
 		return nil
 	}
 
-	return fiber.NewError(fiber.StatusNotFound, "Страница не найдена!")
+	return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
 }
 
 func RouteAuthLogout(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok || uAuth == nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Вы не авторизованы!")
+		return fiber.NewError(fiber.StatusUnauthorized, "Для того, чтобы выйти из системы, Вы должны быть авторизованы")
 	}
 
 	c.Cookie(&fiber.Cookie{

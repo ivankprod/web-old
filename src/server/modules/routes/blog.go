@@ -41,5 +41,5 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		return nil
 	}
 
-	return fiber.NewError(fiber.StatusNotFound, "Страница не найдена!")
+	return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
 }

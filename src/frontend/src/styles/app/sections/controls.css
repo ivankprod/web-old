@@ -35,11 +35,11 @@ button.small {
 }
 
 button:hover {
-	opacity: 0.8;
+	opacity: 0.8 !important;
 }
 
 button:active {
-	opacity: 0.6;
+	opacity: 0.6 !important;
 }
 
 button[disabled] {

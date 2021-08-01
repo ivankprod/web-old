@@ -59,33 +59,7 @@
 
 .breadcrumbs .breadcrumbs-last { margin-left: 12px; }
 
-.error-box {
-	margin:  0 auto;
-	padding: 24px 0;
-
-	max-width: 50%;
-
-	font-size: 1.4rem;
-}
-
-.error-box .error-title {
-	padding: 0 24px;
-
-	font-size: 3rem;
-}
-
-.error-box .error-message { padding: 0 24px 24px 24px; }
-
-.error-box hr {
-	height: 2px;
-
-	margin: 0;
-
-	color: var(--color-theme-green);
-	background-color: var(--color-theme-green);
-
-	border: none;
-	border-radius: 6px;
-}
-
-.error-box button { margin: 24px auto 0 auto; text-transform: uppercase; }
+.error-box                { width: 100%; padding: 48px; font-size: 1.2rem; }
+.error-box .error-title   { font-size: 2.4rem; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
+.error-box .error-message { margin-top: 12px; }
+.error-box button         { margin: 24px auto 0 auto; text-transform: uppercase; }

@@ -90,6 +90,18 @@ table {
 	border-spacing:  0;
 }
 
+hr {
+	height: 2px;
+
+	margin: 0;
+
+	color: var(--color-theme-green);
+	background-color: var(--color-theme-green);
+
+	border: none;
+	border-radius: 6px;
+}
+
 .clearfix:before, .clearfix:after { content: " "; display: table; }
 .clearfix:after,  .clear          { clear:  both; }
 
@@ -117,4 +129,9 @@ table {
 @keyframes slideIn {
 	from { transform: translateY(31px) translateZ(0); }
 	to   { transform: translateY(0)    translateZ(0); }
+}
+
+@keyframes slideBlockTitle {
+	from { transform: translateX(64px) translateZ(0); }
+	to   { transform: translateX(0)    translateZ(0); }
 }

@@ -41,6 +41,9 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	if (res.error && res.error.error_type == 'server') {
 		res = res.response;
 	}
+
+	let swiperWrapper = document.querySelector('.swiper-section');
+	if (window.swiper && swiperWrapper) { window.swiper.destroy(); swiperWrapper.style.display = 'none'; }
 	
 	const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
 	if (elemActiveNavItem) elemActiveNavItem.classList.remove('nav-item-active');
