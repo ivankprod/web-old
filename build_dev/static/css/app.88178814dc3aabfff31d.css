@@ -237,6 +237,12 @@ button {
 	transition: opacity 0.1s;
 }
 
+button.middle {
+	padding: 11px 12px 10px 12px;
+
+	font-size: 1.1rem;
+}
+
 button.small {
 	padding: 11px 12px 10px 12px;
 
@@ -847,13 +853,15 @@ footer .container {
 
 .swiper-slide   { padding: 16px !important; background: #fff; }
 
-.swiper-pagination { position: relative !important; }
+.swiper-pagination { position: relative !important; top: 12px; }
 
-.swiper-pagination-bullet { margin: 0 4px !important; outline: none !important; }
+.swiper-pagination-bullet        { margin: 0 4px !important; outline: none !important; }
 
 .swiper-pagination-bullet-active { background: var(--color-theme-green) !important; }
 
-.swiper-container .slide-block-desc { margin: 8px 0 22px 0; font-size: 1.2rem; }
+.swiper-container .slide-block-desc    { margin: 8px 0 22px 0;   font-size: 1.2rem; }
+
+.swiper-container .slide-block-desc-wm { margin: 8px 0 22px 9px; font-size: 1.2rem; }
 
 @media (min-width: 768px)  {
 	.swiper-container .slide-block-desc { text-align: justify; }

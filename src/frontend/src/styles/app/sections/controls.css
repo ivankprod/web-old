@@ -28,6 +28,12 @@ button {
 	transition: opacity 0.1s;
 }
 
+button.middle {
+	padding: 11px 12px 10px 12px;
+
+	font-size: 1.1rem;
+}
+
 button.small {
 	padding: 11px 12px 10px 12px;
 

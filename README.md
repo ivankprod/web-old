@@ -1,6 +1,29 @@
 # ivankprod.ru
 Сайт IVANKPROD.RU
-(golang, webpack)
+(go, webpack)
+
+# Setup
+1. install
+```shell
+./install.sh
+```
+2. build to /build_(dev|prod) dir
+```shell
+# development
+./build.sh dev
+
+# production
+./build.sh prod
+```
+
+3. run
+```shell
+# development build
+./run.sh dev
+
+# production build
+./run.sh prod
+```
 
 # TODOS:
 1. user profile page
