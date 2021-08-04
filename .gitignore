@@ -2,6 +2,7 @@
 .env
 *.log
 *.pem
+*.symlink
 .cache
 .eslintcache
 package-lock.json
