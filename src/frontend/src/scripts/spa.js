@@ -25,8 +25,6 @@ let hState  = {
 	url:    loc.substring(intHrefStart)
 };
 
-let elemProgressBar = document.getElementById('progress-bar');
-
 //  Loads ajax page
 export async function loadPage(strHref, params = {}, changeAddress = false, callback = null) {
 	let progress = new ProgressBar(); progress.start();

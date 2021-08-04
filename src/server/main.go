@@ -57,6 +57,8 @@ func main() {
 	defer f.Close()
 
 	// Server base logging
+	log.SetFlags(0)
+	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 	log.SetOutput(f)
 	log.Println("-- Server starting...")
 
@@ -98,7 +100,7 @@ func main() {
 	app.Use(logger.New(logger.Config{
 		Format:     "${method} | IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
 		TimeFormat: "02.01.2006 15:04:05",
-		TimeZone:   "Russia/Moscow",
+		TimeZone:   "Europe/Moscow",
 		Output:     f,
 	}))
 
