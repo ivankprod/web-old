@@ -144,12 +144,12 @@ func main() {
 
 	// HTTP listener
 	go func() {
-		log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
 		log.Fatalln(app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")))
+		log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
 	}()
 
 	// HTTPS certs
-	cer, err := tls.LoadX509KeyPair("C:/Certbot/live/ivankprod.ru/fullchain.pem", "C:/Certbot/live/ivankprod.ru/privkey.pem")
+	cer, err := tls.LoadX509KeyPair(os.Getenv("SERVER_SSL_CERT"), os.Getenv("SERVER_SSL_KEY"))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -162,6 +162,6 @@ func main() {
 	}
 
 	// LISTEN
-	log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 	log.Fatalln(app.Listener(ln))
+	log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 }

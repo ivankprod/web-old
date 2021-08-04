@@ -9,14 +9,15 @@ else
 	echo "Error argument parsing"; exit
 fi
 
+os="$2"
+arch="$3"
+
 cd src/frontend/
 ./build.sh "$mode"
 
 cd ../server/
-./build.sh "$mode"
+./build.sh "$mode" "$os" "$arch"
 
 cd ../../
-
-mkdir -p build_"$mode"/logs
 
 echo "Building webapp done!"

@@ -17,10 +17,14 @@ fi
 
 echo "MODE: $mode"
 
+os="$2"
+arch="$3"
+
 windres -o server-res.syso ./resources_win/server.rc
 pkger
-GOMAXPROCS=4 go build -o ../../build_$mode -v -ldflags="-s -w"
+GOOS=$os GOARCH=$arch GOMAXPROCS=4 go build -o ../../build_$mode -v -ldflags="-s -w"
 
 cp ../../.env ../../build_$mode/
+mkdir -p ../../build_$mode/logs
 
 echo "Backend build done!"
