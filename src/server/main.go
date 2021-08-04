@@ -96,7 +96,7 @@ func main() {
 
 	// Logger
 	app.Use(logger.New(logger.Config{
-		Format:     "IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
+		Format:     "${method} | IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
 		TimeFormat: "02.01.2006 15:04:05",
 		TimeZone:   "Russia/Moscow",
 		Output:     f,
