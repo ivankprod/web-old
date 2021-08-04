@@ -144,8 +144,8 @@ func main() {
 
 	// HTTP listener
 	go func() {
+		log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
 		log.Fatalln(app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")))
-		log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
 	}()
 
 	// HTTPS certs
@@ -162,6 +162,6 @@ func main() {
 	}
 
 	// LISTEN
+	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 	log.Fatalln(app.Listener(ln))
-	log.Println("-- Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 }
