@@ -73,7 +73,7 @@ module.exports = {
 				},
 				{
 					from: path.resolve(__dirname, '../server/certs/ivankprod.ru/'),
-					to:   './certs/ivankprod.ru/'
+					to:   './certs/ivankprod.ru localhost/'
 				},
 				// {
 				// 	from: path.resolve(__dirname, '../server/views'),
