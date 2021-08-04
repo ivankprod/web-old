@@ -1,9 +1,12 @@
 .DS_Store
 .env
 *.log
+*.pem
 .cache
 .eslintcache
 package-lock.json
 /tmp
 /build_dev/server*
 /build_prod/server*
+/build_dev/certs/ivankprod.ru/*
+/build_prod/certs/ivankprod.ru/*
