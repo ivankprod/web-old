@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -13,10 +15,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
 	"github.com/markbates/pkger/pkging"
 
+	"ivankprod.ru/src/server/modules/db"
 	"ivankprod.ru/src/server/modules/router"
 	"ivankprod.ru/src/server/modules/utils"
 )
@@ -25,6 +29,13 @@ var (
 	MODE_DEV  bool
 	MODE_PROD bool
 )
+
+// App struct
+type App struct {
+	*fiber.App
+
+	DB *sqlx.DB
+}
 
 // Sitemap JSON to HTML
 func loadSitemap(fileSitemapJSON *pkging.File) *string {
@@ -65,7 +76,8 @@ func main() {
 	// Load .env configuration
 	err = godotenv.Load(".env")
 	if err != nil {
-		log.Fatalln("Error loading .env file")
+		log.Println("Error loading .env file")
+		log.Fatalln("-- Server starting failed")
 	}
 
 	// Load STAGE_MODE configuration
@@ -80,18 +92,35 @@ func main() {
 	// Open sitemap.json file for reading
 	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
 	if err != nil {
-		log.Fatalf("Error opening sitemap.json file: %v\n", err)
+		log.Printf("Error opening sitemap.json file: %v\n", err)
+		log.Fatalln("-- Server starting failed")
 	}
 
 	// App & template engine
 	views := pkger.Dir("/views")
 	engine := handlebars.NewFileSystem(views, ".hbs")
-	app := fiber.New(fiber.Config{
-		Prefork:       false,
-		ErrorHandler:  router.HandleError,
-		Views:         engine,
-		StrictRouting: true,
-	})
+	app := App{
+		App: fiber.New(fiber.Config{
+			Prefork:       false,
+			ErrorHandler:  router.HandleError,
+			Views:         engine,
+			StrictRouting: true,
+		}),
+	}
+
+	// DB connect
+	db, err := db.Connect()
+	if db == nil {
+		if err == nil {
+			log.Println("Failed connecting to database")
+			log.Fatalln("-- Server starting failed")
+		} else {
+			log.Printf("Error connecting to database: %v\n", err)
+			log.Fatalln("-- Server starting failed")
+		}
+	} else {
+		app.DB = db
+	}
 
 	// Safe panic
 	app.Use(recover.New())
@@ -142,28 +171,58 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App, app.DB, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
-		log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP"))
-		log.Fatalln(app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")))
+		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
+			log.Println(err)
+			log.Fatalf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+		}
 	}()
 
 	// HTTPS certs
 	cer, err := tls.LoadX509KeyPair(os.Getenv("SERVER_SSL_CERT"), os.Getenv("SERVER_SSL_KEY"))
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		log.Fatalln("-- Server starting failed")
 	}
 
 	// HTTPS listener
 	config := &tls.Config{Certificates: []tls.Certificate{cer}}
 	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		log.Fatalln("-- Server starting failed")
 	}
+
+	// Graceful shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	go func() {
+		<-c
+		app.exit()
+	}()
 
 	// LISTEN
 	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
-	log.Fatalln(app.Listener(ln))
+	if err = app.Listener(ln); err != nil {
+		log.Println(err)
+		log.Fatalf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
+	}
+}
+
+// App exit
+func (app *App) exit(msg ...string) {
+	if app.DB != nil {
+		app.DB.Close()
+	}
+
+	if len(msg) > 0 {
+		log.Println(msg)
+	}
+
+	log.Print("-- Server shutdowned\n\n")
+	_ = app.Shutdown()
 }

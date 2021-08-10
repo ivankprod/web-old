@@ -33,6 +33,7 @@ func RouteHomeIndex(c *fiber.Ctx) error {
 		"activeHome": true,
 		"data":       data,
 	})
+
 	if err == nil {
 		if os.Getenv("STAGE_MODE") == "dev" {
 			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)

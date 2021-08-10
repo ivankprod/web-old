@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"ivankprod.ru/src/server/modules/db"
+	"github.com/jmoiron/sqlx"
+
 	"ivankprod.ru/src/server/modules/utils"
 )
 
@@ -92,7 +93,7 @@ type ArgsGetUsers struct {
 }
 
 // Add new user
-func AddUser(user *User) (int64, error) {
+func AddUser(db *sqlx.DB, user *User) (int64, error) {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
@@ -108,11 +109,6 @@ func AddUser(user *User) (int64, error) {
 		(*user).Role = 2
 	}
 
-	db, err := db.Connect()
-	if err != nil {
-		return 0, err
-	}
-
 	res, err := db.NamedExec(query, user)
 	if err != nil {
 		return 0, err
@@ -124,14 +120,14 @@ func AddUser(user *User) (int64, error) {
 	}
 
 	if (*user).ID == 0 && (*user).Group == 0 {
-		setUserGroup(id, id)
+		setUserGroup(db, id, id)
 	}
 
 	return id, nil
 }
 
 // Update user group if it's new user
-func setUserGroup(uID int64, uGroup int64) error {
+func setUserGroup(db *sqlx.DB, uID int64, uGroup int64) error {
 	type PQuery struct {
 		ID    int64
 		Group int64
@@ -143,12 +139,7 @@ func setUserGroup(uID int64, uGroup int64) error {
 		pqs = &PQuery{ID: uID, Group: uGroup}
 	)
 
-	db, err := db.Connect()
-	if err != nil {
-		return err
-	}
-
-	_, err = db.NamedExec(query, pqs)
+	_, err := db.NamedExec(query, pqs)
 	if err != nil {
 		return err
 	}
@@ -157,7 +148,7 @@ func setUserGroup(uID int64, uGroup int64) error {
 }
 
 // Get user
-func GetUser(uID int64) (*User, error) {
+func GetUser(db *sqlx.DB, uID int64) (*User, error) {
 	type PQuery struct {
 		ID int64
 	}
@@ -171,11 +162,6 @@ func GetUser(uID int64) (*User, error) {
 
 		result = &User{}
 	)
-
-	db, err := db.Connect()
-	if err != nil {
-		return result, err
-	}
 
 	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
@@ -196,7 +182,7 @@ func GetUser(uID int64) (*User, error) {
 }
 
 // Get user credentials
-func getUserCredentials(uID int64) (*User, error) {
+func getUserCredentials(db *sqlx.DB, uID int64) (*User, error) {
 	type PQuery struct {
 		ID int64
 	}
@@ -210,11 +196,6 @@ func getUserCredentials(uID int64) (*User, error) {
 
 		result = &User{}
 	)
-
-	db, err := db.Connect()
-	if err != nil {
-		return result, err
-	}
 
 	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
@@ -233,7 +214,7 @@ func getUserCredentials(uID int64) (*User, error) {
 }
 
 // Get users by specified group
-func GetUsersGroup(uGroup int64) (*Users, error) {
+func GetUsersGroup(db *sqlx.DB, uGroup int64) (*Users, error) {
 	type PQuery struct {
 		Group int64
 	}
@@ -247,11 +228,6 @@ func GetUsersGroup(uGroup int64) (*Users, error) {
 
 		result = &Users{}
 	)
-
-	db, err := db.Connect()
-	if err != nil {
-		return result, err
-	}
 
 	rows, err := db.NamedQuery(query, pqs)
 	if err != nil {
@@ -276,7 +252,7 @@ func GetUsersGroup(uGroup int64) (*Users, error) {
 }
 
 // Check if user exists
-func ExistsUser(uSocialID string, uSocialType int) (int64, int64, int, error) {
+func ExistsUser(db *sqlx.DB, uSocialID string, uSocialType int) (int64, int64, int, error) {
 	type PQuery struct {
 		ID   string
 		Type int
@@ -289,11 +265,6 @@ func ExistsUser(uSocialID string, uSocialType int) (int64, int64, int, error) {
 
 		result = &User{}
 	)
-
-	db, err := db.Connect()
-	if err != nil {
-		return 0, 0, 0, err
-	}
 
 	row, err := db.NamedQuery(query, pqs)
 	if err != nil {
@@ -312,7 +283,7 @@ func ExistsUser(uSocialID string, uSocialType int) (int64, int64, int, error) {
 }
 
 // Get all users by args
-func GetUsers(args *ArgsGetUsers) (*Users, error) {
+func GetUsers(db *sqlx.DB, args *ArgsGetUsers) (*Users, error) {
 	type PQuery struct {
 		Search string
 		Role   int
@@ -354,11 +325,6 @@ func GetUsers(args *ArgsGetUsers) (*Users, error) {
 
 	pqs := &PQuery{Search: "%" + search + "%", Role: role}
 
-	db, err := db.Connect()
-	if err != nil {
-		return result, err
-	}
-
 	rows, err := db.NamedQuery(query+where+" ORDER BY users.user_role DESC"+limit, pqs)
 	if err != nil {
 		return result, err
@@ -382,7 +348,7 @@ func GetUsers(args *ArgsGetUsers) (*Users, error) {
 }
 
 // User sign in
-func SignInUser(u *User) error {
+func SignInUser(db *sqlx.DB, u *User) error {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
@@ -393,12 +359,7 @@ func SignInUser(u *User) error {
 
 	(*u).LastAccessTime = tNow
 
-	db, err := db.Connect()
-	if err != nil {
-		return err
-	}
-
-	_, err = db.NamedExec(query, u)
+	_, err := db.NamedExec(query, u)
 	if err != nil {
 		return err
 	}
@@ -407,7 +368,7 @@ func SignInUser(u *User) error {
 }
 
 // User update access time
-func UpdateUserAccessTime(uID int64) error {
+func UpdateUserAccessTime(db *sqlx.DB, uID int64) error {
 	type PQuery struct {
 		ID   int64
 		Time string
@@ -421,12 +382,7 @@ func UpdateUserAccessTime(uID int64) error {
 		pqs = &PQuery{ID: uID, Time: tNow}
 	)
 
-	db, err := db.Connect()
-	if err != nil {
-		return err
-	}
-
-	_, err = db.NamedExec(query, pqs)
+	_, err := db.NamedExec(query, pqs)
 	if err != nil {
 		return err
 	}
@@ -464,7 +420,7 @@ func userAuthParse(str string) (*UserAuth, error) {
 }
 
 // Check for login
-func IsAuthenticated(uAuth string, uAgent string) (*User, error) {
+func IsAuthenticated(db *sqlx.DB, uAuth string, uAgent string) (*User, error) {
 	uAuthParsed, err := userAuthParse(uAuth)
 	if err != nil {
 		return nil, err
@@ -473,7 +429,7 @@ func IsAuthenticated(uAuth string, uAgent string) (*User, error) {
 		return nil, nil
 	}
 
-	result, err := getUserCredentials((*uAuthParsed).ID)
+	result, err := getUserCredentials(db, (*uAuthParsed).ID)
 	if err != nil {
 		return nil, err
 	}

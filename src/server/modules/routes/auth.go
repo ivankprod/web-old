@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jmoiron/sqlx"
+
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/utils"
 )
 
 //  VK authentication
-func authVK(c *fiber.Ctx, userExisting *models.User) error {
+func authVK(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
@@ -79,13 +81,13 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 			Type:        0,
 		}
 
-		id, _, _, err := models.ExistsUser((*user).SocialID, 0)
+		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 0) // error here
 		if err != nil {
 			return err
 		}
 
 		if id > 0 {
-			if err := models.SignInUser(user); err != nil {
+			if err := models.SignInUser(db, user); err != nil {
 				return err
 			}
 		} else {
@@ -94,7 +96,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 				(*user).Role = (*userExisting).Role
 			}
 
-			id, err = models.AddUser(user)
+			id, err = models.AddUser(db, user)
 			if err != nil {
 				return err
 			}
@@ -118,7 +120,7 @@ func authVK(c *fiber.Ctx, userExisting *models.User) error {
 }
 
 //  Facebook authentication
-func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
+func authFacebook(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
@@ -180,13 +182,13 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 			Type:        2,
 		}
 
-		id, _, _, err := models.ExistsUser((*user).SocialID, 2)
+		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 2)
 		if err != nil {
 			return err
 		}
 
 		if id > 0 {
-			if err := models.SignInUser(user); err != nil {
+			if err := models.SignInUser(db, user); err != nil {
 				return err
 			}
 		} else {
@@ -195,7 +197,7 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 				(*user).Role = (*userExisting).Role
 			}
 
-			id, err = models.AddUser(user)
+			id, err = models.AddUser(db, user)
 			if err != nil {
 				return err
 			}
@@ -219,7 +221,7 @@ func authFacebook(c *fiber.Ctx, userExisting *models.User) error {
 }
 
 //  Yandex authentication
-func authYandex(c *fiber.Ctx, userExisting *models.User) error {
+func authYandex(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
@@ -298,13 +300,13 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 			Type:        1,
 		}
 
-		id, _, _, err := models.ExistsUser((*user).SocialID, 1)
+		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 1)
 		if err != nil {
 			return err
 		}
 
 		if id > 0 {
-			if err := models.SignInUser(user); err != nil {
+			if err := models.SignInUser(db, user); err != nil {
 				return err
 			}
 		} else {
@@ -313,7 +315,7 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 				(*user).Role = (*userExisting).Role
 			}
 
-			id, err = models.AddUser(user)
+			id, err = models.AddUser(db, user)
 			if err != nil {
 				return err
 			}
@@ -337,7 +339,7 @@ func authYandex(c *fiber.Ctx, userExisting *models.User) error {
 }
 
 //  Google authentication
-func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
+func authGoogle(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
@@ -403,13 +405,13 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 			Type:        3,
 		}
 
-		id, _, _, err := models.ExistsUser((*user).SocialID, 3)
+		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 3)
 		if err != nil {
 			return err
 		}
 
 		if id > 0 {
-			if err := models.SignInUser(user); err != nil {
+			if err := models.SignInUser(db, user); err != nil {
 				return err
 			}
 		} else {
@@ -418,7 +420,7 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 				(*user).Role = (*userExisting).Role
 			}
 
-			id, err = models.AddUser(user)
+			id, err = models.AddUser(db, user)
 			if err != nil {
 				return err
 			}
@@ -441,75 +443,77 @@ func authGoogle(c *fiber.Ctx, userExisting *models.User) error {
 	return nil
 }
 
-func RouteAuthIndex(c *fiber.Ctx) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
-	if !ok {
-		uAuth = nil
-	}
-
-	data := make(fiber.Map)
-	title := "Авторизация"
-
-	if c.Query("code") != "" && c.Query("state") != "" {
-		if c.Query("state") == "vk" {
-			if err := authVK(c, uAuth); err != nil {
-				return err
-			}
-		} else if c.Query("state") == "facebook" {
-			if err := authFacebook(c, uAuth); err != nil {
-				return err
-			}
-		} else if c.Query("state") == "yandex" {
-			if err := authYandex(c, uAuth); err != nil {
-				return err
-			}
-		} else if c.Query("state") == "google" {
-			if err := authGoogle(c, uAuth); err != nil {
-				return err
-			}
+func RouteAuthIndex(db *sqlx.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		uAuth, ok := c.Locals("user_auth").(*models.User)
+		if !ok {
+			uAuth = nil
 		}
 
-		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-		return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
-	} else {
-		if uAuth == nil {
-			data["links"] = utils.GetAuthLinks()
+		data := make(fiber.Map)
+		title := "Авторизация"
+
+		if c.Query("code") != "" && c.Query("state") != "" {
+			if c.Query("state") == "vk" {
+				if err := authVK(c, db, uAuth); err != nil {
+					return err
+				}
+			} else if c.Query("state") == "facebook" {
+				if err := authFacebook(c, db, uAuth); err != nil {
+					return err
+				}
+			} else if c.Query("state") == "yandex" {
+				if err := authYandex(c, db, uAuth); err != nil {
+					return err
+				}
+			} else if c.Query("state") == "google" {
+				if err := authGoogle(c, db, uAuth); err != nil {
+					return err
+				}
+			}
+
+			c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+			return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
 		} else {
-			data["user"] = *uAuth
-			data["links"] = utils.GetAuthLinks()
-			title = "Личный кабинет"
+			if uAuth == nil {
+				data["links"] = utils.GetAuthLinks()
+			} else {
+				data["user"] = *uAuth
+				data["links"] = utils.GetAuthLinks()
+				title = "Личный кабинет"
 
-			userAccounts, err := models.GetUsersGroup((*uAuth).Group)
-			if err != nil {
-				return err
-			}
+				userAccounts, err := models.GetUsersGroup(db, (*uAuth).Group)
+				if err != nil {
+					return err
+				}
 
-			if userAccounts != nil {
-				data["user_accounts"] = (*userAccounts).GetCondsByType((*uAuth).Type)
+				if userAccounts != nil {
+					data["user_accounts"] = (*userAccounts).GetCondsByType((*uAuth).Type)
+				}
 			}
 		}
-	}
 
-	err := c.Render("auth", fiber.Map{
-		"urlBase":      c.BaseURL(),
-		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    title + " - " + os.Getenv("INFO_TITLE_BASE"),
-		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-		"ogTags": fiber.Map{
-			"title": os.Getenv("INFO_TITLE_BASE"),
-			"type":  "website",
-		},
-		"data": data,
-	})
-	if err == nil {
-		if os.Getenv("STAGE_MODE") == "dev" {
-			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+		err := c.Render("auth", fiber.Map{
+			"urlBase":      c.BaseURL(),
+			"urlCanonical": c.BaseURL() + c.Path(),
+			"pageTitle":    title + " - " + os.Getenv("INFO_TITLE_BASE"),
+			"pageDesc":     os.Getenv("INFO_DESC_BASE"),
+			"ogTags": fiber.Map{
+				"title": os.Getenv("INFO_TITLE_BASE"),
+				"type":  "website",
+			},
+			"data": data,
+		})
+		if err == nil {
+			if os.Getenv("STAGE_MODE") == "dev" {
+				go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
+			}
+
+			return nil
 		}
 
-		return nil
+		return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
 	}
-
-	return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
 }
 
 func RouteAuthLogout(c *fiber.Ctx) error {

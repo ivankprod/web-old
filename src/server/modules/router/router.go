@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jmoiron/sqlx"
 
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/routes"
@@ -63,11 +64,11 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App, sitemap *string) {
-	// Authentication
+func Router(app *fiber.App, db *sqlx.DB, sitemap *string) {
+	// Authentication & db
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Cookies("session") != "" {
-			auth, err := models.IsAuthenticated(c.Cookies("session"), c.Get("user-agent"))
+			auth, err := models.IsAuthenticated(db, c.Cookies("session"), c.Get("user-agent"))
 			if err != nil {
 				return err
 			}
@@ -86,9 +87,9 @@ func Router(app *fiber.App, sitemap *string) {
 				})
 
 				// Update access time
-				go func(id int64) {
-					models.UpdateUserAccessTime(id)
-				}((*auth).ID)
+				go func(db *sqlx.DB, id int64) {
+					models.UpdateUserAccessTime(db, id)
+				}(db, (*auth).ID)
 			}
 		}
 
@@ -103,7 +104,7 @@ func Router(app *fiber.App, sitemap *string) {
 	app.Get("/blog/", routes.RouteBlogIndex)
 	app.Get("/about/", routes.RouteAboutIndex)
 	app.Get("/contacts/", routes.RouteContactsIndex)
-	app.Get("/auth/", routes.RouteAuthIndex)
+	app.Get("/auth/", routes.RouteAuthIndex(db))
 	app.Get("/auth/logout/", routes.RouteAuthLogout)
 
 	// Sitemap route
