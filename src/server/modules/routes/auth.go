@@ -81,7 +81,7 @@ func authVK(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 			Type:        0,
 		}
 
-		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 0) // error here
+		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 0)
 		if err != nil {
 			return err
 		}

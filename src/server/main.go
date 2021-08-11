@@ -113,10 +113,10 @@ func main() {
 	if db == nil {
 		if err == nil {
 			log.Println("Failed connecting to database")
-			log.Fatalln("-- Server starting failed")
+			log.Fatal("-- Server starting failed\n\n")
 		} else {
 			log.Printf("Error connecting to database: %v\n", err)
-			log.Fatalln("-- Server starting failed")
+			log.Fatal("-- Server starting failed\n\n")
 		}
 	} else {
 		app.DB = db
@@ -178,7 +178,7 @@ func main() {
 		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.Println(err)
-			log.Fatalf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+			log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 		}
 	}()
 
@@ -186,7 +186,7 @@ func main() {
 	cer, err := tls.LoadX509KeyPair(os.Getenv("SERVER_SSL_CERT"), os.Getenv("SERVER_SSL_KEY"))
 	if err != nil {
 		log.Println(err)
-		log.Fatalln("-- Server starting failed")
+		log.Fatal("-- Server starting failed\n\n")
 	}
 
 	// HTTPS listener
@@ -194,7 +194,7 @@ func main() {
 	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
 		log.Println(err)
-		log.Fatalln("-- Server starting failed")
+		log.Fatal("-- Server starting failed\n\n")
 	}
 
 	// Graceful shutdown
@@ -209,7 +209,7 @@ func main() {
 	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 	if err = app.Listener(ln); err != nil {
 		log.Println(err)
-		log.Fatalf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
+		log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
 	}
 }
 

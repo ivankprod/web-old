@@ -25,6 +25,7 @@ const swiperConfig = {
 	speed:         1000,
 	spaceBetween:  30,
 	slidesPerView: 'auto',
+	allowTouchMove: false,
 
 	autoplay: {
 		delay: 6000,
