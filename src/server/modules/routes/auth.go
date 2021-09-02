@@ -450,6 +450,36 @@ func RouteAuthIndex(db *sqlx.DB) fiber.Handler {
 			uAuth = nil
 		}
 
+		/* test begin
+		fmt.Println("Begin test...")
+		ut := &models.User{
+			Group:          0,
+			SocialID:       "123",
+			NameFirst:      "Test",
+			NameLast:       "Testov",
+			AvatarPath:     "asd",
+			Email:          "asd",
+			AccessToken:    "asd",
+			LastAccessTime: "asd",
+			Type:           3,
+		}
+
+		for i := 0; i < 40000; i++ {
+			cmd := exec.Command("cmd", "/c", "cls")
+			cmd.Stdout = os.Stdout
+			cmd.Run()
+
+			if _, err := models.AddUser(db, ut); err != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "Test error: "+err.Error())
+			}
+
+			time.Sleep(10 * time.Millisecond)
+
+			fmt.Print("Test: completed ", i, " of 40 000")
+		}
+		fmt.Println("End test.")
+		// test end*/
+
 		data := make(fiber.Map)
 		title := "Авторизация"
 

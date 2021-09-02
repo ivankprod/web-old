@@ -177,6 +177,8 @@ func main() {
 	go func() {
 		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
 			log.Println(err)
 			log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 		}
@@ -193,6 +195,8 @@ func main() {
 	config := &tls.Config{Certificates: []tls.Certificate{cer}}
 	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
 		log.Println(err)
 		log.Fatal("-- Server starting failed\n\n")
 	}
@@ -208,6 +212,8 @@ func main() {
 	// LISTEN
 	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
 	if err = app.Listener(ln); err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
 		log.Println(err)
 		log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
 	}
@@ -218,6 +224,8 @@ func (app *App) exit(msg ...string) {
 	if app.DB != nil {
 		app.DB.Close()
 	}
+
+	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 
 	if len(msg) > 0 {
 		log.Println(msg)
