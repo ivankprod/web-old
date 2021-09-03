@@ -2,30 +2,145 @@ package models
 
 import (
 	"encoding/json"
-	"strconv"
-	"strings"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/jmoiron/sqlx"
+	"github.com/tarantool/go-tarantool"
+	"gopkg.in/vmihailenco/msgpack.v2"
 
 	"ivankprod.ru/src/server/modules/utils"
 )
 
 // User struct
 type User struct {
-	ID             int64  `db:"user_id"           json:"userID"`
-	Group          int64  `db:"user_group"        json:"userGroup"`
-	SocialID       string `db:"user_social_id"    json:"userSocialID"`
-	NameFirst      string `db:"user_name_first"   json:"userNameFirst"`
-	NameLast       string `db:"user_name_last"    json:"userNameLast"`
-	AvatarPath     string `db:"user_avatar_path"  json:"userAvatarPath"`
-	Email          string `db:"user_email"        json:"userEmail"`
-	AccessToken    string `db:"user_access_token" json:"-"`
-	LastAccessTime string `db:"user_last_access"  json:"userLastAccessTime"`
-	Role           int    `db:"user_role"         json:"userRole"`
-	RoleDesc       string `db:"user_role_desc"    json:"userRoleDesc"`
-	Type           int    `db:"user_type"         json:"userType"`
-	TypeDesc       string `db:"user_type_desc"    json:"userTypeDesc"`
+	ID             int64  `json:"userID"`
+	Group          int64  `json:"userGroup"`
+	SocialID       string `json:"userSocialID"`
+	NameFirst      string `json:"userNameFirst"`
+	NameLast       string `json:"userNameLast"`
+	AvatarPath     string `json:"userAvatarPath"`
+	Email          string `json:"userEmail"`
+	AccessToken    string `json:"userAccessToken"`
+	LastAccessTime string `json:"userLastAccessTime"`
+	Role           int64  `json:"userRole"`
+	RoleDesc       string `json:"userRoleDesc"`
+	Type           int64  `json:"userType"`
+	TypeDesc       string `json:"userTypeDesc"`
+}
+
+// User struct: msgpack encoder
+func (u *User) EncodeMsgpack(e *msgpack.Encoder) error {
+	if err := e.EncodeSliceLen(11); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(u.ID); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(u.Group); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.SocialID); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.AccessToken); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.AvatarPath); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.Email); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.NameFirst); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.NameLast); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(u.LastAccessTime); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(u.Role); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(u.Type); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// User struct: msgpack decoder
+func (u *User) DecodeMsgpack(d *msgpack.Decoder) error {
+	var (
+		l   int
+		err error
+	)
+
+	if l, err = d.DecodeSliceLen(); err != nil {
+		return err
+	}
+
+	if l != 11 {
+		return fmt.Errorf("array len doesn't match: %d", l)
+	}
+
+	if u.ID, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	if u.Group, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	if u.SocialID, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.AccessToken, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.AvatarPath, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.Email, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.NameFirst, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.NameLast, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.LastAccessTime, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if u.Role, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	if u.Type, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Stringify user struct
@@ -93,33 +208,31 @@ type ArgsGetUsers struct {
 }
 
 // Add new user
-func AddUser(db *sqlx.DB, user *User) (int64, error) {
+func AddUser(db *tarantool.Connection, user *User) (int64, error) {
 	var (
-		tNow = utils.TimeMSK_ToString()
-
-		query = "INSERT INTO users (user_social_id, user_group, user_role, user_access_token, " +
-			"user_avatar_path, user_email, user_name_first, user_name_last, user_last_access, user_type) " +
-			"VALUES (:user_social_id, :user_group, :user_role, :user_access_token, :user_avatar_path, " +
-			":user_email, :user_name_first, :user_name_last, :user_last_access, :user_type)"
+		tuples []User
+		tNow   = utils.TimeMSK_ToString()
 	)
 
-	(*user).LastAccessTime = tNow
+	user.LastAccessTime = tNow
 
-	if (*user).Role == 0 {
-		(*user).Role = 2
+	if user.Role == 0 {
+		user.Role = 2
 	}
 
-	res, err := db.NamedExec(query, user)
+	err := db.InsertTyped("users", []interface{}{
+		nil, user.Group, user.SocialID, user.AccessToken,
+		user.AvatarPath, user.Email, user.NameFirst, user.NameLast, user.LastAccessTime,
+		user.Role, user.Type}, &tuples)
 	if err != nil {
 		return 0, err
 	}
 
-	id, err := res.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
+	id := tuples[0].ID
 
-	if (*user).ID == 0 && (*user).Group == 0 {
+	fmt.Println(*user)
+
+	if user.ID == 0 && user.Group == 0 {
 		setUserGroup(db, id, id)
 	}
 
@@ -127,19 +240,8 @@ func AddUser(db *sqlx.DB, user *User) (int64, error) {
 }
 
 // Update user group if it's new user
-func setUserGroup(db *sqlx.DB, uID int64, uGroup int64) error {
-	type PQuery struct {
-		ID    int64
-		Group int64
-	}
-
-	var (
-		query = "UPDATE users SET user_group = :group WHERE user_id = :id"
-
-		pqs = &PQuery{ID: uID, Group: uGroup}
-	)
-
-	_, err := db.NamedExec(query, pqs)
+func setUserGroup(db *tarantool.Connection, uID int64, uGroup int64) error {
+	_, err := db.Update("users", "primary_id", []interface{}{uID}, []interface{}{[]interface{}{"=", "user_group", uGroup}})
 	if err != nil {
 		return err
 	}
@@ -147,8 +249,9 @@ func setUserGroup(db *sqlx.DB, uID int64, uGroup int64) error {
 	return nil
 }
 
+/*
 // Get user
-func GetUser(db *sqlx.DB, uID int64) (*User, error) {
+func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
 	type PQuery struct {
 		ID int64
 	}
@@ -182,7 +285,7 @@ func GetUser(db *sqlx.DB, uID int64) (*User, error) {
 }
 
 // Get user credentials
-func getUserCredentials(db *sqlx.DB, uID int64) (*User, error) {
+func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
 	type PQuery struct {
 		ID int64
 	}
@@ -214,7 +317,7 @@ func getUserCredentials(db *sqlx.DB, uID int64) (*User, error) {
 }
 
 // Get users by specified group
-func GetUsersGroup(db *sqlx.DB, uGroup int64) (*Users, error) {
+func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
 	type PQuery struct {
 		Group int64
 	}
@@ -252,7 +355,7 @@ func GetUsersGroup(db *sqlx.DB, uGroup int64) (*Users, error) {
 }
 
 // Check if user exists
-func ExistsUser(db *sqlx.DB, uSocialID string, uSocialType int) (int64, int64, int, error) {
+func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (int64, int64, int, error) {
 	type PQuery struct {
 		ID   string
 		Type int
@@ -283,7 +386,7 @@ func ExistsUser(db *sqlx.DB, uSocialID string, uSocialType int) (int64, int64, i
 }
 
 // Get all users by args
-func GetUsers(db *sqlx.DB, args *ArgsGetUsers) (*Users, error) {
+func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 	type PQuery struct {
 		Search string
 		Role   int
@@ -348,7 +451,7 @@ func GetUsers(db *sqlx.DB, args *ArgsGetUsers) (*Users, error) {
 }
 
 // User sign in
-func SignInUser(db *sqlx.DB, u *User) error {
+func SignInUser(db *tarantool.Connection, u *User) error {
 	var (
 		tNow = utils.TimeMSK_ToString()
 
@@ -368,7 +471,7 @@ func SignInUser(db *sqlx.DB, u *User) error {
 }
 
 // User update access time
-func UpdateUserAccessTime(db *sqlx.DB, uID int64) error {
+func UpdateUserAccessTime(db *tarantool.Connection, uID int64) error {
 	type PQuery struct {
 		ID   int64
 		Time string
@@ -420,7 +523,7 @@ func userAuthParse(str string) (*UserAuth, error) {
 }
 
 // Check for login
-func IsAuthenticated(db *sqlx.DB, uAuth string, uAgent string) (*User, error) {
+func IsAuthenticated(db *tarantool.Connection, uAuth string, uAgent string) (*User, error) {
 	uAuthParsed, err := userAuthParse(uAuth)
 	if err != nil {
 		return nil, err
@@ -437,24 +540,12 @@ func IsAuthenticated(db *sqlx.DB, uAuth string, uAgent string) (*User, error) {
 		return nil, nil
 	}
 
-	/*resultArr, err := getUsersGroup((*result).Group, (*result).ID)
-	if err != nil {
-		return nil, err
-	}*/
-
 	uSessionHash := utils.HashSHA512(strconv.FormatInt(((*result).ID), 10) + (*result).SocialID + (*result).AccessToken + uAgent)
 	if uSessionHash == (*uAuthParsed).Hash {
 		(*result).AccessToken = "<restricted>"
-
-		/*r := &Users{}
-		(*r) = append([]User{}, *result)
-
-		if resultArr != nil {
-			(*r) = append((*r), (*resultArr)...)
-		}*/
 
 		return result, nil
 	}
 
 	return nil, nil
-}
+}*/

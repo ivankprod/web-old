@@ -19,6 +19,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
 	"github.com/markbates/pkger/pkging"
+	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/modules/db"
 	"ivankprod.ru/src/server/modules/router"
@@ -34,7 +35,8 @@ var (
 type App struct {
 	*fiber.App
 
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	DBT *tarantool.Connection
 }
 
 // Sitemap JSON to HTML
@@ -108,18 +110,32 @@ func main() {
 		}),
 	}
 
-	// DB connect
-	db, err := db.Connect()
-	if db == nil {
+	// DB MySQL connect
+	dbm, err := db.Connect()
+	if dbm == nil {
 		if err == nil {
-			log.Println("Failed connecting to database")
+			log.Println("Failed connecting to MySQL database")
 			log.Fatal("-- Server starting failed\n\n")
 		} else {
-			log.Printf("Error connecting to database: %v\n", err)
+			log.Printf("Error connecting to MySQL database: %v\n", err)
 			log.Fatal("-- Server starting failed\n\n")
 		}
 	} else {
-		app.DB = db
+		app.DB = dbm
+	}
+
+	// DB Tarantool connect
+	dbt, err := db.ConnectTarantool()
+	if dbt == nil {
+		if err == nil {
+			log.Println("Failed connecting to Tarantool database")
+			log.Fatal("-- Server starting failed\n\n")
+		} else {
+			log.Printf("Error connecting to Tarantool database: %v\n", err)
+			log.Fatal("-- Server starting failed\n\n")
+		}
+	} else {
+		app.DBT = dbt
 	}
 
 	// Safe panic
@@ -171,7 +187,7 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app.App, app.DB, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App, app.DB, app.DBT, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
@@ -223,6 +239,9 @@ func main() {
 func (app *App) exit(msg ...string) {
 	if app.DB != nil {
 		app.DB.Close()
+	}
+	if app.DBT != nil {
+		app.DBT.Close()
 	}
 
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")

@@ -8,7 +8,21 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/tarantool/go-tarantool"
 )
+
+func ConnectTarantool() (*tarantool.Connection, error) {
+	conn, err := tarantool.Connect("127.0.0.1:3301", tarantool.Opts{
+		User: "operator",
+		Pass: os.Getenv("DB_PASSWORD"),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
 
 // Connect function
 func Connect() (*sqlx.DB, error) {

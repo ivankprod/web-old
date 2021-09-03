@@ -12,7 +12,9 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.12.1 // indirect
 	github.com/markbates/pkger v0.17.1
+	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
+	gopkg.in/vmihailenco/msgpack.v2 v2.9.2
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

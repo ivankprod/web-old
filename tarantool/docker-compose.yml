@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  tarantool:
+    container_name: ikpru_tarantool
+    image: tarantool/tarantool:2.8
+    command: tarantool /usr/local/share/tarantool/app.lua
+    ports:
+      - 3301:3301
+    volumes:
+      - ./app:/usr/local/share/tarantool
+      - ./data:/var/lib/tarantool

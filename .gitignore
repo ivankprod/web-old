@@ -6,6 +6,8 @@
 .cache
 .eslintcache
 package-lock.json
+/tarantool/data
+/tarantool/data/*
 /tmp
 /build_dev/server*
 /build_prod/server*

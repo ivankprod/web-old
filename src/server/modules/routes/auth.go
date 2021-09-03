@@ -1,21 +1,19 @@
 package routes
 
 import (
-	"encoding/json"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/jmoiron/sqlx"
+	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/utils"
 )
 
+/*
 //  VK authentication
-func authVK(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
+func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
@@ -120,7 +118,7 @@ func authVK(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 }
 
 //  Facebook authentication
-func authFacebook(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
+func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
@@ -221,7 +219,7 @@ func authFacebook(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 }
 
 //  Yandex authentication
-func authYandex(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
+func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
@@ -339,7 +337,7 @@ func authYandex(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 }
 
 //  Google authentication
-func authGoogle(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
+func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
@@ -442,13 +440,13 @@ func authGoogle(c *fiber.Ctx, db *sqlx.DB, userExisting *models.User) error {
 
 	return nil
 }
-
-func RouteAuthIndex(db *sqlx.DB) fiber.Handler {
+*/
+func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		uAuth, ok := c.Locals("user_auth").(*models.User)
+		/*uAuth, ok := c.Locals("user_auth").(*models.User)
 		if !ok {
 			uAuth = nil
-		}
+		}*/
 
 		/* test begin
 		fmt.Println("Begin test...")
@@ -482,45 +480,63 @@ func RouteAuthIndex(db *sqlx.DB) fiber.Handler {
 
 		data := make(fiber.Map)
 		title := "Авторизация"
+		/*
+			if c.Query("code") != "" && c.Query("state") != "" {
+				if c.Query("state") == "vk" {
+					if err := authVK(c, db, uAuth); err != nil {
+						return err
+					}
+				} else if c.Query("state") == "facebook" {
+					if err := authFacebook(c, db, uAuth); err != nil {
+						return err
+					}
+				} else if c.Query("state") == "yandex" {
+					if err := authYandex(c, db, uAuth); err != nil {
+						return err
+					}
+				} else if c.Query("state") == "google" {
+					if err := authGoogle(c, db, uAuth); err != nil {
+						return err
+					}
+				}
 
-		if c.Query("code") != "" && c.Query("state") != "" {
-			if c.Query("state") == "vk" {
-				if err := authVK(c, db, uAuth); err != nil {
-					return err
-				}
-			} else if c.Query("state") == "facebook" {
-				if err := authFacebook(c, db, uAuth); err != nil {
-					return err
-				}
-			} else if c.Query("state") == "yandex" {
-				if err := authYandex(c, db, uAuth); err != nil {
-					return err
-				}
-			} else if c.Query("state") == "google" {
-				if err := authGoogle(c, db, uAuth); err != nil {
-					return err
-				}
-			}
-
-			c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-			return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
-		} else {
-			if uAuth == nil {
-				data["links"] = utils.GetAuthLinks()
+				c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+				return c.SendString("<!DOCTYPE html><html><head><script>window.location.href=\"/auth/\"</script></head><body></body></html>")
 			} else {
-				data["user"] = *uAuth
-				data["links"] = utils.GetAuthLinks()
-				title = "Личный кабинет"
+				if uAuth == nil {
+					data["links"] = utils.GetAuthLinks()
+				} else {
+					data["user"] = *uAuth
+					data["links"] = utils.GetAuthLinks()
+					title = "Личный кабинет"
 
-				userAccounts, err := models.GetUsersGroup(db, (*uAuth).Group)
-				if err != nil {
-					return err
-				}
+					userAccounts, err := models.GetUsersGroup(db, (*uAuth).Group)
+					if err != nil {
+						return err
+					}
 
-				if userAccounts != nil {
-					data["user_accounts"] = (*userAccounts).GetCondsByType((*uAuth).Type)
+					if userAccounts != nil {
+						data["user_accounts"] = (*userAccounts).GetCondsByType((*uAuth).Type)
+					}
 				}
 			}
+		*/
+
+		var errr error
+
+		user := &models.User{
+			SocialID:    "test",
+			NameFirst:   "test",
+			NameLast:    "test",
+			AvatarPath:  "test",
+			Email:       "test",
+			AccessToken: "test",
+			Type:        0,
+		}
+
+		data["test"], errr = models.AddUser(db, user)
+		if errr != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "test: "+errr.Error())
 		}
 
 		err := c.Render("auth", fiber.Map{
