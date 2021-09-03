@@ -11,6 +11,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 )
 
+// TODO: connection params & ping
 func ConnectTarantool() (*tarantool.Connection, error) {
 	conn, err := tarantool.Connect("127.0.0.1:3301", tarantool.Opts{
 		User: "operator",

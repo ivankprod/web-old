@@ -174,6 +174,175 @@ func (users *Users) ToJSON() string {
 	return string(result)
 }
 
+// UserRole struct
+type UserRole struct {
+	ID   int64  `json:"roleID"`
+	Role string `json:"roleDesc"`
+	Sort int64  `json:"roleSort"`
+}
+
+// UserRole struct: msgpack encoder
+func (r *UserRole) EncodeMsgpack(e *msgpack.Encoder) error {
+	if err := e.EncodeSliceLen(3); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(r.ID); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(r.Role); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(r.Sort); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UserRole struct: msgpack decoder
+func (r *UserRole) DecodeMsgpack(d *msgpack.Decoder) error {
+	var (
+		l   int
+		err error
+	)
+
+	if l, err = d.DecodeSliceLen(); err != nil {
+		return err
+	}
+
+	if l != 3 {
+		return fmt.Errorf("array len doesn't match: %d", l)
+	}
+
+	if r.ID, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	if r.Role, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	if r.Sort, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Stringify UserRole struct
+func (r *UserRole) ToJSON() string {
+	var (
+		result []byte
+		err    error
+	)
+
+	if result, err = json.Marshal(r); err != nil {
+		return err.Error()
+	}
+
+	return string(result)
+}
+
+// UserRoles struct
+type UserRoles []UserRole
+
+// Stringify UserRoles struct
+func (r *UserRoles) ToJSON() string {
+	var (
+		result []byte
+		err    error
+	)
+
+	if result, err = json.Marshal(r); err != nil {
+		return err.Error()
+	}
+
+	return string(result)
+}
+
+// UserType struct
+type UserType struct {
+	ID   int64  `json:"typeID"`
+	Type string `json:"typeDesc"`
+}
+
+// Stringify UserType struct
+func (t *UserType) ToJSON() string {
+	var (
+		result []byte
+		err    error
+	)
+
+	if result, err = json.Marshal(t); err != nil {
+		return err.Error()
+	}
+
+	return string(result)
+}
+
+// UserType struct: msgpack encoder
+func (t *UserType) EncodeMsgpack(e *msgpack.Encoder) error {
+	if err := e.EncodeSliceLen(2); err != nil {
+		return err
+	}
+
+	if err := e.EncodeInt64(t.ID); err != nil {
+		return err
+	}
+
+	if err := e.EncodeString(t.Type); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UserType struct: msgpack decoder
+func (t *UserType) DecodeMsgpack(d *msgpack.Decoder) error {
+	var (
+		l   int
+		err error
+	)
+
+	if l, err = d.DecodeSliceLen(); err != nil {
+		return err
+	}
+
+	if l != 2 {
+		return fmt.Errorf("array len doesn't match: %d", l)
+	}
+
+	if t.ID, err = d.DecodeInt64(); err != nil {
+		return err
+	}
+
+	if t.Type, err = d.DecodeString(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UserTypes struct
+type UserTypes []UserType
+
+// Stringify UserTypes struct
+func (t *UserTypes) ToJSON() string {
+	var (
+		result []byte
+		err    error
+	)
+
+	if result, err = json.Marshal(t); err != nil {
+		return err.Error()
+	}
+
+	return string(result)
+}
+
 // Get users conditions by type to map
 func (users *Users) GetCondsByType(aType int) fiber.Map {
 	result := make(fiber.Map)
@@ -203,14 +372,14 @@ type UserAuth struct {
 // Args struct for GetUsers function
 type ArgsGetUsers struct {
 	Search string
-	Role   int
-	Page   int
+	Role   int64
+	Page   int64
 }
 
 // Add new user
 func AddUser(db *tarantool.Connection, user *User) (int64, error) {
 	var (
-		tuples []User
+		tuples Users
 		tNow   = utils.TimeMSK_ToString()
 	)
 
@@ -230,8 +399,6 @@ func AddUser(db *tarantool.Connection, user *User) (int64, error) {
 
 	id := tuples[0].ID
 
-	fmt.Println(*user)
-
 	if user.ID == 0 && user.Group == 0 {
 		setUserGroup(db, id, id)
 	}
@@ -249,41 +416,39 @@ func setUserGroup(db *tarantool.Connection, uID int64, uGroup int64) error {
 	return nil
 }
 
-/*
 // Get user
 func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
-	type PQuery struct {
-		ID int64
-	}
-
 	var (
-		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
-			"INNER JOIN users_roles INNER JOIN users_types ON " +
-			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_id = :id LIMIT 1"
+		tuplesRoles UserRoles
+		tuplesTypes UserTypes
+		tuplesUsers Users
 
-		pqs = &PQuery{ID: uID}
-
-		result = &User{}
+		err error
 	)
 
-	row, err := db.NamedQuery(query, pqs)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
-	defer row.Close()
-
-	for row.Next() {
-		if err := row.StructScan(result); err != nil {
-			return result, err
-		}
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	if err != nil {
+		return nil, err
 	}
 
-	(*result).AccessToken = "<restricted>"
+	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, []interface{}{uID}, &tuplesUsers)
+	if err != nil {
+		return nil, err
+	}
 
-	return result, nil
+	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+	tuplesUsers[0].AccessToken = "<restricted>"
+
+	return &tuplesUsers[0], nil
 }
 
+/*
 // Get user credentials
 func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
 	type PQuery struct {
