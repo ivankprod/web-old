@@ -524,21 +524,19 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 
 		var errr error
 
-		// u := &models.User{
-		// 	//Group:          1,
-		// 	SocialID:       "123",
-		// 	NameFirst:      "123",
-		// 	NameLast:       "123",
-		// 	AvatarPath:     "123",
-		// 	Email:          "123",
-		// 	AccessToken:    "123",
-		// 	LastAccessTime: "123",
-		// 	Type:           0,
-		// }
+		u := &models.User{
+			SocialID:    "123",
+			NameFirst:   "123",
+			NameLast:    "123",
+			AvatarPath:  "123",
+			Email:       "123",
+			AccessToken: "123",
+			Type:        1,
+		}
 
-		// models.AddUser(db, u)
+		models.SignInUser(db, u, 2)
 
-		data["test"], _, _, errr = models.ExistsUser(db, "123", 0)
+		data["test"], errr = models.GetUser(db, 2)
 		if errr != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "test: "+errr.Error())
 		}

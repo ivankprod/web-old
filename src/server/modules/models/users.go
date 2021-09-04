@@ -11,6 +11,9 @@ import (
 	"ivankprod.ru/src/server/modules/utils"
 )
 
+// Tarantool param type
+type AX []interface{}
+
 // User struct
 type User struct {
 	ID             int64  `json:"userID"`
@@ -378,29 +381,30 @@ type ArgsGetUsers struct {
 
 // Add new user
 func AddUser(db *tarantool.Connection, user *User) (int64, error) {
-	var (
-		tuples Users
-		tNow   = utils.TimeMSK_ToString()
-	)
-
-	user.LastAccessTime = tNow
+	var tuplesUsers Users
 
 	if user.Role == 0 {
 		user.Role = 2
 	}
 
-	err := db.InsertTyped("users", []interface{}{
+	err := db.InsertTyped("users", AX{
 		nil, user.Group, user.SocialID, user.AccessToken,
-		user.AvatarPath, user.Email, user.NameFirst, user.NameLast, user.LastAccessTime,
-		user.Role, user.Type}, &tuples)
+		user.AvatarPath, user.Email, user.NameFirst, user.NameLast, utils.TimeMSK_ToString(),
+		user.Role, user.Type}, &tuplesUsers)
 	if err != nil {
 		return 0, err
 	}
 
-	id := tuples[0].ID
+	if len(tuplesUsers) == 0 {
+		return 0, nil
+	}
+
+	id := tuplesUsers[0].ID
 
 	if user.ID == 0 && user.Group == 0 {
-		setUserGroup(db, id, id)
+		if err := setUserGroup(db, id, id); err != nil {
+			return 0, err
+		}
 	}
 
 	return id, nil
@@ -408,7 +412,7 @@ func AddUser(db *tarantool.Connection, user *User) (int64, error) {
 
 // Update user group if it's new user
 func setUserGroup(db *tarantool.Connection, uID int64, uGroup int64) error {
-	_, err := db.Update("users", "primary_id", []interface{}{uID}, []interface{}{[]interface{}{"=", "user_group", uGroup}})
+	_, err := db.Update("users", "primary_id", AX{uID}, AX{AX{"=", "user_group", uGroup}})
 	if err != nil {
 		return err
 	}
@@ -426,19 +430,23 @@ func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
 		err error
 	)
 
-	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, []interface{}{uID}, &tuplesUsers)
+	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, AX{uID}, &tuplesUsers)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(tuplesUsers) == 0 {
+		return nil, nil
 	}
 
 	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
@@ -458,19 +466,23 @@ func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
 		err error
 	)
 
-	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, []interface{}{uID}, &tuplesUsers)
+	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, AX{uID}, &tuplesUsers)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(tuplesUsers) == 0 {
+		return nil, nil
 	}
 
 	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
@@ -489,17 +501,17 @@ func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
 		err error
 	)
 
-	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, AX{}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.SelectTyped("users", "secondary_group", 0, 4, tarantool.IterEq, []interface{}{uGroup}, &tuplesUsers)
+	err = db.SelectTyped("users", "secondary_group", 0, 4, tarantool.IterEq, AX{uGroup}, &tuplesUsers)
 	if err != nil {
 		return nil, err
 	}
@@ -520,9 +532,13 @@ func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (in
 		err error
 	)
 
-	err = db.SelectTyped("users", "secondary_socialid_type", 0, 1, tarantool.IterEq, []interface{}{uSocialID, uSocialType}, &tuplesUsers)
+	err = db.SelectTyped("users", "secondary_socialid_type", 0, 1, tarantool.IterEq, AX{uSocialID, uSocialType}, &tuplesUsers)
 	if err != nil {
 		return 0, 0, 0, err
+	}
+
+	if len(tuplesUsers) == 0 {
+		return 0, 0, 0, nil
 	}
 
 	tuplesUsers[0].AccessToken = "<restricted>"
@@ -595,20 +611,17 @@ func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 
 	return result, nil
 }
-
+*/
 // User sign in
-func SignInUser(db *tarantool.Connection, u *User) error {
-	var (
-		tNow = utils.TimeMSK_ToString()
-
-		query = "UPDATE users SET user_access_token = :user_access_token, user_avatar_path = :user_avatar_path, user_email = :user_email, " +
-			"user_name_first = :user_name_first, user_name_last = :user_name_last, user_last_access = :user_last_access " +
-			"WHERE user_social_id = :user_social_id AND user_type = :user_type"
-	)
-
-	(*u).LastAccessTime = tNow
-
-	_, err := db.NamedExec(query, u)
+func SignInUser(db *tarantool.Connection, u *User, uID int64) error {
+	_, err := db.Update("users", "primary_id", AX{uID}, AX{
+		AX{"=", "user_access_token", u.AccessToken},
+		AX{"=", "user_avatar_path", u.AvatarPath},
+		AX{"=", "user_email", u.Email},
+		AX{"=", "user_name_first", u.NameFirst},
+		AX{"=", "user_name_last", u.NameLast},
+		AX{"=", "user_last_access", utils.TimeMSK_ToString()},
+	})
 	if err != nil {
 		return err
 	}
@@ -616,6 +629,7 @@ func SignInUser(db *tarantool.Connection, u *User) error {
 	return nil
 }
 
+/*
 // User update access time
 func UpdateUserAccessTime(db *tarantool.Connection, uID int64) error {
 	type PQuery struct {
