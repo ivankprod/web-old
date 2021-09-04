@@ -512,38 +512,25 @@ func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
 	return &tuplesUsers, nil
 }
 
-/*
 // Check if user exists
-func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (int64, int64, int, error) {
-	type PQuery struct {
-		ID   string
-		Type int
-	}
-
+func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (int64, int64, int64, error) {
 	var (
-		query = "SELECT user_id, user_group, user_role FROM users WHERE user_social_id = :id AND user_type = :type LIMIT 1"
+		tuplesUsers Users
 
-		pqs = &PQuery{ID: uSocialID, Type: uSocialType}
-
-		result = &User{}
+		err error
 	)
 
-	row, err := db.NamedQuery(query, pqs)
+	err = db.SelectTyped("users", "secondary_socialid_type", 0, 1, tarantool.IterEq, []interface{}{uSocialID, uSocialType}, &tuplesUsers)
 	if err != nil {
 		return 0, 0, 0, err
 	}
 
-	defer row.Close()
+	tuplesUsers[0].AccessToken = "<restricted>"
 
-	for row.Next() {
-		if err := row.StructScan(result); err != nil {
-			return 0, 0, 0, err
-		}
-	}
-
-	return (*result).ID, (*result).Group, (*result).Role, nil
+	return tuplesUsers[0].ID, tuplesUsers[0].Group, tuplesUsers[0].Role, nil
 }
 
+/*
 // Get all users by args
 func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 	type PQuery struct {

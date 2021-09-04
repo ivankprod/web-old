@@ -538,7 +538,7 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 
 		// models.AddUser(db, u)
 
-		data["test"], errr = models.GetUsersGroup(db, 1)
+		data["test"], _, _, errr = models.ExistsUser(db, "123", 0)
 		if errr != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "test: "+errr.Error())
 		}
