@@ -524,7 +524,21 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 
 		var errr error
 
-		data["test"], errr = models.GetUser(db, 1)
+		// u := &models.User{
+		// 	//Group:          1,
+		// 	SocialID:       "123",
+		// 	NameFirst:      "123",
+		// 	NameLast:       "123",
+		// 	AvatarPath:     "123",
+		// 	Email:          "123",
+		// 	AccessToken:    "123",
+		// 	LastAccessTime: "123",
+		// 	Type:           0,
+		// }
+
+		// models.AddUser(db, u)
+
+		data["test"], errr = models.GetUsersGroup(db, 1)
 		if errr != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "test: "+errr.Error())
 		}

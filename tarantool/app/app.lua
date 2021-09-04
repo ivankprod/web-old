@@ -62,18 +62,18 @@ local function init()
 		parts = {{ field = 1, type = 'integer' }}
 	})
 
-	users_space:create_index('secondary_role', {
+	users_space:create_index('secondary_group', {
 		if_not_exists = true,
 		type = 'TREE',
 		unique = false,
-		parts = {{ field = 10, type = 'integer' }}
+		parts = {{ field = 2, type = 'integer' }}
 	})
 
-	users_space:create_index('secondary_type', {
+	users_space:create_index('secondary_socialid_type', {
 		if_not_exists = true,
 		type = 'TREE',
 		unique = false,
-		parts = {{ field = 11, type = 'integer' }}
+		parts = {{ field = 3, type = 'string' }, { field = 11, type = 'integer' }}
 	})
 end
 
@@ -110,5 +110,5 @@ box.cfg{
 	log_level  = 5
 }
 
-box.once('init-v1.4.0', init)
-box.once('def-data-v1.4.0', default_data)
+box.once('init-v1.4.1', init)
+box.once('def-data-v1.4.1', default_data)

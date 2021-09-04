@@ -441,84 +441,78 @@ func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
 		return nil, err
 	}
 
-	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role].Role
+	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
 	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
 	tuplesUsers[0].AccessToken = "<restricted>"
 
 	return &tuplesUsers[0], nil
 }
 
-/*
 // Get user credentials
 func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
-	type PQuery struct {
-		ID int64
-	}
-
 	var (
-		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
-			"INNER JOIN users_roles INNER JOIN users_types ON " +
-			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_id = :id LIMIT 1"
+		tuplesRoles UserRoles
+		tuplesTypes UserTypes
+		tuplesUsers Users
 
-		pqs = &PQuery{ID: uID}
-
-		result = &User{}
+		err error
 	)
 
-	row, err := db.NamedQuery(query, pqs)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
-	defer row.Close()
-
-	for row.Next() {
-		if err := row.StructScan(result); err != nil {
-			return result, err
-		}
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	if err != nil {
+		return nil, err
 	}
 
-	return result, nil
+	err = db.SelectTyped("users", "primary_id", 0, 1, tarantool.IterEq, []interface{}{uID}, &tuplesUsers)
+	if err != nil {
+		return nil, err
+	}
+
+	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+
+	return &tuplesUsers[0], nil
 }
 
 // Get users by specified group
 func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
-	type PQuery struct {
-		Group int64
-	}
-
 	var (
-		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
-			"INNER JOIN users_roles INNER JOIN users_types ON " +
-			"users.user_role = users_roles.id AND users.user_type = users_types.id WHERE users.user_group = :group LIMIT 4"
+		tuplesRoles UserRoles
+		tuplesTypes UserTypes
+		tuplesUsers Users
 
-		pqs = &PQuery{Group: uGroup}
-
-		result = &Users{}
+		err error
 	)
 
-	rows, err := db.NamedQuery(query, pqs)
+	err = db.SelectTyped("users_roles", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesRoles)
 	if err != nil {
-		return result, err
+		return nil, err
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		user := &User{}
-
-		if err := rows.StructScan(user); err != nil {
-			return result, err
-		}
-
-		(*user).AccessToken = "<restricted>"
-
-		(*result) = append((*result), (*user))
+	err = db.SelectTyped("users_types", "primary_id", 0, 4, tarantool.IterEq, []interface{}{}, &tuplesTypes)
+	if err != nil {
+		return nil, err
 	}
 
-	return result, nil
+	err = db.SelectTyped("users", "secondary_group", 0, 4, tarantool.IterEq, []interface{}{uGroup}, &tuplesUsers)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, v := range tuplesUsers {
+		tuplesUsers[i].RoleDesc = tuplesRoles[v.Role-1].Role
+		tuplesUsers[i].TypeDesc = tuplesTypes[v.Type].Type
+	}
+
+	return &tuplesUsers, nil
 }
 
+/*
 // Check if user exists
 func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (int64, int64, int, error) {
 	type PQuery struct {
