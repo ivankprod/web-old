@@ -3,6 +3,8 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
@@ -347,7 +349,7 @@ func (t *UserTypes) ToJSON() string {
 }
 
 // Get users conditions by type to map
-func (users *Users) GetCondsByType(aType int) fiber.Map {
+func (users *Users) GetCondsByType(aType int64) fiber.Map {
 	result := make(fiber.Map)
 
 	for _, v := range *users {
@@ -629,23 +631,11 @@ func SignInUser(db *tarantool.Connection, u *User, uID int64) error {
 	return nil
 }
 
-/*
 // User update access time
 func UpdateUserAccessTime(db *tarantool.Connection, uID int64) error {
-	type PQuery struct {
-		ID   int64
-		Time string
-	}
-
-	var (
-		tNow = utils.TimeMSK_ToString()
-
-		query = "UPDATE users SET user_last_access = :time WHERE user_id = :id"
-
-		pqs = &PQuery{ID: uID, Time: tNow}
-	)
-
-	_, err := db.NamedExec(query, pqs)
+	_, err := db.Update("users", "primary_id", AX{uID}, AX{
+		AX{"=", "user_last_access", utils.TimeMSK_ToString()},
+	})
 	if err != nil {
 		return err
 	}
@@ -672,12 +662,12 @@ func userAuthParse(str string) (*UserAuth, error) {
 		return nil, nil
 	}
 
-	(*result).ID, err = strconv.ParseInt(strarr[0], 10, 64)
+	result.ID, err = strconv.ParseInt(strarr[0], 10, 64)
 	if err != nil {
 		return result, err
 	}
 
-	(*result).Hash = strarr[1]
+	result.Hash = strarr[1]
 
 	return result, nil
 }
@@ -692,7 +682,7 @@ func IsAuthenticated(db *tarantool.Connection, uAuth string, uAgent string) (*Us
 		return nil, nil
 	}
 
-	result, err := getUserCredentials(db, (*uAuthParsed).ID)
+	result, err := getUserCredentials(db, uAuthParsed.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -700,12 +690,12 @@ func IsAuthenticated(db *tarantool.Connection, uAuth string, uAgent string) (*Us
 		return nil, nil
 	}
 
-	uSessionHash := utils.HashSHA512(strconv.FormatInt(((*result).ID), 10) + (*result).SocialID + (*result).AccessToken + uAgent)
-	if uSessionHash == (*uAuthParsed).Hash {
-		(*result).AccessToken = "<restricted>"
+	uSessionHash := utils.HashSHA512(strconv.FormatInt(result.ID, 10) + result.SocialID + result.AccessToken + uAgent)
+	if uSessionHash == uAuthParsed.Hash {
+		result.AccessToken = "<restricted>"
 
 		return result, nil
 	}
 
 	return nil, nil
-}*/
+}

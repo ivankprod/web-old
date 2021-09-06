@@ -3,6 +3,7 @@ package router
 import (
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -67,7 +68,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 func Router(app *fiber.App, db *sqlx.DB, dbt *tarantool.Connection, sitemap *string) {
 	// Authentication & db
 	app.Use(func(c *fiber.Ctx) error {
-		/*if c.Cookies("session") != "" {
+		if c.Cookies("session") != "" {
 			auth, err := models.IsAuthenticated(dbt, c.Cookies("session"), c.Get("user-agent"))
 			if err != nil {
 				return err
@@ -87,11 +88,11 @@ func Router(app *fiber.App, db *sqlx.DB, dbt *tarantool.Connection, sitemap *str
 				})
 
 				// Update access time
-				go func(db *sqlx.DB, id int64) {
+				go func(dbt *tarantool.Connection, id int64) {
 					models.UpdateUserAccessTime(dbt, id)
-				}(db, (*auth).ID)
+				}(dbt, auth.ID)
 			}
-		}*/
+		}
 
 		return c.Next()
 	})
