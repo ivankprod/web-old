@@ -464,7 +464,7 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 			Type:           3,
 		}
 
-		for i := 0; i < 40000; i++ {
+		for i := 0; i < 10000; i++ {
 			cmd := exec.Command("cmd", "/c", "cls")
 			cmd.Stdout = os.Stdout
 			cmd.Run()
@@ -473,9 +473,9 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 				return fiber.NewError(fiber.StatusInternalServerError, "Test error: "+err.Error())
 			}
 
-			time.Sleep(10 * time.Millisecond)
+			//time.Sleep(10 * time.Millisecond)
 
-			fmt.Print("Test: completed ", i, " of 40 000")
+			fmt.Print("Test: completed ", i, " of 10 000")
 		}
 		fmt.Println("End test.")
 		// test end*/
@@ -522,6 +522,17 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 				}
 			}
 		}
+
+		/*var errr error
+		data["test"], errr = models.GetUsers(db, &models.ArgsGetUsers{
+			Search: "",
+			Role:   0,
+			Page:   0,
+		})
+
+		if errr != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "test error: "+errr.Error())
+		}*/
 
 		err := c.Render("auth", fiber.Map{
 			"urlBase":      c.BaseURL(),

@@ -593,7 +593,19 @@ func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 		return nil, err
 	}
 
-	respParsed := resp.Data[0].([]interface{})[0].(map[interface{}]interface{})["rows"].([]interface{})
+	respData := resp.Data
+
+	if len(respData) > 1 {
+		respError, _ := respData[1].([]interface{})[0].(string)
+		if respError != "" {
+			return nil, fmt.Errorf("SQL error: %s", respError)
+		}
+	}
+
+	respParsed, ok := respData[0].([]interface{})[0].(map[interface{}]interface{})["rows"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("error during parsing SQL response")
+	}
 
 	for _, v := range respParsed {
 		data := v.([]interface{})
@@ -618,72 +630,6 @@ func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 	return &tuplesUsers, nil
 }
 
-/*
-// Get all users by args
-func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
-	type PQuery struct {
-		Search string
-		Role   int
-	}
-
-	var (
-		query = "SELECT users.*, users_roles.role AS user_role_desc, users_types.type AS user_type_desc FROM users " +
-			"INNER JOIN users_roles INNER JOIN users_types ON " +
-			"users.user_role = users_roles.id AND users.user_type = users_types.id "
-		search = (*args).Search
-		where  = ""
-		limit  = ""
-
-		role = (*args).Role
-		page = (*args).Page
-
-		result = &Users{}
-	)
-
-	if search != "" || role != 0 {
-		where += "WHERE "
-
-		if search != "" {
-			where += "(users.user_email LIKE :search OR concat(users.user_name_first, ' ', users.user_name_last) LIKE :search)"
-
-			if role != 0 {
-				where += " AND "
-			}
-		}
-
-		if role != 0 {
-			where += "(users.user_role = :role)"
-		}
-	}
-
-	if page != 0 {
-		limit += " LIMIT " + strconv.Itoa((page-1)*10) + ", " + "10"
-	}
-
-	pqs := &PQuery{Search: "%" + search + "%", Role: role}
-
-	rows, err := db.NamedQuery(query+where+" ORDER BY users.user_role DESC"+limit, pqs)
-	if err != nil {
-		return result, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		user := &User{}
-
-		if err := rows.StructScan(user); err != nil {
-			return result, err
-		}
-
-		(*user).AccessToken = "<restricted>"
-
-		(*result) = append((*result), (*user))
-	}
-
-	return result, nil
-}
-*/
 // User sign in
 func SignInUser(db *tarantool.Connection, u *User, uID uint64) error {
 	_, err := db.Update("users", "primary_id", AX{uID}, AX{

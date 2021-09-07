@@ -15,7 +15,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
-	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
 	"github.com/markbates/pkger/pkging"
@@ -35,7 +34,7 @@ var (
 type App struct {
 	*fiber.App
 
-	DB  *sqlx.DB
+	//DB  *sqlx.DB
 	DBT *tarantool.Connection
 }
 
@@ -111,7 +110,7 @@ func main() {
 	}
 
 	// DB MySQL connect
-	dbm, err := db.Connect()
+	/*dbm, err := db.Connect()
 	if dbm == nil {
 		if err == nil {
 			log.Println("Failed connecting to MySQL database")
@@ -122,7 +121,7 @@ func main() {
 		}
 	} else {
 		app.DB = dbm
-	}
+	}*/
 
 	// DB Tarantool connect
 	dbt, err := db.ConnectTarantool()
@@ -187,7 +186,7 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app.App, app.DB, app.DBT, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App /*, app.DB */, app.DBT, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
@@ -237,9 +236,9 @@ func main() {
 
 // App exit
 func (app *App) exit(msg ...string) {
-	if app.DB != nil {
+	/*if app.DB != nil {
 		app.DB.Close()
-	}
+	}*/
 	if app.DBT != nil {
 		app.DBT.Close()
 	}

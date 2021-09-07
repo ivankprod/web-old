@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/jmoiron/sqlx"
 	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/modules/models"
@@ -65,7 +64,7 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App, db *sqlx.DB, dbt *tarantool.Connection, sitemap *string) {
+func Router(app *fiber.App /*db *sqlx.DB,*/, dbt *tarantool.Connection, sitemap *string) {
 	// Authentication & db
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Cookies("session") != "" {
