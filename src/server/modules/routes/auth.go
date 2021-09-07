@@ -105,7 +105,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+userID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+userID+(*user).AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -206,7 +206,7 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -324,7 +324,7 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -429,7 +429,7 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatInt(id, 10) + ":" + utils.HashSHA512(strconv.FormatInt(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -522,25 +522,6 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 				}
 			}
 		}
-
-		/*var errr error
-
-		u := &models.User{
-			SocialID:    "123",
-			NameFirst:   "123",
-			NameLast:    "123",
-			AvatarPath:  "123",
-			Email:       "123",
-			AccessToken: "123",
-			Type:        1,
-		}
-
-		models.UpdateUserAccessTime(db, 2)
-
-		data["test"], errr = models.GetUser(db, 2)
-		if errr != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "test: "+errr.Error())
-		}*/
 
 		err := c.Render("auth", fiber.Map{
 			"urlBase":      c.BaseURL(),

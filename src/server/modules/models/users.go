@@ -18,8 +18,8 @@ type AX []interface{}
 
 // User struct
 type User struct {
-	ID             int64  `json:"userID"`
-	Group          int64  `json:"userGroup"`
+	ID             uint64 `json:"userID"`
+	Group          uint64 `json:"userGroup"`
 	SocialID       string `json:"userSocialID"`
 	NameFirst      string `json:"userNameFirst"`
 	NameLast       string `json:"userNameLast"`
@@ -27,9 +27,9 @@ type User struct {
 	Email          string `json:"userEmail"`
 	AccessToken    string `json:"userAccessToken"`
 	LastAccessTime string `json:"userLastAccessTime"`
-	Role           int64  `json:"userRole"`
+	Role           uint64 `json:"userRole"`
 	RoleDesc       string `json:"userRoleDesc"`
-	Type           int64  `json:"userType"`
+	Type           uint64 `json:"userType"`
 	TypeDesc       string `json:"userTypeDesc"`
 }
 
@@ -39,11 +39,11 @@ func (u *User) EncodeMsgpack(e *msgpack.Encoder) error {
 		return err
 	}
 
-	if err := e.EncodeInt64(u.ID); err != nil {
+	if err := e.EncodeUint64(u.ID); err != nil {
 		return err
 	}
 
-	if err := e.EncodeInt64(u.Group); err != nil {
+	if err := e.EncodeUint64(u.Group); err != nil {
 		return err
 	}
 
@@ -75,11 +75,11 @@ func (u *User) EncodeMsgpack(e *msgpack.Encoder) error {
 		return err
 	}
 
-	if err := e.EncodeInt64(u.Role); err != nil {
+	if err := e.EncodeUint64(u.Role); err != nil {
 		return err
 	}
 
-	if err := e.EncodeInt64(u.Type); err != nil {
+	if err := e.EncodeUint64(u.Type); err != nil {
 		return err
 	}
 
@@ -101,11 +101,11 @@ func (u *User) DecodeMsgpack(d *msgpack.Decoder) error {
 		return fmt.Errorf("array len doesn't match: %d", l)
 	}
 
-	if u.ID, err = d.DecodeInt64(); err != nil {
+	if u.ID, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
-	if u.Group, err = d.DecodeInt64(); err != nil {
+	if u.Group, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
@@ -137,11 +137,11 @@ func (u *User) DecodeMsgpack(d *msgpack.Decoder) error {
 		return err
 	}
 
-	if u.Role, err = d.DecodeInt64(); err != nil {
+	if u.Role, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
-	if u.Type, err = d.DecodeInt64(); err != nil {
+	if u.Type, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
@@ -181,9 +181,9 @@ func (users *Users) ToJSON() string {
 
 // UserRole struct
 type UserRole struct {
-	ID   int64  `json:"roleID"`
+	ID   uint64 `json:"roleID"`
 	Role string `json:"roleDesc"`
-	Sort int64  `json:"roleSort"`
+	Sort uint64 `json:"roleSort"`
 }
 
 // UserRole struct: msgpack encoder
@@ -192,7 +192,7 @@ func (r *UserRole) EncodeMsgpack(e *msgpack.Encoder) error {
 		return err
 	}
 
-	if err := e.EncodeInt64(r.ID); err != nil {
+	if err := e.EncodeUint64(r.ID); err != nil {
 		return err
 	}
 
@@ -200,7 +200,7 @@ func (r *UserRole) EncodeMsgpack(e *msgpack.Encoder) error {
 		return err
 	}
 
-	if err := e.EncodeInt64(r.Sort); err != nil {
+	if err := e.EncodeUint64(r.Sort); err != nil {
 		return err
 	}
 
@@ -222,7 +222,7 @@ func (r *UserRole) DecodeMsgpack(d *msgpack.Decoder) error {
 		return fmt.Errorf("array len doesn't match: %d", l)
 	}
 
-	if r.ID, err = d.DecodeInt64(); err != nil {
+	if r.ID, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
@@ -230,7 +230,7 @@ func (r *UserRole) DecodeMsgpack(d *msgpack.Decoder) error {
 		return err
 	}
 
-	if r.Sort, err = d.DecodeInt64(); err != nil {
+	if r.Sort, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
@@ -270,7 +270,7 @@ func (r *UserRoles) ToJSON() string {
 
 // UserType struct
 type UserType struct {
-	ID   int64  `json:"typeID"`
+	ID   uint64 `json:"typeID"`
 	Type string `json:"typeDesc"`
 }
 
@@ -294,7 +294,7 @@ func (t *UserType) EncodeMsgpack(e *msgpack.Encoder) error {
 		return err
 	}
 
-	if err := e.EncodeInt64(t.ID); err != nil {
+	if err := e.EncodeUint64(t.ID); err != nil {
 		return err
 	}
 
@@ -320,7 +320,7 @@ func (t *UserType) DecodeMsgpack(d *msgpack.Decoder) error {
 		return fmt.Errorf("array len doesn't match: %d", l)
 	}
 
-	if t.ID, err = d.DecodeInt64(); err != nil {
+	if t.ID, err = d.DecodeUint64(); err != nil {
 		return err
 	}
 
@@ -349,7 +349,7 @@ func (t *UserTypes) ToJSON() string {
 }
 
 // Get users conditions by type to map
-func (users *Users) GetCondsByType(aType int64) fiber.Map {
+func (users *Users) GetCondsByType(aType uint64) fiber.Map {
 	result := make(fiber.Map)
 
 	for _, v := range *users {
@@ -370,19 +370,19 @@ func (users *Users) GetCondsByType(aType int64) fiber.Map {
 
 // User auth struct
 type UserAuth struct {
-	ID   int64
+	ID   uint64
 	Hash string
 }
 
 // Args struct for GetUsers function
 type ArgsGetUsers struct {
 	Search string
-	Role   int64
-	Page   int64
+	Role   uint64
+	Page   uint64
 }
 
 // Add new user
-func AddUser(db *tarantool.Connection, user *User) (int64, error) {
+func AddUser(db *tarantool.Connection, user *User) (uint64, error) {
 	var tuplesUsers Users
 
 	if user.Role == 0 {
@@ -413,7 +413,7 @@ func AddUser(db *tarantool.Connection, user *User) (int64, error) {
 }
 
 // Update user group if it's new user
-func setUserGroup(db *tarantool.Connection, uID int64, uGroup int64) error {
+func setUserGroup(db *tarantool.Connection, uID uint64, uGroup uint64) error {
 	_, err := db.Update("users", "primary_id", AX{uID}, AX{AX{"=", "user_group", uGroup}})
 	if err != nil {
 		return err
@@ -423,7 +423,7 @@ func setUserGroup(db *tarantool.Connection, uID int64, uGroup int64) error {
 }
 
 // Get user
-func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
+func GetUser(db *tarantool.Connection, uID uint64) (*User, error) {
 	var (
 		tuplesRoles UserRoles
 		tuplesTypes UserTypes
@@ -459,7 +459,7 @@ func GetUser(db *tarantool.Connection, uID int64) (*User, error) {
 }
 
 // Get user credentials
-func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
+func getUserCredentials(db *tarantool.Connection, uID uint64) (*User, error) {
 	var (
 		tuplesRoles UserRoles
 		tuplesTypes UserTypes
@@ -494,7 +494,7 @@ func getUserCredentials(db *tarantool.Connection, uID int64) (*User, error) {
 }
 
 // Get users by specified group
-func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
+func GetUsersGroup(db *tarantool.Connection, uGroup uint64) (*Users, error) {
 	var (
 		tuplesRoles UserRoles
 		tuplesTypes UserTypes
@@ -527,7 +527,7 @@ func GetUsersGroup(db *tarantool.Connection, uGroup int64) (*Users, error) {
 }
 
 // Check if user exists
-func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (int64, int64, int64, error) {
+func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType uint64) (uint64, uint64, uint64, error) {
 	var (
 		tuplesUsers Users
 
@@ -546,6 +546,76 @@ func ExistsUser(db *tarantool.Connection, uSocialID string, uSocialType int) (in
 	tuplesUsers[0].AccessToken = "<restricted>"
 
 	return tuplesUsers[0].ID, tuplesUsers[0].Group, tuplesUsers[0].Role, nil
+}
+
+// Get all users by args
+func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
+	var (
+		query = "SELECT \"users\".*, \"users_roles\".\"role\" AS \"user_role_desc\", \"users_types\".\"type\" AS \"user_type_desc\" FROM \"users\" " +
+			"INNER JOIN \"users_roles\" INNER JOIN \"users_types\" ON " +
+			"\"users\".\"user_role\" = \"users_roles\".\"id\" AND \"users\".\"user_type\" = \"users_types\".\"id\" "
+		search = (*args).Search
+		where  = ""
+		limit  = ""
+
+		role = (*args).Role
+		page = (*args).Page
+
+		tuplesUsers Users
+	)
+
+	if search != "" || role != 0 {
+		where += "WHERE "
+
+		if search != "" {
+			where += "(\"users\".\"user_email\" LIKE '%" + search + "%' OR (\"users\".\"user_name_first\" || ' ' || \"users\".\"user_name_last\") LIKE '%" + search + "%')"
+
+			if role != 0 {
+				where += " AND "
+			}
+		}
+
+		if role != 0 {
+			where += "(\"users\".\"user_role\" = " + strconv.FormatUint(role, 10) + ")"
+		}
+	}
+
+	if page != 0 {
+		limit += " LIMIT " + strconv.FormatUint((page-1)*10, 10) + ", " + "10"
+	} else {
+		limit += " LIMIT 10"
+	}
+
+	query += where + " ORDER BY \"users\".\"user_role\" DESC" + limit
+
+	resp, err := db.Call("box.execute", AX{query})
+	if err != nil {
+		return nil, err
+	}
+
+	respParsed := resp.Data[0].([]interface{})[0].(map[interface{}]interface{})["rows"].([]interface{})
+
+	for _, v := range respParsed {
+		data := v.([]interface{})
+
+		tuplesUsers = append(tuplesUsers, User{
+			ID:             data[0].(uint64),
+			Group:          data[1].(uint64),
+			SocialID:       data[2].(string),
+			NameFirst:      data[6].(string),
+			NameLast:       data[7].(string),
+			AvatarPath:     data[4].(string),
+			Email:          data[5].(string),
+			AccessToken:    data[3].(string),
+			LastAccessTime: data[8].(string),
+			Role:           data[9].(uint64),
+			RoleDesc:       data[11].(string),
+			Type:           data[10].(uint64),
+			TypeDesc:       data[12].(string),
+		})
+	}
+
+	return &tuplesUsers, nil
 }
 
 /*
@@ -615,7 +685,7 @@ func GetUsers(db *tarantool.Connection, args *ArgsGetUsers) (*Users, error) {
 }
 */
 // User sign in
-func SignInUser(db *tarantool.Connection, u *User, uID int64) error {
+func SignInUser(db *tarantool.Connection, u *User, uID uint64) error {
 	_, err := db.Update("users", "primary_id", AX{uID}, AX{
 		AX{"=", "user_access_token", u.AccessToken},
 		AX{"=", "user_avatar_path", u.AvatarPath},
@@ -632,7 +702,7 @@ func SignInUser(db *tarantool.Connection, u *User, uID int64) error {
 }
 
 // User update access time
-func UpdateUserAccessTime(db *tarantool.Connection, uID int64) error {
+func UpdateUserAccessTime(db *tarantool.Connection, uID uint64) error {
 	_, err := db.Update("users", "primary_id", AX{uID}, AX{
 		AX{"=", "user_last_access", utils.TimeMSK_ToString()},
 	})
@@ -662,7 +732,7 @@ func userAuthParse(str string) (*UserAuth, error) {
 		return nil, nil
 	}
 
-	result.ID, err = strconv.ParseInt(strarr[0], 10, 64)
+	result.ID, err = strconv.ParseUint(strarr[0], 10, 64)
 	if err != nil {
 		return result, err
 	}
@@ -690,7 +760,7 @@ func IsAuthenticated(db *tarantool.Connection, uAuth string, uAgent string) (*Us
 		return nil, nil
 	}
 
-	uSessionHash := utils.HashSHA512(strconv.FormatInt(result.ID, 10) + result.SocialID + result.AccessToken + uAgent)
+	uSessionHash := utils.HashSHA512(strconv.FormatUint(result.ID, 10) + result.SocialID + result.AccessToken + uAgent)
 	if uSessionHash == uAuthParsed.Hash {
 		result.AccessToken = "<restricted>"
 
