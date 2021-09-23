@@ -13,9 +13,9 @@ import (
 
 // TODO: connection params & ping
 func ConnectTarantool() (*tarantool.Connection, error) {
-	conn, err := tarantool.Connect("127.0.0.1:3301", tarantool.Opts{
-		User: "operator",
-		Pass: os.Getenv("DB_PASSWORD"),
+	conn, err := tarantool.Connect(fmt.Sprintf("%s:%s", os.Getenv("DB_TARANTOOL_HOST"), os.Getenv("DB_TARANTOOL_PORT")), tarantool.Opts{
+		User: os.Getenv("DB_TARANTOOL_USER"),
+		Pass: os.Getenv("DB_TARANTOOL_PASSWORD"),
 	})
 
 	if err != nil {

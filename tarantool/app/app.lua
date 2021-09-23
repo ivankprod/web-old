@@ -4,9 +4,6 @@ local log = require('log')
 
 -- DB structure init
 local function init()
-	box.schema.user.create('operator', { password = '83467738438', if_not_exists = true })
-	box.schema.user.grant('operator', 'read,write,execute', 'universe', nil, { if_not_exists = true })
-
 	box.schema.sequence.create('users_id_seq', { min=1, start=1, if_not_exists = true })
 
 	local users_roles_space = box.schema.space.create('users_roles', { if_not_exists = true })
@@ -104,11 +101,11 @@ box.cfg{
 	checkpoint_interval = 3600,
 	checkpoint_count    = 10,
 
-	listen     = 3301,
+	listen     = tonumber(os.getenv("DB_TARANTOOL_PORT"), 10),
 	pid_file   = nil,
 	background = false,
 	log_level  = 5
 }
 
-box.once('init-v1.4.1', init)
-box.once('def-data-v1.4.1', default_data)
+box.once('init-v1.4.2', init)
+box.once('def-data-v1.4.2', default_data)

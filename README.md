@@ -26,5 +26,6 @@
 ```
 
 # TODOS:
+0. VK OAuth API error fix!!!
 1. user profile page
 2. user auth cabinet

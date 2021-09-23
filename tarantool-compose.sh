@@ -1,0 +1,1 @@
+docker-compose -f tarantool/docker-compose.yml --env-file .env up -d
