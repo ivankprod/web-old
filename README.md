@@ -26,5 +26,6 @@
 ```
 
 # TODOS:
+0. Replace SwiperJS with custom slider
 1. user profile page
 2. user auth cabinet
