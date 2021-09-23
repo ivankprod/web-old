@@ -64,8 +64,8 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App /*db *sqlx.DB,*/, dbt *tarantool.Connection, sitemap *string) {
-	// Authentication & db
+func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap *string) {
+	// User authentication
 	app.Use(func(c *fiber.Ctx) error {
 		if c.Cookies("session") != "" {
 			auth, err := models.IsAuthenticated(dbt, c.Cookies("session"), c.Get("user-agent"))
@@ -86,7 +86,7 @@ func Router(app *fiber.App /*db *sqlx.DB,*/, dbt *tarantool.Connection, sitemap 
 					SameSite: "Lax",
 				})
 
-				// Update access time
+				// Update user last access time
 				go func(dbt *tarantool.Connection, id uint64) {
 					models.UpdateUserAccessTime(dbt, id)
 				}(dbt, auth.ID)

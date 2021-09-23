@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/markbates/pkger"
 	"github.com/markbates/pkger/pkging"
@@ -34,7 +35,7 @@ var (
 type App struct {
 	*fiber.App
 
-	//DB  *sqlx.DB
+	DBM *sqlx.DB
 	DBT *tarantool.Connection
 }
 
@@ -77,6 +78,7 @@ func main() {
 	// Load .env configuration
 	err = godotenv.Load(".env")
 	if err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println("Error loading .env file")
 		log.Fatalln("-- Server starting failed")
 	}
@@ -93,6 +95,7 @@ func main() {
 	// Open sitemap.json file for reading
 	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
 	if err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("Error opening sitemap.json file: %v\n", err)
 		log.Fatalln("-- Server starting failed")
 	}
@@ -110,29 +113,33 @@ func main() {
 	}
 
 	// DB MySQL connect
-	/*dbm, err := db.Connect()
+	/*dbm, err := db.ConnectMySQL()
 	if dbm == nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
 		if err == nil {
 			log.Println("Failed connecting to MySQL database")
-			log.Fatal("-- Server starting failed\n\n")
 		} else {
 			log.Printf("Error connecting to MySQL database: %v\n", err)
-			log.Fatal("-- Server starting failed\n\n")
 		}
+
+		log.Fatal("-- Server starting failed\n\n")
 	} else {
-		app.DB = dbm
+		app.DBM = dbm
 	}*/
 
 	// DB Tarantool connect
 	dbt, err := db.ConnectTarantool()
 	if dbt == nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
 		if err == nil {
 			log.Println("Failed connecting to Tarantool database")
-			log.Fatal("-- Server starting failed\n\n")
 		} else {
 			log.Printf("Error connecting to Tarantool database: %v\n", err)
-			log.Fatal("-- Server starting failed\n\n")
 		}
+
+		log.Fatal("-- Server starting failed\n\n")
 	} else {
 		app.DBT = dbt
 	}
@@ -186,14 +193,15 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app.App /*, app.DB */, app.DBT, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App /*, app.DBM */, app.DBT, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+
 		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 			log.Println(err)
 			log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 		}
@@ -202,6 +210,7 @@ func main() {
 	// HTTPS certs
 	cer, err := tls.LoadX509KeyPair(os.Getenv("SERVER_SSL_CERT"), os.Getenv("SERVER_SSL_KEY"))
 	if err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
 		log.Fatal("-- Server starting failed\n\n")
 	}
@@ -211,7 +220,6 @@ func main() {
 	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 		log.Println(err)
 		log.Fatal("-- Server starting failed\n\n")
 	}
@@ -225,10 +233,11 @@ func main() {
 	}()
 
 	// LISTEN
+	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
+
 	if err = app.Listener(ln); err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 		log.Println(err)
 		log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
 	}
@@ -236,9 +245,9 @@ func main() {
 
 // App exit
 func (app *App) exit(msg ...string) {
-	/*if app.DB != nil {
-		app.DB.Close()
-	}*/
+	if app.DBM != nil {
+		app.DBM.Close()
+	}
 	if app.DBT != nil {
 		app.DBT.Close()
 	}
