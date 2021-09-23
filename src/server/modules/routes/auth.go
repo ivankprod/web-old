@@ -49,7 +49,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 	if (*ress1)["access_token"] != nil {
 		query := &utils.URLParams{}
 
-		(*query)["v"] = "5.52"
+		(*query)["v"] = "5.131"
 		(*query)["uids"] = userID
 		(*query)["access_token"] = (*ress1)["access_token"].(string)
 		(*query)["fields"] = "photo_400_orig"
