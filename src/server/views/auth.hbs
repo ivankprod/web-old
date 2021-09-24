@@ -18,7 +18,7 @@
 		</ul></div>
 	</div>
 	<div id="content" class="content animate-fadein-css">
-		<h1>{{#if data.user}}Личный кабинет пользователя{{else}}Войти на сайт{{/if}}</h1><br>
+		<h1>{{#if data.user}}Личный кабинет{{else}}Войти в аккаунт{{/if}}</h1>
 		{{#if data.user}}
 			{{> 'partials/components/auth_user_cabinet' user=data.user user_accounts=data.user_accounts links=data.links }}
 		{{else}}

@@ -44,6 +44,7 @@
 	},
 	"dependencies": {
 		"core-js": "^3.10.1",
+		"normalize.css": "^8.0.1",
 		"swiper": "^6.8.0"
 	}
 }

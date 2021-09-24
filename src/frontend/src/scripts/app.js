@@ -5,6 +5,7 @@
 */
 
 // import styles
+import 'normalize.css';
 import '../styles/bundle.css';
 
 // import app modules
