@@ -1,0 +1,27 @@
+{{> 'partials/header' }}
+	</header>
+<section id="content-holder" class="container">
+	<div id="breadcrumbs" class="breadcrumbs rounded-bottom">
+		<div><ul itemscope itemtype="http://schema.org/BreadcrumbList">
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<a itemscope itemtype="http://schema.org/WebPage" itemprop="item" id="{{urlBase}}" class="spa" href="/">
+					<span itemprop="name">Главная</span>
+				</a>
+				<meta itemprop="position" content="1">
+			</li>
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<span itemscope itemtype="http://schema.org/WebPage" itemprop="item" class="breadcrumbs-last">
+					<span itemprop="name">Карта сайта</span>
+				</span>
+				<meta itemprop="position" content="2">
+			</li>
+		</ul></div>
+	</div>
+	<div id="content" class="content animate-fadein-css">
+		<h1>Карта сайта</h1><br>
+		<div class="content-links">
+			{{{data.sitemap}}}
+		</div>
+	</div>
+</section>
+{{> 'partials/footer' }}

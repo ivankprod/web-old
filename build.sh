@@ -12,11 +12,11 @@ fi
 os="$2"
 arch="$3"
 
-cd src/frontend/
-./build.sh "$mode"
-
-cd ../server/
+cd src/server/
 ./build.sh "$mode" "$os" "$arch"
+
+cd ../frontend/
+./build.sh "$mode"
 
 cd ../../
 

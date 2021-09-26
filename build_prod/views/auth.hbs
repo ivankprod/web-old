@@ -1,0 +1,46 @@
+{{> 'partials/header' noindex=true }}
+	</header>
+<section id="content-holder" class="container">
+	<div id="breadcrumbs" class="breadcrumbs rounded-bottom">
+		<div><ul itemscope itemtype="http://schema.org/BreadcrumbList">
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<a itemscope itemtype="http://schema.org/WebPage" itemprop="item" id="{{urlBase}}" class="spa" href="/">
+					<span itemprop="name">Главная</span>
+				</a>
+				<meta itemprop="position" content="1">
+			</li>
+			<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<span itemscope itemtype="http://schema.org/WebPage" itemprop="item" class="breadcrumbs-last">
+					<span itemprop="name">{{#if data.user}}Личный кабинет{{else}}Авторизация{{/if}}</span>
+				</span>
+				<meta itemprop="position" content="2">
+			</li>
+		</ul></div>
+	</div>
+	<div id="content" class="content animate-fadein-css">
+		<h1>{{#if data.user}}Личный кабинет{{else}}Войти в аккаунт{{/if}}</h1>
+		{{#if data.user}}
+			{{> 'partials/components/auth_user_cabinet' user=data.user user_accounts=data.user_accounts links=data.links }}
+		{{else}}
+			<div class="auth-form rounded-all">
+				<div class="auth-form-image"><img src="/static/images/profile_180px.png" draggable="false"></div>
+				<div class="auth-form-buttons">
+					<div class="auth-form-caption">Авторизуйтесь с помощью<br>социальной сети</div>
+					<button class="rounded-all btn-auth" data-href="{{data.links.vk}}">
+						<img src="/static/images/auth-icons/auth-vk.png" draggable="false"><span>Войти с помощью ВКонтакте</span>
+					</button>
+					<button class="rounded-all btn-auth" data-href="{{data.links.fb}}">
+						<img src="/static/images/auth-icons/auth-fb.png" draggable="false"><span>Войти с помощью Facebook</span>
+					</button>
+					<button class="rounded-all btn-auth" data-href="{{data.links.ya}}">
+						<img src="/static/images/auth-icons/auth-ya.png" draggable="false"><span>Войти с помощью Яндекс</span>
+					</button>
+					<button class="rounded-all btn-auth" data-href="{{data.links.gl}}">
+						<img src="/static/images/auth-icons/auth-gl.png" draggable="false"><span>Войти с помощью Google</span>
+					</button>
+				</div>
+			</div>
+		{{/if}}
+	</div>
+</section>
+{{> 'partials/footer' }}

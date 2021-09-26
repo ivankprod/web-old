@@ -31,32 +31,6 @@ module.exports = {
 	optimization: isPROD ? { minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()] } : { minimize: false },
 	cache: false,
 	plugins: [
-		new SriPlugin({ hashFuncNames: ['sha256'] }),
-		new SitemapPlugin({
-			base: 'https://ivankprod.ru',
-			paths: sitemapPaths,
-			options: { filename: './sitemap.xml', skipgzip: true, lastmod: (new Date()).toDateString() }
-		}),
-		new HTMLWebpackPlugin({
-			chunks: ['app'],
-			template: path.resolve(__dirname, './src/views/partials/footer.hbs'),
-			filename: path.resolve(__dirname, '../server/views/partials/footer.hbs'),
-			publicPath: '/',
-			inject: false,
-			scriptLoading: 'defer',
-			minify: false
-		}),
-		new HTMLWebpackPlugin({
-			chunks: ['app'],
-			template: path.resolve(__dirname, './src/views/partials/header.hbs'),
-			filename: path.resolve(__dirname, '../server/views/partials/header.hbs'),
-			publicPath: '/',
-			inject: false,
-			scriptLoading: 'defer',
-			minify: false
-		}),
-		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
-		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false }),
 		new CopyPlugin({
 			patterns: [
 				{
@@ -74,19 +48,35 @@ module.exports = {
 				{
 					from: path.resolve(__dirname, '../server/certs/ivankprod.ru/'),
 					to:   './certs/ivankprod.ru localhost/'
-				},
-				// {
-				// 	from: path.resolve(__dirname, '../server/views'),
-				// 	to:   './views',
-				// 	globOptions: {
-				// 		ignore: [
-				// 			'**/footer.hbs',
-				// 			'**/header.hbs'
-				// 		]
-				// 	}
-				// }
+				}
 			]
 		}),
+		new SriPlugin({ hashFuncNames: ['sha256'] }),
+		new SitemapPlugin({
+			base: 'https://ivankprod.ru',
+			paths: sitemapPaths,
+			options: { filename: './sitemap.xml', skipgzip: true, lastmod: (new Date()).toDateString() }
+		}),
+		new HTMLWebpackPlugin({
+			chunks: ['app'],
+			template: path.resolve(__dirname, '../server/views/partials/footer.hbs'),
+			filename: './views/partials/footer.hbs',
+			publicPath: '/',
+			inject: false,
+			scriptLoading: 'defer',
+			minify: false
+		}),
+		new HTMLWebpackPlugin({
+			chunks: ['app'],
+			template: path.resolve(__dirname, '../server/views/partials/header.hbs'),
+			filename: './views/partials/header.hbs',
+			publicPath: '/',
+			inject: false,
+			scriptLoading: 'defer',
+			minify: false
+		}),
+		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
+		new MiniCssExtractPlugin({ filename: './static/css/[name].[contenthash].css', ignoreOrder: false }),
 		new DotEnv({ path: path.resolve(__dirname, '../../.env') })
 	],
 	module: {

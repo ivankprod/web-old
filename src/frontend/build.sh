@@ -15,6 +15,8 @@ fi
 
 echo "MODE: $mode"
 
+cp -r ../server/views/ ../../build_$mode/
+
 NODE_ENV="$env" npm run "$mode"
 
 echo "Frontend build done!"

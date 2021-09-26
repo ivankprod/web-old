@@ -1,0 +1,12 @@
+{{> 'partials/header' error=true noindex=true }}
+	</header>
+<section id="content-holder" class="container">
+	<div id="content" class="content animate-fadein-css">
+		<div class="error-box">
+			<div class="error-title">{{error.code}} {{error.status}}</div>
+			<div class="error-message">{{{error.msg}}}</div>
+			<button class="small rounded-all spa" data-href="/">На главную</button>
+		</div>
+	</div>
+</section>
+{{> 'partials/footer' }}

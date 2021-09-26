@@ -100,9 +100,10 @@ func main() {
 		log.Fatalln("-- Server starting failed")
 	}
 
-	// App & template engine
-	views := pkger.Dir("/views")
-	engine := handlebars.NewFileSystem(views, ".hbs")
+	// Templates engine
+	engine := handlebars.New("./views", ".hbs")
+
+	// App
 	app := App{
 		App: fiber.New(fiber.Config{
 			Prefork:       false,
