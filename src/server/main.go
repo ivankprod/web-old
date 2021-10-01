@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -124,7 +125,7 @@ func main() {
 			log.Printf("Error connecting to MySQL database: %v\n", err)
 		}
 
-		log.Fatal("-- Server starting failed\n\n")
+		app.exit("-- Server starting failed\n")
 	} else {
 		app.DBM = dbm
 	}*/
@@ -140,7 +141,7 @@ func main() {
 			log.Printf("Error connecting to Tarantool database: %v\n", err)
 		}
 
-		log.Fatal("-- Server starting failed\n\n")
+		app.exit("-- Server starting failed\n")
 	} else {
 		app.DBT = dbt
 	}
@@ -204,7 +205,7 @@ func main() {
 		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 			log.Println(err)
-			log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+			app.exit(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
 		}
 	}()
 
@@ -213,7 +214,7 @@ func main() {
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		log.Fatal("-- Server starting failed\n\n")
+		app.exit("-- Server starting failed\n")
 	}
 
 	// HTTPS listener
@@ -222,7 +223,7 @@ func main() {
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		log.Fatal("-- Server starting failed\n\n")
+		app.exit("-- Server starting failed\n")
 	}
 
 	// Graceful shutdown
@@ -240,7 +241,7 @@ func main() {
 	if err = app.Listener(ln); err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		log.Fatalf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS"))
+		app.exit(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
 	}
 }
 
@@ -259,6 +260,6 @@ func (app *App) exit(msg ...string) {
 		log.Println(msg)
 	}
 
-	log.Print("-- Server shutdowned\n\n")
+	log.Print("-- Server terminated\n\n")
 	_ = app.Shutdown()
 }
