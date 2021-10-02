@@ -9,7 +9,7 @@ import 'normalize.css';
 import '../styles/bundle.css';
 
 //  import app modules
-import utils, { onScrollPB } from './utils.js';
+import utils from './utils.js';
 import spa from './spa.js';
 
 //  import components
@@ -178,7 +178,7 @@ window.onresize = function() {
 
 //  onScroll
 window.onscroll = function() {
-	onScrollPB();
+	utils.onScrollPB();
 };
 
 //  onLoad

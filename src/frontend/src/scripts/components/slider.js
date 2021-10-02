@@ -4,7 +4,7 @@
     Author : IvanK Production
 */
 
-import { animate, makeLinear, drawOpacity, sleep } from "../utils.js";
+import { sleep } from "../utils.js";
 
 export default class Slider {
 	constructor(sliderContainerID, sliderConfig) {
