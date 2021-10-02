@@ -157,5 +157,5 @@ export function ajaxErr(status, message, subject = '&nbsp;') {
 
 //  Exports
 export default {
-	newAjax, ajaxDone, ajaxErr
+	ProgressBar, newAjax, ajaxDone, ajaxErr
 }

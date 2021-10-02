@@ -5,8 +5,7 @@
 */
 
 import { newAjax, ajaxErr, ProgressBar } from './ajax.js';
-import { sleep, animate, makeLinear, completeProgress, fadeOut,
-         queryParse, queryStringify, getMeta, setMeta, rewriteMetas } from './utils.js';
+import { sleep, fadeOut, queryParse, queryStringify, getMeta, setMeta, rewriteMetas } from './utils.js';
 
 //  Hostname var
 const strServerHost = String('https://' + (process.env.SERVER_HOST != '' ? process.env.SERVER_HOST : 'ivankprod.ru'));
@@ -40,8 +39,8 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 		res = res.response;
 	}
 
-	let swiperWrapper = document.querySelector('.swiper-section');
-	if (window.swiper && swiperWrapper) { window.swiper.destroy(); swiperWrapper.style.display = 'none'; }
+	let sliderWrapper = document.querySelector('.slider-section');
+	if (window.slider && sliderWrapper) { window.slider.destroy(); }
 	
 	const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
 	if (elemActiveNavItem) elemActiveNavItem.classList.remove('nav-item-active');

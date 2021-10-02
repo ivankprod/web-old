@@ -4,49 +4,35 @@
     Author : IvanK Production
 */
 
-// import styles
+//  import styles
 import 'normalize.css';
 import '../styles/bundle.css';
 
-// import app modules
+//  import app modules
 import utils, { onScrollPB } from './utils.js';
 import spa from './spa.js';
 
-// Swiper: import
-import { Swiper, Autoplay, Pagination, EffectFade } from 'swiper/core';
-import 'swiper/swiper-bundle.css';
+//  import components
+import Slider from './components/slider.js'
 
-// Swiper: modules loading
-Swiper.use([Autoplay, Pagination, EffectFade]);
+//  Slider: config
+const sliderConfig = {
+	speed: 600,
 
-// Swiper: config
-const swiperConfig = {
-	direction:     'horizontal',
-	effect:        'fade',
-	speed:         1000,
-	spaceBetween:  30,
-	slidesPerView: 'auto',
-	allowTouchMove: false,
-
-	autoplay: {
-		delay: 6000,
-		disableOnInteraction: false
-	},
+	autoplay: { delay: 6000 },
 
 	pagination: {
-		el: '.swiper-pagination',
+		element: '.slider-pagination',
 		clickable: true
-	},
-
-	fadeEffect: { crossFade: true }
+	}
 };
 
-// Swiper: init
-window.swiper = new Swiper('.swiper-container', swiperConfig);
+//  Slider: init
+window.slider = new Slider('slider-container', sliderConfig);
 
-// Swiper: onSwiperTransitionStart
-const onSwiperTransitionStart = function(swiper) {
-	const slide = swiper.slides[swiper.activeIndex].children[0];
+//  Slider: onSliderTransitionStart
+const onSliderTransitionStart = function(slider) {
+	const slide = slider.slides[slider.activeIndex].children[0];
 
 	slide.style.opacity = 0;
 
@@ -56,9 +42,9 @@ const onSwiperTransitionStart = function(swiper) {
 	slide.children[2].style.animation = 'none';
 }
 
-// Swiper: onSwiperTransitionEnd
-const onSwiperTransitionEnd = function(swiper) {
-	const slide = swiper.slides[swiper.activeIndex].children[0];
+//  Slider: onSliderTransitionEnd
+const onSliderTransitionEnd = function(slider) {
+	const slide = slider.slides[slider.activeIndex].children[0];
 
 	utils.animate({
 		duration: 800,
@@ -75,9 +61,9 @@ const onSwiperTransitionEnd = function(swiper) {
 	slide.children[0].style.animation = 'slideBlockTitle 1600ms cubic-bezier(0.190, 1.000, 0.220, 1.000), fadeIn 600ms linear';
 }
 
-// Swiper: attach events
-window.swiper.on('transitionStart', onSwiperTransitionStart);
-window.swiper.on('transitionEnd',   onSwiperTransitionEnd);
+//  Slider: attach events
+window.slider.on('transitionStart', onSliderTransitionStart);
+window.slider.on('transitionEnd',   onSliderTransitionEnd);
 
 //  Elements
 let elemSubnavWrappers = document.querySelectorAll('.subnav-container');
@@ -212,12 +198,12 @@ window.onPageLoaded = dataExtras => {
 	fillButtonsOnClick();
 	fillLinksOnClick();
 
-	// Swiper reinit
-	if (document.querySelector('.swiper-section')) {
-		window.swiper = new Swiper('.swiper-container', swiperConfig);
+	// Slider reinit
+	if (document.querySelector('.slider-section')) {
+		window.slider = new Slider('slider-container', sliderConfig);
 
-		window.swiper.on('transitionStart', onSwiperTransitionStart);
-		window.swiper.on('transitionEnd',   onSwiperTransitionEnd);
+		window.slider.on('transitionStart', onSliderTransitionStart);
+		window.slider.on('transitionEnd',   onSliderTransitionEnd);
 	}
 }
 

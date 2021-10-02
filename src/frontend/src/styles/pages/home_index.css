@@ -4,20 +4,57 @@
 	Author     : IvanK Production
 */
 
-.swiper-section { align-self: center; padding: 32px; }
-.swiper-slide   { padding: 16px !important; background: #fff; }
-.swiper-pagination { position: relative !important; top: 12px; }
-.swiper-pagination-bullet        { margin: 0 4px !important; outline: none !important; }
-.swiper-pagination-bullet-active { background: var(--color-theme-green) !important; }
-.swiper-container .slide-block-desc    { margin: 8px 0 22px 0;   font-size: 1.2rem; }
-.swiper-container .slide-block-desc-wm { margin: 8px 0 22px 9px; font-size: 1.2rem; }
+.slider-section { align-self: center; padding: 32px; }
+
+.slider-slide {
+	position: absolute;
+
+	width: 100%;
+
+	padding: 16px;
+	
+	background: #fff;
+	
+	opacity: 0;
+
+	transition: opacity 0.6s linear;
+
+	z-index: 10;
+}
+.slider-slide .slide-block { opacity: 0; }
+.slider-slide .slide-block-title { opacity: 0; }
+.slider-slide .slide-block-desc { margin: 8px 0 22px 0; font-size: 1.2rem; }
+.slider-slide .slide-block-desc-wm { margin: 8px 0 22px 9px; font-size: 1.2rem; }
+.slider-slide button { opacity: 0; }
+
+.slider-pagination {
+	display:           flex;
+	flex-direction:     row;
+	align-items:     center;
+	justify-content: center;
+
+	padding: 12px;
+}
+.slider-pagination-bullet {
+	height: 10px;
+	width:  10px;
+
+	margin: 4px;
+
+	background: #d3d3d3;
+
+	border-radius: 50%;
+
+	cursor: pointer;
+}
+.slider-pagination-bullet-active { background: var(--color-theme-green); }
 
 @media (min-width: 768px)  {
-	.swiper-container .slide-block-desc { text-align: justify; }
+	.slider-container .slide-block-desc { text-align: justify; }
 }
 @media (min-width: 992px)  {
-	.swiper-container .slide-block-desc { text-align: left; }
+	.slider-container .slide-block-desc { text-align: left; }
 }
 @media (min-width: 1200px) {
-	.swiper-container .slide-block-desc { text-align: left; }
+	.slider-container .slide-block-desc { text-align: left; }
 }
