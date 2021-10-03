@@ -4,7 +4,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const SitemapPlugin = require('sitemap-webpack-plugin').default;
 const SriPlugin = require('webpack-subresource-integrity');
@@ -19,17 +19,27 @@ const sitemapPaths = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../serv
 
 module.exports = {
 	context: path.resolve(__dirname, './src'),
+
 	entry: {
 		app:   './scripts/app.js',
 		admin: './scripts/admin.js'
 	},
+
 	output: {
 		path: path.resolve(__dirname, '../../build_' + (isDEV ? 'dev' : 'prod')),
 		filename: 'static/js/[name].[contenthash].js',
 		crossOriginLoading: 'anonymous'
 	},
-	optimization: isPROD ? { minimizer: [new OptimizeCssAssetsPlugin(), new TerserPlugin()] } : { minimize: false },
+
+	optimization: isPROD ? {
+		minimize:  true,
+		minimizer: [new CssMinimizerPlugin(), new TerserPlugin()]
+	} : {
+		minimize: false
+	},
+
 	cache: false,
+
 	plugins: [
 		new CopyPlugin({
 			patterns: [
@@ -75,6 +85,7 @@ module.exports = {
 		new MiniCssExtractPlugin({ filename: './static/css/[name].[contenthash].css', ignoreOrder: false }),
 		new DotEnv({ path: path.resolve(__dirname, '../../.env') })
 	],
+
 	module: {
 		rules: [
 			{
