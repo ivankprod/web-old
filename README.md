@@ -16,7 +16,16 @@
 ./build.sh prod
 ```
 
-3. run
+3. generate sitemap.xml for (dev|prod) build
+```shell
+# development
+./sitemap.sh dev
+
+# production
+./sitemap.sh prod
+```
+
+4. run
 ```shell
 # development build
 ./run.sh dev
