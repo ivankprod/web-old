@@ -36,7 +36,7 @@
 		"postcss-import": "^14.0.2",
 		"postcss-loader": "^5.3.0",
 		"postcss-preset-env": "^6.7.0",
-		"sitemap-webpack-plugin": "^1.1.1",
+		"sitemap-generator-custom-domain": "0.0.1",
 		"terser-webpack-plugin": "^5.2.4",
 		"webpack": "^5.56.0",
 		"webpack-cli": "^4.8.0",

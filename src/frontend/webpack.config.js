@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -6,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
-const SitemapPlugin = require('sitemap-webpack-plugin').default;
 const SriPlugin = require('webpack-subresource-integrity');
 const DotEnv = require('dotenv-webpack');
 const babelConfig = require('./babel.config');
@@ -14,8 +12,6 @@ const postcssConfig = require('./postcss.config');
 
 const MODE  = process.argv[process.argv.indexOf('--mode') + 1];
 const isDEV = MODE === 'development', isPROD = !isDEV;
-
-const sitemapPaths = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../server/misc/sitemap.json')));
 
 module.exports = {
 	context: path.resolve(__dirname, './src'),
@@ -58,11 +54,6 @@ module.exports = {
 			]
 		}),
 		new SriPlugin({ hashFuncNames: ['sha256'] }),
-		new SitemapPlugin({
-			base: 'https://ivankprod.ru',
-			paths: sitemapPaths,
-			options: { filename: './sitemap.xml', skipgzip: true, lastmod: (new Date()).toDateString() }
-		}),
 		new HTMLWebpackPlugin({
 			chunks: ['app'],
 			template: path.resolve(__dirname, '../server/views/partials/footer.hbs'),
