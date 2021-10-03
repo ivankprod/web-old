@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
-const SriPlugin = require('webpack-subresource-integrity');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const DotEnv = require('dotenv-webpack');
 const babelConfig = require('./babel.config');
 const postcssConfig = require('./postcss.config');
@@ -28,9 +28,11 @@ module.exports = {
 	},
 
 	optimization: isPROD ? {
-		minimize:  true,
+		realContentHash: true,
+		minimize: true,
 		minimizer: [new CssMinimizerPlugin(), new TerserPlugin()]
 	} : {
+		realContentHash: true,
 		minimize: false
 	},
 
@@ -53,7 +55,7 @@ module.exports = {
 				}
 			]
 		}),
-		new SriPlugin({ hashFuncNames: ['sha256'] }),
+		new SubresourceIntegrityPlugin({ enabled: true, hashFuncNames: ["sha256"] }),
 		new HTMLWebpackPlugin({
 			chunks: ['app'],
 			template: path.resolve(__dirname, '../server/views/partials/footer.hbs'),
@@ -73,7 +75,7 @@ module.exports = {
 			minify: false
 		}),
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
-		new MiniCssExtractPlugin({ filename: './static/css/[name].[contenthash].css', ignoreOrder: false }),
+		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false }),
 		new DotEnv({ path: path.resolve(__dirname, '../../.env') })
 	],
 
