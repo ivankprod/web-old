@@ -391,7 +391,7 @@ func AddUser(db *tarantool.Connection, user *User) (uint64, error) {
 
 	err := db.InsertTyped("users", AX{
 		nil, user.Group, user.SocialID, user.AccessToken,
-		user.AvatarPath, user.Email, user.NameFirst, user.NameLast, utils.TimeMSK_ToString(),
+		user.AvatarPath, user.Email, user.NameFirst, user.NameLast, utils.TimeMSK_ToLocaleString(),
 		user.Role, user.Type}, &tuplesUsers)
 	if err != nil {
 		return 0, err
@@ -638,7 +638,7 @@ func SignInUser(db *tarantool.Connection, u *User, uID uint64) error {
 		AX{"=", "user_email", u.Email},
 		AX{"=", "user_name_first", u.NameFirst},
 		AX{"=", "user_name_last", u.NameLast},
-		AX{"=", "user_last_access", utils.TimeMSK_ToString()},
+		AX{"=", "user_last_access", utils.TimeMSK_ToLocaleString()},
 	})
 	if err != nil {
 		return err
@@ -650,7 +650,7 @@ func SignInUser(db *tarantool.Connection, u *User, uID uint64) error {
 // User update access time
 func UpdateUserAccessTime(db *tarantool.Connection, uID uint64) error {
 	_, err := db.Update("users", "primary_id", AX{uID}, AX{
-		AX{"=", "user_last_access", utils.TimeMSK_ToString()},
+		AX{"=", "user_last_access", utils.TimeMSK_ToLocaleString()},
 	})
 	if err != nil {
 		return err
@@ -709,6 +709,7 @@ func IsAuthenticated(db *tarantool.Connection, uAuth string, uAgent string) (*Us
 	uSessionHash := utils.HashSHA512(strconv.FormatUint(result.ID, 10) + result.SocialID + result.AccessToken + uAgent)
 	if uSessionHash == uAuthParsed.Hash {
 		result.AccessToken = "<restricted>"
+		result.LastAccessTime = utils.TimeMSK_ToLocaleString()
 
 		return result, nil
 	}
