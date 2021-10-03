@@ -125,7 +125,7 @@ func main() {
 			log.Printf("Error connecting to MySQL database: %v\n", err)
 		}
 
-		app.exit("-- Server starting failed\n")
+		app.fail("-- Server starting failed\n")
 	} else {
 		app.DBM = dbm
 	}*/
@@ -141,7 +141,7 @@ func main() {
 			log.Printf("Error connecting to Tarantool database: %v\n", err)
 		}
 
-		app.exit("-- Server starting failed\n")
+		app.fail("-- Server starting failed\n")
 	} else {
 		app.DBT = dbt
 	}
@@ -205,7 +205,7 @@ func main() {
 		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 			log.Println(err)
-			app.exit(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
+			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
 		}
 	}()
 
@@ -214,7 +214,7 @@ func main() {
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		app.exit("-- Server starting failed\n")
+		app.fail("-- Server starting failed\n")
 	}
 
 	// HTTPS listener
@@ -223,7 +223,7 @@ func main() {
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		app.exit("-- Server starting failed\n")
+		app.fail("-- Server starting failed\n")
 	}
 
 	// Graceful shutdown
@@ -241,7 +241,25 @@ func main() {
 	if err = app.Listener(ln); err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		app.exit(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
+		app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
+	}
+}
+
+// App fail
+func (app *App) fail(msg ...string) {
+	if app.DBM != nil {
+		app.DBM.Close()
+	}
+	if app.DBT != nil {
+		app.DBT.Close()
+	}
+
+	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+
+	if len(msg) > 0 {
+		log.Fatalln(msg[0])
+	} else {
+		os.Exit(1)
 	}
 }
 
@@ -257,7 +275,7 @@ func (app *App) exit(msg ...string) {
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 
 	if len(msg) > 0 {
-		log.Println(msg)
+		log.Println(msg[0])
 	}
 
 	log.Print("-- Server terminated\n\n")

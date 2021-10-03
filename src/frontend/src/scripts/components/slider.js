@@ -49,24 +49,28 @@ export default class Slider {
 	get activeIndex() { return this.activeIdx - 1; }
 	get slides()      { return this.slidesList;    }
 
-	on(eventName, callback) { this.events[eventName] = callback; }
+	on(eventName, callback) { if (this.events) this.events[eventName] = callback; }
 
-	fireNext() { this.fire(this.activeIdx - 1, this.activeIdx += 1); }
-	firePrev() { this.fire(this.activeIdx - 1, this.activeIdx -= 1); }
+	fireNext() { if (this.activeIdx != undefined) this.fire(this.activeIdx - 1, this.activeIdx += 1); }
+	firePrev() { if (this.activeIdx != undefined) this.fire(this.activeIdx - 1, this.activeIdx -= 1); }
 	fireCurr(index) {
+		if (!this.elemContainer) return false;
+
 		if (this._timer) { window.clearInterval(this._timer); this._timer = null; }
 
 		this.fire(this.activeIdx - 1, this.activeIdx = index + 1);
 	}
 
 	fire(prev, index) {
+		if (!this.elemContainer) return false;
+
 		const showSlide = () => {
 			if (index > this.slidesList.length) this.activeIdx = 1;
 			if (index < 1) this.activeIdx = this.slidesList.length;
 	
 			if (this.events['transitionStart']) this.events['transitionStart'](this);
 
-			this.paginationBullets[this.activeIdx - 1].classList.add('slider-pagination-bullet-active');
+			if (this.paginationBullets) this.paginationBullets[this.activeIdx - 1].classList.add('slider-pagination-bullet-active');
 	
 			this.slidesList[this.activeIdx - 1].style.zIndex  = '11';
 			this.slidesList[this.activeIdx - 1].style.opacity = '1';
@@ -91,9 +95,14 @@ export default class Slider {
 		} else { showSlide(); }
 	}
 
-	startAutoplay() { this._timer = window.setInterval(() => { this.fireNext(); }, this.autoplayDelay + this.speed * 2); }
+	startAutoplay() {
+		if (this.autoplayEnabled) { this._timer = window.setInterval(() => { this.fireNext(); }, this.autoplayDelay + this.speed * 2); }
+		else return false;
+	}
 
 	initPagination() {
+		if (!this.paginationElement) return false;
+
 		const wrapper = this.paginationElement;
 
 		this.slidesList.forEach((_, i) => {

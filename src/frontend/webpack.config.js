@@ -44,10 +44,6 @@ module.exports = {
 				{
 					from: path.resolve(__dirname, './src/fonts'),
 					to:   './static/fonts'
-				},
-				{
-					from: path.resolve(__dirname, '../server/certs/ivankprod.ru/'),
-					to:   './certs/ivankprod.ru localhost/'
 				}
 			]
 		}),
