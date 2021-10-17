@@ -88,7 +88,7 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 
 				// Update user last access time
 				go func(dbt *tarantool.Connection, id uint64) {
-					models.UpdateUserAccessTime(dbt, id)
+					_ = models.UpdateUserAccessTime(dbt, id)
 				}(dbt, auth.ID)
 			}
 		}
