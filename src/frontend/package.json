@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "npx webpack --mode development --progress",
 		"prod": "npx webpack --mode production --progress",
-		"lint": "npx eslint src/scripts/** --debug"
+		"lint": "npx eslint src/scripts/*/** --debug"
 	},
 	"author": "IvanK Production",
 	"license": "ISC",
