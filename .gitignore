@@ -36,8 +36,7 @@ vendor
 
 /tmp
 
-/build_dev/server*
-/build_prod/server*
+/build_*
 
 /build_dev/certs/ivankprod.ru
 /build_dev/certs/ivankprod.ru/*
