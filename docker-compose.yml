@@ -12,12 +12,10 @@ services:
   tarantool:
     container_name: ikpru_tarantool
     image: tarantool/tarantool:2.8
-    env_file:
-      - ./prod.env
     environment:
       TARANTOOL_PORT: ${DB_TARANTOOL_PORT:-3301}
-      TARANTOOL_USER_NAME: ${DB_TARANTOOL_USER:-operator}
-      TARANTOOL_USER_PASSWORD: ${DB_TARANTOOL_PASSWORD}
+      TARANTOOL_USER_NAME: ${DB_TARANTOOL_USER:-nothing}
+      TARANTOOL_USER_PASSWORD: ${DB_TARANTOOL_PASSWORD:-nothing}
     command: tarantool /usr/local/share/tarantool/app.lua
     ports:
       - "${DB_TARANTOOL_PORT:-3301}:${DB_TARANTOOL_PORT:-3301}"
@@ -30,7 +28,7 @@ services:
     build: .
     restart: on-failure
     env_file:
-      - ./prod.env
+      - prod.env
     command: bash -c "cd ./home/app && ./server"
     ports:
       - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
