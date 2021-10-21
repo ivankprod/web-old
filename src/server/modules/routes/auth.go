@@ -24,15 +24,17 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 	(*query)["code"] = c.Query("code")
 
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
-	code, res, errs := (*req).Get("https://oauth.vk.com/access_token" + (*query).ToString(true)).Bytes()
 
-	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+"код ошибки: "+strconv.Itoa(code))
-	}
-	for _, v := range errs {
-		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
+	code, res, errs := req.Get("https://oauth.vk.com/access_token" + query.ToString(true)).Bytes()
+
+	if (code != 200 && code != 400) || len(errs) > 0 {
+		for _, v := range errs {
+			if v != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
+			}
 		}
+
+		return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 
 	ress1 := new(map[string]interface{})
@@ -54,11 +56,16 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 		(*query)["access_token"] = (*ress1)["access_token"].(string)
 		(*query)["fields"] = "photo_400_orig"
 
-		_, res, errs := (*req).Get("https://api.vk.com/method/users.get" + (*query).ToString(true)).Bytes()
-		for _, v := range errs {
-			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
+		code, res, errs := (*req).Get("https://api.vk.com/method/users.get" + (*query).ToString(true)).Bytes()
+
+		if (code != 200 && code != 400) || len(errs) > 0 {
+			for _, v := range errs {
+				if v != nil {
+					return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+v.Error())
+				}
 			}
+
+			return fiber.NewError(fiber.StatusInternalServerError, "ВКонтакте OAuth - "+"код ошибки: "+strconv.Itoa(code))
 		}
 
 		ress := new(map[string]interface{})
@@ -132,13 +139,14 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
 	code, res, errs := (*req).Get("https://graph.facebook.com/v11.0/oauth/access_token" + (*query).ToString(true)).Bytes()
 
-	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+"код ошибки: "+strconv.Itoa(code))
-	}
-	for _, v := range errs {
-		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
+	if (code != 200 && code != 400) || len(errs) > 0 {
+		for _, v := range errs {
+			if v != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
+			}
 		}
+
+		return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 
 	ress1 := new(map[string]interface{})
@@ -156,11 +164,16 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 		(*query)["access_token"] = (*ress1)["access_token"].(string)
 		(*query)["fields"] = "id,email,first_name,last_name,picture.width(400)"
 
-		_, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).Bytes()
-		for _, v := range errs {
-			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
+		code, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).Bytes()
+
+		if (code != 200 && code != 400) || len(errs) > 0 {
+			for _, v := range errs {
+				if v != nil {
+					return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+v.Error())
+				}
 			}
+
+			return fiber.NewError(fiber.StatusInternalServerError, "Facebook OAuth - "+"код ошибки: "+strconv.Itoa(code))
 		}
 
 		ress := new(map[string]interface{})
@@ -243,13 +256,14 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 
 	code, res, errs := a.Bytes()
 
-	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+"код ошибки: "+strconv.Itoa(code))
-	}
-	for _, v := range errs {
-		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
+	if (code != 200 && code != 400) || len(errs) > 0 {
+		for _, v := range errs {
+			if v != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
+			}
 		}
+
+		return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 
 	ress1 := new(map[string]interface{})
@@ -274,12 +288,16 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+err.Error())
 		}
 
-		_, res, errs := a.Bytes()
+		code, res, errs := a.Bytes()
 
-		for _, v := range errs {
-			if v != nil {
-				return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
+		if (code != 200 && code != 400) || len(errs) > 0 {
+			for _, v := range errs {
+				if v != nil {
+					return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+v.Error())
+				}
 			}
+
+			return fiber.NewError(fiber.StatusInternalServerError, "Яндекс OAuth - "+"код ошибки: "+strconv.Itoa(code))
 		}
 
 		ress := new(map[string]interface{})
@@ -351,13 +369,14 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
 	code, res, errs := (*req).Post("https://oauth2.googleapis.com/token" + (*query).ToString(true)).Bytes()
 
-	if code != 200 && code != 400 {
-		return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
-	}
-	for _, v := range errs {
-		if v != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+v.Error())
+	if (code != 200 && code != 400) || len(errs) > 0 {
+		for _, v := range errs {
+			if v != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+v.Error())
+			}
 		}
+
+		return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
 	}
 
 	ress1 := new(map[string]interface{})
@@ -376,13 +395,14 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 
 		code, res, errs := a.Bytes()
 
-		if code != 200 && code != 400 {
-			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
-		}
-		for _, v := range errs {
-			if v != nil {
-				return v
+		if (code != 200 && code != 400) || len(errs) > 0 {
+			for _, v := range errs {
+				if v != nil {
+					return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+v.Error())
+				}
 			}
+
+			return fiber.NewError(fiber.StatusInternalServerError, "Google OAuth - "+"код ошибки: "+strconv.Itoa(code))
 		}
 
 		ress := new(map[string]interface{})

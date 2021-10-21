@@ -215,12 +215,12 @@ func IsEmptyStruct(object interface{}) bool {
 
 // Time functions: to time
 func TimeMSK_ToTime() time.Time {
-	loc, err := time.LoadLocation("Europe/Moscow")
+	loc, err := time.LoadLocation("UTC")
 	if err != nil {
 		panic(err)
 	}
 
-	return time.Now().In(loc)
+	return time.Now().In(loc).Add(time.Hour * time.Duration(3))
 }
 
 // Time functions: to string

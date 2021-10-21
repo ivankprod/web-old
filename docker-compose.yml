@@ -1,11 +1,19 @@
 version: '3.8'
 
 services:
+  certbot:
+    container_name: ikpru_certbot
+    image: certbot/certbot
+    restart: unless-stopped
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot:/etc/letsencrypt
+
   tarantool:
     container_name: ikpru_tarantool
     image: tarantool/tarantool:2.8
     env_file:
-      - ./.env
+      - ./prod.env
     environment:
       TARANTOOL_PORT: ${DB_TARANTOOL_PORT:-3301}
       TARANTOOL_USER_NAME: ${DB_TARANTOOL_USER:-operator}
@@ -16,3 +24,22 @@ services:
     volumes:
       - ./tarantool/app:/usr/local/share/tarantool
       - ./tarantool/data:/var/lib/tarantool
+
+  app:
+    container_name: ikpru_app
+    build: .
+    restart: on-failure
+    env_file:
+      - ./prod.env
+    command: bash -c "cd ./home/app && ./server"
+    ports:
+      - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
+      - "${SERVER_PORT_HTTPS:-443}:${SERVER_PORT_HTTPS:-443}"
+    volumes:
+      - ./build_prod:/home/app
+      - ./data/certbot:/etc/letsencrypt
+    links:
+      - tarantool:${DB_TARANTOOL_HOST:-tarantool}
+    depends_on:
+      - certbot
+      - tarantool

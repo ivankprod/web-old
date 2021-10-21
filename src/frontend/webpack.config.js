@@ -76,7 +76,7 @@ module.exports = {
 		}),
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
 		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false }),
-		new DotEnv({ path: path.resolve(__dirname, '../../.env') })
+		new DotEnv({ path: path.resolve(__dirname, '../../' + (isDEV ? 'dev' : 'prod') + '.env') })
 	],
 
 	module: {

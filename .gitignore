@@ -23,6 +23,7 @@ vendor
 /Godeps/
 
 .env
+*.env
 
 *.log
 *.pem
@@ -34,11 +35,6 @@ vendor
 /tarantool/data
 /tarantool/data/*
 
-/tmp
+/data
 
 /build_*
-
-/build_dev/certs/ivankprod.ru
-/build_dev/certs/ivankprod.ru/*
-/build_prod/certs/ivankprod.ru
-/build_prod/certs/ivankprod.ru/*

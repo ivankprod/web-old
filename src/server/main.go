@@ -151,7 +151,7 @@ func main() {
 
 	// Logger
 	app.Use(logger.New(logger.Config{
-		Format:     "${method} | IP: ${ip} | TIME: ${time} | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
+		Format:     "${method} | IP: ${ip} | TIME: ${time} UTC | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
 		TimeFormat: "02.01.2006 15:04:05",
 		TimeZone:   "Europe/Moscow",
 		Output:     f,
@@ -202,7 +202,7 @@ func main() {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 
-		if err := app.Listen(os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
+		if err := app.Listen( /*os.Getenv("SERVER_HOST") +*/ ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 			log.Println(err)
 			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
@@ -219,7 +219,7 @@ func main() {
 
 	// HTTPS listener
 	config := &tls.Config{Certificates: []tls.Certificate{cer}}
-	ln, err := tls.Listen("tcp", os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT_HTTPS"), config)
+	ln, err := tls.Listen("tcp" /*os.Getenv("SERVER_HOST")+*/, ":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
