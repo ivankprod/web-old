@@ -9,6 +9,7 @@ cd ../server/
 go get
 
 cd ../../
-cp .env.local .env
+cp .env.local dev.env
+cp .env.local prod.env
 
 echo "Installing webapp done!"

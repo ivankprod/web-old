@@ -26,15 +26,16 @@ services:
   app:
     container_name: ikpru_app
     build: .
+    image: ivankprodru_app
     restart: on-failure
     env_file:
-      - prod.env
+      - ${STAGE_MODE:-prod}.env
     command: bash -c "cd ./home/app && ./server"
     ports:
       - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
       - "${SERVER_PORT_HTTPS:-443}:${SERVER_PORT_HTTPS:-443}"
     volumes:
-      - ./build_prod:/home/app
+      - ./build_${STAGE_MODE:-prod}:/home/app
       - ./data/certbot:/etc/letsencrypt
     links:
       - tarantool:${DB_TARANTOOL_HOST:-tarantool}
