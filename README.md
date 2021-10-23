@@ -6,6 +6,7 @@ IVANKPROD.RU website
 1. Setup
     1. Install Git, Docker, golang and NodeJS
     2. Clone this repo and cd into it
+
 2. Install
 ```shell
 ./install.sh
