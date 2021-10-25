@@ -233,11 +233,7 @@ func IsEmptyStruct(object interface{}) bool {
 
 	empty := reflect.New(reflect.TypeOf(object)).Elem().Interface()
 
-	if reflect.DeepEqual(object, empty) {
-		return true
-	}
-
-	return false
+	return reflect.DeepEqual(object, empty)
 }
 
 // Time functions: to time
