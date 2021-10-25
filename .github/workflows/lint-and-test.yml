@@ -21,3 +21,11 @@ jobs:
 
       - name: go-test
         run: cd src/server/ && sudo go test -coverprofile=coverage.out -race -v ./...
+
+      - name: coverage-codecov
+        uses: codecov/codecov-action@v2
+          with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: ./coverage.out
+          fail_ci_if_error: true
+          verbose: true
