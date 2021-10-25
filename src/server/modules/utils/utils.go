@@ -241,33 +241,39 @@ func IsEmptyStruct(object interface{}) bool {
 }
 
 // Time functions: to time
-func TimeMSK_ToTime() time.Time {
+func TimeMSK_ToTime(mock ...time.Time) time.Time {
+	now := time.Now()
+
 	loc, err := time.LoadLocation("UTC")
 	if err != nil {
 		panic(err)
 	}
 
-	return time.Now().In(loc).Add(time.Hour * time.Duration(3))
+	if len(mock) > 1 {
+		now = mock[0]
+	}
+
+	return now.In(loc).Add(time.Hour * time.Duration(3))
 }
 
 // Time functions: to string
-func TimeMSK_ToString() string {
-	return TimeMSK_ToTime().Format("2006-01-02 15:04:05")
+func TimeMSK_ToString(mock ...time.Time) string {
+	return TimeMSK_ToTime(mock...).Format("2006-01-02 15:04:05")
 }
 
 // Time functions: to locale string
-func TimeMSK_ToLocaleString() string {
-	return TimeMSK_ToTime().Format("02.01.2006 15:04:05")
+func TimeMSK_ToLocaleString(mock ...time.Time) string {
+	return TimeMSK_ToTime(mock...).Format("02.01.2006 15:04:05")
 }
 
 // Time functions: date to locale string
-func DateMSK_ToLocaleString() string {
-	return TimeMSK_ToTime().Format("02.01.2006")
+func DateMSK_ToLocaleString(mock ...time.Time) string {
+	return TimeMSK_ToTime(mock...).Format("02.01.2006")
 }
 
 // Time functions: date to locale string with - separator
-func DateMSK_ToLocaleSepString() string {
-	return TimeMSK_ToTime().Format("02-01-2006")
+func DateMSK_ToLocaleSepString(mock ...time.Time) string {
+	return TimeMSK_ToTime(mock...).Format("02-01-2006")
 }
 
 // SHA512 hash
@@ -280,7 +286,7 @@ func HashSHA512(str string) string {
 }
 
 // Logger (for dev only)
-func DevLogger(uri string, ip string, status int) {
+func DevLogger(uri string, ip string, status int) bool {
 	memStats := &runtime.MemStats{}
 	runtime.ReadMemStats(memStats)
 
@@ -288,13 +294,18 @@ func DevLogger(uri string, ip string, status int) {
 
 	if err != nil {
 		log.Printf("Error opening devlog file: %v\n", err)
+
+		return false
 	} else {
 		log.SetFlags(0)
 		log.SetOutput(f)
+
 		log.Printf("\nREQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",
 			TimeMSK_ToLocaleString(), uri, ip, status,
 			memStats.Alloc/1024, memStats.TotalAlloc/1024, memStats.Sys/1024, memStats.NumGC)
 
 		defer f.Close()
 	}
+
+	return true
 }

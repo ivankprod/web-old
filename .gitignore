@@ -27,6 +27,8 @@
 .cache
 .eslintcache
 
+logs
+
 /tarantool/data
 
 /data

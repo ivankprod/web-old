@@ -1,8 +1,12 @@
 package utils
 
 import (
+	"os"
 	"reflect"
 	"testing"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func TestSitemapPath_addChild(t *testing.T) {
@@ -486,6 +490,36 @@ func TestURLParams_ToString(t *testing.T) {
 	}
 }
 
+func TestGetAuthLinks(t *testing.T) {
+	tests := []struct {
+		name string
+		want fiber.Map
+	}{
+		{
+			name: "Test GetAuthLinks",
+			want: fiber.Map{
+				"vk": "https://oauth.vk.com/authorize" +
+					"?client_id=&redirect_uri=https%3A%2F%2F%2Fauth%2F&response_type=code&scope=email&state=vk",
+				"fb": "https://www.facebook.com/v11.0/dialog/oauth" +
+					"?client_id=&redirect_uri=https%3A%2F%2F%2Fauth%2F&response_type=code&scope=email&state=facebook",
+				"ya": "https://oauth.yandex.ru/authorize" +
+					"?client_id=&redirect_uri=https%3A%2F%2F%2Fauth%2F&response_type=code&state=yandex",
+				"gl": "https://accounts.google.com/o/oauth2/v2/auth" +
+					"?access_type=online&client_id=&include_granted_scopes=false&redirect_uri=https%3A%2F%2F%2Fauth%2F&response_type=code" +
+					"&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&state=google",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetAuthLinks(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAuthLinks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_IsEmptyStruct(t *testing.T) {
 	type args struct {
 		object interface{}
@@ -656,6 +690,259 @@ func Test_IsEmptyStruct(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsEmptyStruct(tt.args.object); got != tt.want {
 				t.Errorf("IsEmptyStruct() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTimeMSK_ToTime(t *testing.T) {
+	tNow := time.Now()
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		mock []time.Time
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want time.Time
+	}{
+		{
+			name: "Get mockable time.Now",
+			args: args{
+				mock: []time.Time{tNow},
+			},
+			want: tNow.In(loc).Add(time.Hour * time.Duration(3)),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TimeMSK_ToTime(tt.args.mock...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TimeMSK_ToTime() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTimeMSK_ToString(t *testing.T) {
+	tNow := time.Now()
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		mock []time.Time
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Get string of mockable TimeMSK",
+			args: args{
+				mock: []time.Time{tNow},
+			},
+			want: tNow.In(loc).Add(time.Hour * time.Duration(3)).Format("2006-01-02 15:04:05"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TimeMSK_ToString(tt.args.mock...); got != tt.want {
+				t.Errorf("TimeMSK_ToString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTimeMSK_ToLocaleString(t *testing.T) {
+	tNow := time.Now()
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		mock []time.Time
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Get locale string of mockable TimeMSK",
+			args: args{
+				mock: []time.Time{tNow},
+			},
+			want: tNow.In(loc).Add(time.Hour * time.Duration(3)).Format("02.01.2006 15:04:05"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := TimeMSK_ToLocaleString(tt.args.mock...); got != tt.want {
+				t.Errorf("TimeMSK_ToLocaleString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDateMSK_ToLocaleString(t *testing.T) {
+	tNow := time.Now()
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		mock []time.Time
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Get locale string of mockable DateMSK",
+			args: args{
+				mock: []time.Time{tNow},
+			},
+			want: tNow.In(loc).Add(time.Hour * time.Duration(3)).Format("02.01.2006"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DateMSK_ToLocaleString(tt.args.mock...); got != tt.want {
+				t.Errorf("DateMSK_ToLocaleString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDateMSK_ToLocaleSepString(t *testing.T) {
+	tNow := time.Now()
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		mock []time.Time
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Get locale sep string of mockable DateMSK",
+			args: args{
+				mock: []time.Time{tNow},
+			},
+			want: tNow.In(loc).Add(time.Hour * time.Duration(3)).Format("02-01-2006"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DateMSK_ToLocaleSepString(tt.args.mock...); got != tt.want {
+				t.Errorf("DateMSK_ToLocaleSepString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestHashSHA512(t *testing.T) {
+	type args struct {
+		str string
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "Test HashSHA512",
+			args: args{
+				str: "hash",
+			},
+			want: "30163935c002fc4e1200906c3d30a9c4956b4af9f6dcaef1eb4b1fcb8fba69e7a7acdc491ea5b1f2864ea8c01b01580ef09defc3b11b3f183cb21d236f7f1a6b",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := HashSHA512(tt.args.str); got != tt.want {
+				t.Errorf("HashSHA512() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDevLogger(t *testing.T) {
+	type args struct {
+		uri        string
+		ip         string
+		status     int
+		beforeTest func() error
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "DevLogger to true",
+			args: args{
+				uri:        "/some/",
+				ip:         "127.0.0.1",
+				status:     200,
+				beforeTest: func() error { return os.Mkdir("./logs", 0666) },
+			},
+			want: true,
+		},
+		{
+			name: "DevLogger to false",
+			args: args{
+				uri:        "/some/",
+				ip:         "127.0.0.1",
+				status:     200,
+				beforeTest: func() error { return os.RemoveAll("./logs") },
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.args.beforeTest != nil {
+				if err := tt.args.beforeTest(); err != nil {
+					t.Errorf("DevLogger() error = %v", err)
+				}
+			}
+
+			if got := DevLogger(tt.args.uri, tt.args.ip, tt.args.status); got != tt.want {
+				t.Errorf("DevLogger() = %v, want %v", got, tt.want)
 			}
 		})
 	}
