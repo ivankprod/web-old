@@ -7,7 +7,7 @@ IVANKPROD.RU website
 
 # Setup
 1. Setup
-    1. Install Git, Docker, golang and NodeJS
+    1. Install Git, Docker, Go and NodeJS
     2. Clone this repo and cd into it
 
 2. Install
@@ -17,28 +17,28 @@ IVANKPROD.RU website
 3. Build to /build_(dev|prod) dir
 ```shell
 # development
-./build.sh dev
+./build.sh dev [os] [arch]
 
 # production
 ./build.sh [prod] [os] [arch]
 ```
 
-4. Generate sitemap.xml for (dev|prod) build
-```shell
-# development
-./sitemap.sh dev
-
-# production
-./sitemap.sh [prod]
-```
-
-5. Run in Docker
+4. Run in Docker
 ```shell
 # development build
 ./compose.sh dev
 
 # production build
 ./compose.sh [prod]
+```
+
+5. Generate sitemap.xml for (dev|prod) build (make shure website is running)
+```shell
+# development build
+./sitemap.sh dev
+
+# production build
+./sitemap.sh [prod]
 ```
 
 # TODOS:
