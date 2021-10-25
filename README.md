@@ -2,6 +2,8 @@
 IVANKPROD.RU website
 (go, webpack)
 
+[![Lint and Test](https://github.com/ivankprod/ivankprod.ru/actions/workflows/lint-and-test.yml/badge.svg?branch=main)](https://github.com/ivankprod/ivankprod.ru/actions/workflows/lint-and-test.yml)
+
 # Setup
 1. Setup
     1. Install Git, Docker, golang and NodeJS
