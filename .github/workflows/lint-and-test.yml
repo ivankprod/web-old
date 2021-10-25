@@ -5,11 +5,12 @@ on:
     - main
 
 jobs:
-  golangci:
-    name: lint
+  server:
+    name: server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
@@ -17,3 +18,6 @@ jobs:
           working-directory: src/server/
           args: -v
           skip-go-installation: true
+
+      - name: go-test
+        run: cd src/server/ && go test -coverprofile=coverage.out -race -v ./...
