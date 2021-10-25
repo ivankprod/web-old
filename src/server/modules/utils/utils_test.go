@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -139,6 +140,296 @@ func TestSitemap_addChild(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.p.addChild(tt.args.parentID, tt.args.child); got != tt.want {
 				t.Errorf("Sitemap.addChild() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSitemap_removePath(t *testing.T) {
+	type args struct {
+		index int
+	}
+
+	tests := []struct {
+		name string
+		p    *Sitemap
+		args args
+		want *Sitemap
+	}{
+		{
+			name: "Remove one path from Sitemap",
+			p: &Sitemap{
+				{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+				},
+				{
+					ID:       2,
+					Title:    "Some title 2",
+					Path:     "/some/path2",
+					Priority: 1,
+				},
+			},
+			args: args{index: 1},
+			want: &Sitemap{
+				{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.removePath(tt.args.index); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Sitemap.removePath() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSitemap_Nest(t *testing.T) {
+	tests := []struct {
+		name string
+		p    *Sitemap
+		want *Sitemap
+	}{
+		{
+			name: "Nest the Sitemap",
+			p: &Sitemap{
+				{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+				},
+				{
+					ID:       2,
+					ParentID: 1,
+					Title:    "Some title 2",
+					Path:     "/some/path2",
+					Priority: 1,
+				},
+			},
+			want: &Sitemap{
+				{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+					Children: []SitemapPath{
+						{
+							ID:       2,
+							ParentID: 1,
+							Title:    "Some title 2",
+							Path:     "/some/path2",
+							Priority: 1,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.Nest(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Sitemap.Nest() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_childLookup(t *testing.T) {
+	type args struct {
+		item *SitemapPath
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "HTMLize the SitemapPath",
+			args: args{
+				item: &SitemapPath{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+					Children: []SitemapPath{
+						{
+							ID:       2,
+							ParentID: 1,
+							Title:    "Some title 2",
+							Path:     "/some/path2",
+							Priority: 0.9,
+						},
+					},
+				},
+			},
+			want: "\n<li><a href=\"/some/path1\" class=\"spa\">Some title 1</a><ul>" +
+				"\n<li><a href=\"/some/path2\" class=\"spa\">Some title 2</a></li></ul></li>",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := childLookup(tt.args.item); got != tt.want {
+				t.Errorf("childLookup() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSitemap_ToHTMLString(t *testing.T) {
+	tests := []struct {
+		name string
+		p    *Sitemap
+		want string
+	}{
+		{
+			name: "HTMLize the Sitemap",
+			p: &Sitemap{
+				{
+					ID:       1,
+					Title:    "Some title 1",
+					Path:     "/some/path1",
+					Priority: 1,
+					Children: []SitemapPath{
+						{
+							ID:       3,
+							ParentID: 1,
+							Title:    "Some title 3",
+							Path:     "/some/path3",
+							Priority: 0.9,
+							Children: []SitemapPath{
+								{
+									ID:       4,
+									ParentID: 3,
+									Title:    "Some title 4",
+									Path:     "/some/path4",
+									Priority: 0.8,
+								},
+							},
+						},
+					},
+				},
+				{
+					ID:       2,
+					Title:    "Some title 2",
+					Path:     "/some/path2",
+					Priority: 1,
+				},
+			},
+			want: string("<ul>" +
+				"\n<li><a href=\"/some/path1\" class=\"spa\">Some title 1</a><ul>" +
+				"\n<li><a href=\"/some/path3\" class=\"spa\">Some title 3</a><ul>" +
+				"\n<li><a href=\"/some/path4\" class=\"spa\">Some title 4</a></li></ul></li></ul></li>" +
+				"\n<li><a href=\"/some/path2\" class=\"spa\">Some title 2</a></li></ul>"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.ToHTMLString(); *got != tt.want {
+				t.Errorf("Sitemap.ToHTMLString() = %v, want %v", *got, tt.want)
+			}
+		})
+	}
+}
+
+func TestURLParams_ToString(t *testing.T) {
+	type args struct {
+		escaped bool
+	}
+
+	tests := []struct {
+		name string
+		p    *URLParams
+		args args
+		want string
+	}{
+		{
+			name: "Stringify empty URLParams",
+			p:    &URLParams{},
+			args: args{escaped: false},
+			want: "",
+		},
+		{
+			name: "Stringify URLParams without escaping",
+			p: &URLParams{
+				"param1": 1,
+				"param2": "some param",
+			},
+			args: args{escaped: false},
+			want: "?param1=1&param2=some param",
+		},
+		{
+			name: "Stringify URLParams with escaping",
+			p: &URLParams{
+				"param1": 10,
+				"param2": "some param @",
+			},
+			args: args{escaped: true},
+			want: "?param1=10&param2=some+param+%40",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.ToString(tt.args.escaped); got != tt.want {
+				t.Errorf("URLParams.ToString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_IsEmptyStruct(t *testing.T) {
+	type args struct {
+		object interface{}
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Test empty SitemapPath struct to true",
+			args: args{
+				object: SitemapPath{},
+			},
+			want: true,
+		},
+		{
+			name: "Test pointer to empty Sitemap struct to true",
+			args: args{
+				object: &Sitemap{},
+			},
+			want: true,
+		},
+		{
+			name: "Test pointer to non-empty URLParams map to false",
+			args: args{
+				object: &URLParams{
+					"param1": 0,
+				},
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsEmptyStruct(tt.args.object); got != tt.want {
+				t.Errorf("IsEmptyStruct() = %v, want %v", got, tt.want)
 			}
 		})
 	}

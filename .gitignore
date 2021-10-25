@@ -17,11 +17,6 @@
 *.pprof
 *.workspace
 
-/vendor/
-vendor/
-vendor
-/Godeps/
-
 .env
 *.env
 
@@ -33,7 +28,6 @@ vendor
 .eslintcache
 
 /tarantool/data
-/tarantool/data/*
 
 /data
 

@@ -3,11 +3,13 @@ package utils
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"reflect"
 	"runtime"
+	"sort"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -74,8 +76,10 @@ func (p *Sitemap) addChild(parentID int64, child *SitemapPath) bool {
 }
 
 // Sitemap: remove path by index
-func (p *Sitemap) removePath(index int) {
+func (p *Sitemap) removePath(index int) *Sitemap {
 	*p = append((*p)[:index], (*p)[index+1:]...)
+
+	return p
 }
 
 // Sitemap: nest sitemap
@@ -107,7 +111,7 @@ func (p *Sitemap) Nest() *Sitemap {
 
 // Sitemap: returns path's child html
 func childLookup(item *SitemapPath) string {
-	html := "\n				<li><a href=\"" + item.Path + "\" class=\"spa\">" + item.Title + "</a>"
+	html := "\n<li><a href=\"" + item.Path + "\" class=\"spa\">" + item.Title + "</a>"
 
 	if len(item.Children) > 0 {
 		for _, v := range item.Children {
@@ -126,27 +130,35 @@ func (p *Sitemap) ToHTMLString() *string {
 		output += childLookup(&(*p)[i])
 	}
 
-	output += "\n			</ul>"
+	output += "</ul>"
 	return &output
 }
 
 // URL params: type
-type URLParams map[string]string
+type URLParams map[string]interface{}
 
 // URL params: toString
 func (p *URLParams) ToString(escaped bool) string {
-	object := *p
 	result := ""
+	keys := make([]string, 0, len(*p))
 
-	for key, value := range object {
-		if escaped {
-			value = url.QueryEscape(value)
-		}
-
-		result += "&" + key + "=" + value
+	for k := range *p {
+		keys = append(keys, k)
 	}
 
-	if len(object) > 0 {
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		tv := fmt.Sprintf("%v", (*p)[key])
+
+		if escaped {
+			tv = url.QueryEscape(tv)
+		}
+
+		result += "&" + key + "=" + tv
+	}
+
+	if len(*p) > 0 {
 		result = "?" + result[1:]
 	}
 
@@ -202,12 +214,27 @@ func IsEmptyStruct(object interface{}) bool {
 		return true
 	}
 
-	if reflect.ValueOf(object).Kind() == reflect.Struct {
-		empty := reflect.New(reflect.TypeOf(object)).Elem().Interface()
+	if reflect.TypeOf(object).Kind() == reflect.Ptr {
+		object = reflect.ValueOf(object).Elem().Interface()
+	}
 
-		if reflect.DeepEqual(object, empty) {
+	switch reflect.TypeOf(object).Kind() {
+	case reflect.Array:
+		fallthrough
+	case reflect.Slice:
+		fallthrough
+	case reflect.Map:
+		fallthrough
+	case reflect.Chan:
+		if reflect.ValueOf(object).Len() == 0 {
 			return true
 		}
+	}
+
+	empty := reflect.New(reflect.TypeOf(object)).Elem().Interface()
+
+	if reflect.DeepEqual(object, empty) {
+		return true
 	}
 
 	return false
