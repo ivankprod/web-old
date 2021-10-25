@@ -240,10 +240,7 @@ func IsEmptyStruct(object interface{}) bool {
 func TimeMSK_ToTime(mock ...time.Time) time.Time {
 	now := time.Now()
 
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		panic(err)
-	}
+	loc, _ := time.LoadLocation("UTC")
 
 	if len(mock) > 0 {
 		now = mock[0]
