@@ -17,6 +17,8 @@
 *.pprof
 *.workspace
 
+pkged.go
+
 .env
 *.env
 
