@@ -249,7 +249,7 @@ func TimeMSK_ToTime(mock ...time.Time) time.Time {
 		panic(err)
 	}
 
-	if len(mock) > 1 {
+	if len(mock) > 0 {
 		now = mock[0]
 	}
 

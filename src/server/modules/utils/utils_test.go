@@ -704,7 +704,8 @@ func TestTimeMSK_ToTime(t *testing.T) {
 	}
 
 	type args struct {
-		mock []time.Time
+		mock    []time.Time
+		reverse bool
 	}
 
 	tests := []struct {
@@ -715,16 +716,30 @@ func TestTimeMSK_ToTime(t *testing.T) {
 		{
 			name: "Get mockable time.Now",
 			args: args{
-				mock: []time.Time{tNow},
+				mock:    []time.Time{tNow},
+				reverse: false,
 			},
 			want: tNow.In(loc).Add(time.Hour * time.Duration(3)),
+		},
+		{
+			name: "Get unmockable time.Now",
+			args: args{
+				reverse: true,
+			},
+			want: time.Now().In(loc).Add(time.Hour * time.Duration(3)),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TimeMSK_ToTime(tt.args.mock...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TimeMSK_ToTime() = %v, want %v", got, tt.want)
+			if tt.args.reverse {
+				if got := TimeMSK_ToTime(); !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("TimeMSK_ToTime() = %v, want %v", got, tt.want)
+				}
+			} else {
+				if got := TimeMSK_ToTime(tt.args.mock...); !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("TimeMSK_ToTime() = %v, want %v", got, tt.want)
+				}
 			}
 		})
 	}
