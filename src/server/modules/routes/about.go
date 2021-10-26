@@ -33,13 +33,12 @@ func RouteAboutIndex(c *fiber.Ctx) error {
 		"activeAbout": true,
 		"data":        data,
 	})
+
 	if err == nil {
 		if os.Getenv("STAGE_MODE") == "dev" {
 			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
 		}
-
-		return nil
 	}
 
-	return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
+	return err
 }
