@@ -15,7 +15,7 @@ import (
 )
 
 //  VK authentication
-func AuthVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
@@ -127,7 +127,7 @@ func AuthVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 }
 
 //  Facebook authentication
-func AuthFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
@@ -234,7 +234,7 @@ func AuthFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 }
 
 //  Yandex authentication
-func AuthYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
@@ -357,7 +357,7 @@ func AuthYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 }
 
 //  Google authentication
-func AuthGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{}
 
 	(*query)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")

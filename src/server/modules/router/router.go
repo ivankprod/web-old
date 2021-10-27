@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
 
+	"ivankprod.ru/src/server/modules/auth"
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/routes"
 	"ivankprod.ru/src/server/modules/utils"
@@ -104,8 +105,8 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 	app.Get("/blog/", routes.RouteBlogIndex)
 	app.Get("/about/", routes.RouteAboutIndex)
 	app.Get("/contacts/", routes.RouteContactsIndex)
-	app.Get("/auth/", routes.RouteAuthIndex(dbt))
-	app.Get("/auth/logout/", routes.RouteAuthLogout)
+	app.Get("/auth/", auth.RouteAuthIndex(dbt))
+	app.Get("/auth/logout/", auth.RouteAuthLogout)
 
 	// Sitemap route
 	app.Get("/sitemap/", func(c *fiber.Ctx) error {

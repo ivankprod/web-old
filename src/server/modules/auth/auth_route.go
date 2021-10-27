@@ -1,4 +1,4 @@
-package routes
+package auth
 
 import (
 	"os"
@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/modules/auth"
 	"ivankprod.ru/src/server/modules/models"
 	"ivankprod.ru/src/server/modules/utils"
 )
@@ -24,19 +23,19 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 
 		if c.Query("code") != "" && c.Query("state") != "" {
 			if c.Query("state") == "vk" {
-				if err := auth.AuthVK(c, db, uAuth); err != nil {
+				if err := authVK(c, db, uAuth); err != nil {
 					return err
 				}
 			} else if c.Query("state") == "facebook" {
-				if err := auth.AuthFacebook(c, db, uAuth); err != nil {
+				if err := authFacebook(c, db, uAuth); err != nil {
 					return err
 				}
 			} else if c.Query("state") == "yandex" {
-				if err := auth.AuthYandex(c, db, uAuth); err != nil {
+				if err := authYandex(c, db, uAuth); err != nil {
 					return err
 				}
 			} else if c.Query("state") == "google" {
-				if err := auth.AuthGoogle(c, db, uAuth); err != nil {
+				if err := authGoogle(c, db, uAuth); err != nil {
 					return err
 				}
 			}
@@ -73,15 +72,14 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 			},
 			"data": data,
 		})
+
 		if err == nil {
 			if os.Getenv("STAGE_MODE") == "dev" {
 				go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
 			}
-
-			return nil
 		}
 
-		return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
+		return err
 	}
 }
 
