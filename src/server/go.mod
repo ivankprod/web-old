@@ -14,8 +14,8 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/markbates/pkger v0.17.1
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
-	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6 // indirect
-	golang.org/x/sys v0.0.0-20211003122950-b1ebd4e1001c // indirect
+	golang.org/x/net v0.0.0-20211020060615-d418f374d309 // indirect
+	golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.2
 )
