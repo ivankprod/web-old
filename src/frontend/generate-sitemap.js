@@ -1,5 +1,5 @@
 const path = require('path');
-const SitemapGenerator = require('sitemap-generator-custom-domain');
+const SitemapGenerator = require('sitemap-generator');
 
 const mode = process.argv[2];
 if (mode == undefined || (mode != 'dev' && mode != 'prod')) {
