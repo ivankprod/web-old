@@ -6,9 +6,9 @@ require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/here v0.6.2 // indirect
-	github.com/gofiber/fiber/v2 v2.19.0
+	github.com/gofiber/fiber/v2 v2.20.1
 	github.com/gofiber/helmet/v2 v2.2.2
-	github.com/gofiber/template v1.6.17
+	github.com/gofiber/template v1.6.18
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.13.6 // indirect
