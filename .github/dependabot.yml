@@ -6,7 +6,7 @@ updates:
       interval: "weekly"
     target-branch: "dev"
     labels:
-      - "gomod dependencies"
+      - "dependencies"
 
   - package-ecosystem: "npm"
     directory: "/src/frontend/"
@@ -14,4 +14,4 @@ updates:
       interval: "weekly"
     target-branch: "dev"
     labels:
-      - "npm dependencies"
+      - "dependencies"
