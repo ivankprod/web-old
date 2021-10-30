@@ -66,7 +66,7 @@ window.slider.on('transitionStart', onSliderTransitionStart);
 window.slider.on('transitionEnd',   onSliderTransitionEnd);
 
 //  Elements
-let elemSubnavWrappers = document.querySelectorAll('.subnav-container');
+const elemSubnavWrappers = document.querySelectorAll('.subnav-container');
 
 //  DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function() {

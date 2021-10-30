@@ -14,10 +14,10 @@ const strServerHost = String('https://' + (process.env.SERVER_HOST != '' ? proce
 let dataExtras = null;
 
 //  HistoryAPI: state
-const intHrefStart  = strServerHost.length;
-let loc     = window.location.href;
-let locHref = loc.substring(intHrefStart + 1, (loc.indexOf('?') !== -1 ? loc.indexOf('?') : loc.length));
-let hState  = {
+const intHrefStart = strServerHost.length;
+const loc     = window.location.href;
+const locHref = loc.substring(intHrefStart + 1, (loc.indexOf('?') !== -1 ? loc.indexOf('?') : loc.length));
+const hState  = {
 	href:   '/' + locHref,
 	params: queryParse(loc.substring(intHrefStart + 1).replace(locHref, '').substring(1)),
 	title:  document.title,
@@ -26,8 +26,8 @@ let hState  = {
 
 //  Loads ajax page
 export async function loadPage(strHref, params = {}, changeAddress = false, callback = null) {
-	let progress = new ProgressBar(); progress.start();
-	let res      = await newAjax(strHref, params, 'text');
+	const progress = new ProgressBar(); progress.start();
+	let res = await newAjax(strHref, params, 'text');
 
 	if (res.error && res.error.error_type == 'aborted') { return; }
 
@@ -39,7 +39,7 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 		res = res.response;
 	}
 
-	let sliderWrapper = document.querySelector('.slider-section');
+	const sliderWrapper = document.querySelector('.slider-section');
 	if (window.slider && sliderWrapper) { window.slider.destroy(); }
 	
 	const elemActiveNavItem = document.querySelector('ul.mnav li a.nav-item-active');
@@ -48,13 +48,13 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	const oParser        = new DOMParser();
 	const oDoc           = oParser.parseFromString(res, 'text/html');
 	const newContent     = oDoc.getElementById('content');
-	let   oldContent     = document.getElementById('content');
+	const oldContent     = document.getElementById('content');
 	const newAuthInfo    = oDoc.getElementById('user-auth-info');
-	let   oldAuthInfo    = document.getElementById('user-auth-info');
-	let   containerAuth  = oldAuthInfo.parentNode;
+	const oldAuthInfo    = document.getElementById('user-auth-info');
+	const containerAuth  = oldAuthInfo.parentNode;
 	const newBreadcrumbs = oDoc.getElementById('breadcrumbs');
-	let   oldBreadcrumbs = document.getElementById('breadcrumbs');
-	let   container      = oldContent.parentNode;
+	const oldBreadcrumbs = document.getElementById('breadcrumbs');
+	const container      = oldContent.parentNode;
 	document.title       = oDoc.title;
 
 	rewriteMetas({
@@ -108,7 +108,7 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	const scope = getMeta(oDoc, 'app:scope');
 	setMeta(document, 'app:scope', scope);
 
-	let itemActive = document.querySelector('ul.mnav li a[data-scope="' + scope + '"]');
+	const itemActive = document.querySelector('ul.mnav li a[data-scope="' + scope + '"]');
 	if (itemActive) itemActive.classList.add('nav-item-active');
 
 	if (callback) callback();

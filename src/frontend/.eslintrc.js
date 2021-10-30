@@ -9,5 +9,13 @@ module.exports = {
 		ecmaFeatures: {
 			jsx: false
 		}
+	},
+
+	rules: {
+		"no-var": "error",
+		"space-in-parens": "error",
+		"no-multiple-empty-lines": "error",
+		"prefer-const": "error",
+		"no-use-before-define": "error"
 	}
 }

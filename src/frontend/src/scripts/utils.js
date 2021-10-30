@@ -15,7 +15,7 @@ export function sleep(ms) {
 
 //  ProgressBar onScroll
 export function onScrollPB() {
-	let elemProgressBar = document.getElementById('progress-bar');
+	const elemProgressBar = document.getElementById('progress-bar');
 	if (!elemProgressBar) return;
 
 	const scrolled = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
@@ -35,7 +35,7 @@ export function onScrollPB() {
 
 //  Animations: main function
 export function animate(opts) {
-	let start = performance.now();
+	const start = performance.now();
 
 	if (opts.stoppable) { window.lastRAF = null; }
 
@@ -44,7 +44,7 @@ export function animate(opts) {
 		if (timeFraction > 1) timeFraction = 1;
 		if (timeFraction < 0) timeFraction = 0;
 
-		let progress = opts.timing(timeFraction);
+		const progress = opts.timing(timeFraction);
 
 		if (opts.draw) { opts.draw(progress); }
 		if (opts.move) { opts.move(progress); }
@@ -89,9 +89,9 @@ export function makeEaseInOut(timing) {
 }
 
 //  Animations: complete timing functions
-export var makeLinearEaseInOut = makeEaseInOut(makeLinear);
-export var makePowEaseOut      = makeEaseOut(makePow);
-export var makeCircEaseInOut   = makeEaseInOut(makeCirc);
+export const makeLinearEaseInOut = makeEaseInOut(makeLinear);
+export const makePowEaseOut      = makeEaseOut(makePow);
+export const makeCircEaseInOut   = makeEaseInOut(makeCirc);
 
 //  Animations: opacity 
 export function drawOpacity(elem, value) {
@@ -101,7 +101,7 @@ export function drawOpacity(elem, value) {
 //  Animations: async opacity (fadeout)
 export async function fadeOut(elem) {
 	elem.style.opacity = '0';
-};
+}
 
 //  Animations: height
 export function drawHeight(elem, value) {
@@ -124,7 +124,7 @@ export function completeProgress(elem, start, value) {
 
 //  Query object to string
 export function queryStringify(obj) {
-	let params = [];
+	const params = [];
 
 	Object.keys(obj).forEach(key => {
 		if (obj[key] !== '') params.push(String(key + '=' + obj[key]).replace(/\s/g, '_'));
@@ -135,14 +135,15 @@ export function queryStringify(obj) {
 
 //  Query string to object
 export function queryParse(str) {
-	let result = {};
+	const result = {};
+
 	if (str == '') return result;
 
 	const obj = new URLSearchParams(str);
 	for (const [key, value] of obj.entries()) { result[key] = value; }
 
 	return result;
-};
+}
 
 ////////////////////
 //  META SECTION  //
@@ -150,7 +151,7 @@ export function queryParse(str) {
 
 //  Get canonical link
 function getCanonical(doc) {
-	let result = doc.querySelector('link[rel="canonical"]');
+	const result = doc.querySelector('link[rel="canonical"]');
 	if (!result) throw new Error("Canonical link not found!");
 
 	return result.href;
@@ -158,7 +159,7 @@ function getCanonical(doc) {
 
 //  Set canonical link
 function setCanonical(doc, value) {
-	let result = doc.querySelector('link[rel="canonical"]');
+	const result = doc.querySelector('link[rel="canonical"]');
 	if (!result) throw new Error("Canonical link not found!");
 
 	result.href = value;

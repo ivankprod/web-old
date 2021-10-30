@@ -106,7 +106,7 @@ export default class Slider {
 		const wrapper = this.paginationElement;
 
 		this.slidesList.forEach((_, i) => {
-			let bullet = document.createElement('div');
+			const bullet = document.createElement('div');
 
 			bullet.classList.add('slider-pagination-bullet');
 			if (this.paginationClickable) bullet.onclick = () => { this.fireCurr(i); };

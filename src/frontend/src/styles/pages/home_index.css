@@ -5,6 +5,7 @@
 */
 
 .slider-section { align-self: center; padding: 32px; }
+.slider-wrapper { position: relative; }
 
 .slider-slide {
 	position: absolute;

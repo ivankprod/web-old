@@ -6,7 +6,8 @@
 
 import { sleep, onScrollPB, animate, makeLinear, drawOpacity, completeProgress, queryStringify } from './utils.js';
 
-let elemMasterContainer = document.getElementById('master-container');
+const elemMasterContainer = document.getElementById('master-container');
+
 let ajaxController;
 
 //  Progress Bar class
@@ -17,7 +18,7 @@ export class ProgressBar {
 		this.elem    = document.createElement('div');
 		this.elem.id = 'progress-bar';
 
-		let elemOld = document.getElementById('progress-bar');
+		const elemOld = document.getElementById('progress-bar');
 		if (elemOld) {
 			elemOld.remove(); this.elem.style.opacity = '1';
 			if (window.lastRAF) { cancelAnimationFrame(window.lastRAF); }
@@ -114,10 +115,8 @@ export async function newAjax(url, params = {}, type = 'json') {
 	ajaxController   = new AbortController();
 	const ajaxSignal = ajaxController.signal;
 
-	//params['r'] = Math.floor(Math.random() * (1000 - 1) + 1);
-
 	try {
-		let req = await fetch(url + queryStringify(params), { ajaxSignal });
+		const req = await fetch(url + queryStringify(params), { ajaxSignal });
 
 		if (req.ok) {
 			ajaxController = null;
