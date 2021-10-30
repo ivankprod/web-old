@@ -20,7 +20,9 @@ jobs:
           skip-go-installation: true
 
       - name: go-test
-        run: cd src/server/ && sudo go test -coverprofile=coverage.out -race -v ./...
+        run: |
+          cd src/server/ && sudo go test -coverprofile=coverage.out -race -v ./...
+          go tool cover -html=coverage.out -o coverage.html
 
       - name: coverage-codecov
         uses: codecov/codecov-action@v2
@@ -29,3 +31,9 @@ jobs:
           files: src/server/coverage.out
           fail_ci_if_error: true
           verbose: true
+
+      - name: coverage.html artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-html
+          path: src/server/coverage.html
