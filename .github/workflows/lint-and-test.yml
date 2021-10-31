@@ -54,4 +54,15 @@ jobs:
           npm ci
           npm run lint
 
-      # TODO: - name: jest
+      - name: jest
+        run: |
+          cd src/frontend/
+          npm run test
+
+      - name: coverage-codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: src/frontend/src/scripts/coverage/
+          fail_ci_if_error: true
+          verbose: true
