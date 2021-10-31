@@ -31,7 +31,7 @@ module.exports = {
 	// ],
 
 	// Indicates which provider should be used to instrument code for coverage
-	coverageProvider: "v8",
+	// coverageProvider: "v8",
 
 	// A list of reporter names that Jest uses when writing coverage reports
 	// coverageReporters: [
@@ -84,7 +84,7 @@ module.exports = {
 	// moduleNameMapper: {},
 
 	// An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-	// modulePathIgnorePatterns: [],
+	modulePathIgnorePatterns: ["core-js"],
 
 	// Activates notifications for test results
 	// notify: true,
