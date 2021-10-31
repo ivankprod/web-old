@@ -51,7 +51,7 @@ jobs:
       - name: eslint
         run: |
           cd src/frontend/
-          npm ci
+          npm install
           npm run lint
 
       - name: jest
