@@ -2,3 +2,5 @@
 *.log
 .cache
 .eslintcache
+coverage
+tmp
