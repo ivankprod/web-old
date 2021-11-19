@@ -38,7 +38,7 @@ jobs:
           name: coverage-html
           path: src/server/coverage.html
 
-  forntend:
+  frontend:
     name: frontend
     runs-on: ubuntu-latest
     steps:

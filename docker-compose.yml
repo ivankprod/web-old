@@ -8,6 +8,8 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
       - ./data/certbot:/etc/letsencrypt
+    networks:
+      - ivankprodru_net
 
   tarantool:
     container_name: ikpru_tarantool
@@ -22,6 +24,8 @@ services:
     volumes:
       - ./tarantool/app:/usr/local/share/tarantool
       - ./tarantool/data:/var/lib/tarantool
+    networks:
+      - ivankprodru_net
 
   app:
     container_name: ikpru_app
@@ -29,7 +33,7 @@ services:
     image: ivankprodru_app
     restart: on-failure
     env_file:
-      - ${STAGE_MODE:-prod}.env
+      - ./build_${STAGE_MODE:-prod}/.env
     command: bash -c "cd ./home/app && ./server"
     ports:
       - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
@@ -37,8 +41,15 @@ services:
     volumes:
       - ./build_${STAGE_MODE:-prod}:/home/app
       - ./data/certbot:/etc/letsencrypt
+    networks:
+      - ivankprodru_net
     links:
       - tarantool:${DB_TARANTOOL_HOST:-tarantool}
     depends_on:
       - certbot
       - tarantool
+
+networks:
+  ivankprodru_net:
+    external: true
+    name: ivankprodru_net
