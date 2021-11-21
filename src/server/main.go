@@ -14,7 +14,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/proxy"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
@@ -175,19 +174,8 @@ func main() {
 	// Compression
 	app.Use(compress.New(compress.Config{Level: compress.LevelBestSpeed}))
 
-	// Monitoring, HTTP->HTTPS, without www & sitemap.xml
+	// HTTP->HTTPS, without www & sitemap.xml
 	app.Use(func(c *fiber.Ctx) error {
-		if c.Subdomains() != nil && c.Subdomains(0)[0] == "metrics" {
-			proxy.WithTlsConfig(&tls.Config{InsecureSkipVerify: true})
-
-			if err := proxy.Do(c, "https://prometheus:9090"+c.OriginalURL()); err != nil {
-				return err
-			}
-
-			c.Response().Header.Del(fiber.HeaderServer)
-			return nil
-		}
-
 		if c.Protocol() == "http" || (c.Subdomains() != nil && c.Subdomains(0)[0] == "www") {
 			return c.Redirect("https://"+os.Getenv("SERVER_HOST")+c.OriginalURL(), 301)
 		}

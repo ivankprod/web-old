@@ -8,8 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
 
+	"ivankprod.ru/src/server/modules/admin"
 	"ivankprod.ru/src/server/modules/auth"
 	"ivankprod.ru/src/server/modules/models"
+	"ivankprod.ru/src/server/modules/monitor"
 	"ivankprod.ru/src/server/modules/routes"
 	"ivankprod.ru/src/server/modules/utils"
 )
@@ -96,6 +98,13 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 
 		return c.Next()
 	})
+
+	// Admin
+	adminGroup := app.Group("/admin/", auth.WebmasterAdministratorAccess)
+	adminGroup.Get("/", admin.RouteAdminIndex)
+
+	// Monitoring routes
+	adminGroup.Group("/monitor/prometheus/", auth.WebmasterAccess, monitor.RoutePrometheus)
 
 	// Routes
 	app.Get("/", routes.RouteHomeIndex)

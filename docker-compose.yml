@@ -60,6 +60,7 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.config.file=/etc/prometheus/prometheus.web.yml
+      - --web.external-url=https://ivankprod.ru/admin/monitor/prometheus/
     volumes:
       - ./data/certbot:/etc/letsencrypt
       - ./data/prometheus_cert:/etc/prometheus/cert
