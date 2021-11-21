@@ -176,7 +176,7 @@ func main() {
 
 	// HTTP->HTTPS, without www & sitemap.xml
 	app.Use(func(c *fiber.Ctx) error {
-		if c.Protocol() == "http" || (c.Subdomains() != nil && c.Subdomains(0)[0] == "www") {
+		if c.Protocol() == "http" || (len(c.Subdomains()) > 0) {
 			return c.Redirect("https://"+os.Getenv("SERVER_HOST")+c.OriginalURL(), 301)
 		}
 
