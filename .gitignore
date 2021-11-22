@@ -31,6 +31,7 @@ pkged.go
 
 logs
 
+/prometheus/data
 /grafana/data
 /tarantool/data
 

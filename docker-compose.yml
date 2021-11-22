@@ -37,9 +37,11 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.config.file=/etc/prometheus/prometheus.web.yml
       - --web.external-url=https://ivankprod.ru/admin/monitor/prometheus/
+      - --storage.tsdb.path=/etc/prometheus/data
     volumes:
       - ./data/certbot:/etc/letsencrypt
       - ./data/prometheus_cert:/etc/prometheus/cert
+      - ./prometheus/data:/etc/prometheus/data
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/prometheus.web.yml:/etc/prometheus/prometheus.web.yml:ro
     networks:
