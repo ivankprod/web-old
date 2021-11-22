@@ -11,6 +11,8 @@ module.exports = {
 		}
 	},
 
+	ignorePatterns: ["**/node_modules/*", "**/coverage/*"],
+
 	rules: {
 		"no-var": "error",
 		"space-in-parens": "error",
