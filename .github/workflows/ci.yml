@@ -1,65 +1,66 @@
-name: Lint and Test
+name: CI
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   server:
-    name: server
-    runs-on: ubuntu-latest
+    name: Server
+    strategy:
+      matrix:
+        go-version: [ 1.16.x ]
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
-      - name: golangci-lint
+      - name: Go Lint
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
           working-directory: src/server/
           args: -v
-          skip-go-installation: true
 
-      - name: go-test
+      - name: Go Test
         run: |
-          cd src/server/ && sudo go test -coverprofile=coverage.out -race -v ./...
-          go tool cover -html=coverage.out -o coverage.html
+          cd src/server/
+          sudo go test -coverprofile=coverage.out -race -v ./...
 
-      - name: coverage-codecov
+      - name: Push Go coverage
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: src/server/coverage.out
-          fail_ci_if_error: true
           verbose: true
 
-      - name: coverage.html artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-html
-          path: src/server/coverage.html
-
   frontend:
-    name: frontend
-    runs-on: ubuntu-latest
+    name: Frontend
+    strategy:
+      matrix:
+        node-version: [ '16' ]
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
 
-      - name: eslint
+      - name: JS Lint
         run: |
           cd src/frontend/
-          npm install
+          npm ci
           npm run lint
 
-      - name: jest
+      - name: JS Test
         run: |
           cd src/frontend/
           npm run test
 
-      - name: coverage-codecov
+      - name: Push JS coverage
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
