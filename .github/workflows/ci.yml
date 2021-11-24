@@ -3,17 +3,23 @@ on:
   push:
     branches:
       - main
+      - master
 
 jobs:
   server:
     name: Server
     strategy:
       matrix:
-        go-version: [ 1.16.x ]
+        go-version: [ '1.16' ]
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
 
       - name: Go Lint
         uses: golangci/golangci-lint-action@v2
@@ -21,6 +27,7 @@ jobs:
           version: latest
           working-directory: src/server/
           args: -v
+          skip-go-installation: true
 
       - name: Go Test
         run: |
