@@ -2,7 +2,7 @@
 IVANKPROD.RU website
 (go, webpack)
 
-[![Lint and Test](https://github.com/ivankprod/ivankprod.ru/actions/workflows/lint-and-test.yml/badge.svg?branch=main)](https://github.com/ivankprod/ivankprod.ru/actions/workflows/lint-and-test.yml)
+[![CI](https://github.com/ivankprod/ivankprod.ru/actions/workflows/ci.yml/badge.svg)](https://github.com/ivankprod/ivankprod.ru/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ivankprod/ivankprod.ru/branch/main/graph/badge.svg?token=NLBM9MA475)](https://codecov.io/gh/ivankprod/ivankprod.ru)
 
 # Setup
