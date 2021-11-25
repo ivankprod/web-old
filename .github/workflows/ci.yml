@@ -40,6 +40,16 @@ jobs:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('src/server/go.sum') }}
 
+      - name: Go Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          working-directory: ${{ env.working-directory }}
+          args: -v
+          #skip-pkg-cache: true
+          #skip-build-cache: true
+          skip-go-installation: true
+
       - name: Go Test
         run: sudo go test -coverprofile=coverage.out -race ./...
         working-directory: ${{ env.working-directory }}
@@ -50,16 +60,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ env.working-directory }}/coverage.out
           verbose: true
-
-      - name: Go Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
-          working-directory: ${{ env.working-directory }}
-          args: -v
-          skip-pkg-cache: true
-          skip-build-cache: true
-          skip-go-installation: true
 
   frontend:
     name: Frontend
