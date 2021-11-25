@@ -33,16 +33,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Go Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
-          working-directory: ${{ env.working-directory }}
-          args: -v
-          skip-pkg-cache: true
-          skip-build-cache: true
-          skip-go-installation: true
-
       - name: Go Test
         run: |
           cd ${{ env.working-directory }}
@@ -55,6 +45,16 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ env.working-directory }}/coverage.out
           verbose: true
+
+      - name: Go Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          working-directory: ${{ env.working-directory }}
+          args: -v
+          skip-pkg-cache: true
+          skip-build-cache: true
+          skip-go-installation: true
 
   frontend:
     name: Frontend
