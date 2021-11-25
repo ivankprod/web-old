@@ -13,11 +13,12 @@ jobs:
         go-version: [ '1.16' ]
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
+    env:
+      working-directory: ./src/server
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Go
-        uses: actions/setup-go@v2
+      - uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -25,20 +26,19 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
-          working-directory: src/server/
+          working-directory: ${{ env.working-directory }}
           args: -v
           skip-go-installation: true
 
       - name: Go Test
-        run: |
-          cd src/server/
-          sudo go test -coverprofile=coverage.out -race -v ./...
+        run: sudo go test -coverprofile=coverage.out -race -v ./...
+        working-directory: ${{ env.working-directory }}
 
       - name: Push Go coverage
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: src/server/coverage.out
+          files: ${{ env.working-directory }}/coverage.out
           verbose: true
 
   frontend:
@@ -48,28 +48,37 @@ jobs:
         node-version: [ '16' ]
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
+    env:
+      working-directory: ./src/frontend
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: ${{ env.working-directory }}/node_modules
+          key: node-modules-${{ hashFiles('src/frontend/package-lock.json') }}
+
+      - name: Install JS dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+        working-directory: ${{ env.working-directory }}
+
       - name: JS Lint
-        run: |
-          cd src/frontend/
-          npm ci
-          npm run lint
+        run: npm run lint
+        working-directory: ${{ env.working-directory }}
 
       - name: JS Test
-        run: |
-          cd src/frontend/
-          npm run test
+        run: npm run test
+        working-directory: ${{ env.working-directory }}
 
       - name: Push JS coverage
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: src/frontend/src/scripts/coverage/
+          directory: ${{ env.working-directory }}/src/scripts/coverage/
           verbose: true
