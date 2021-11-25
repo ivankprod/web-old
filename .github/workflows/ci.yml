@@ -44,8 +44,10 @@ jobs:
           skip-go-installation: true
 
       - name: Go Test
-        run: sudo go test -coverprofile=coverage.out -race -v ./...
-        working-directory: ${{ env.working-directory }}
+        run: |
+          cd ${{ env.working-directory }}
+          sudo go test -coverprofile=coverage.out -race -v ./...
+        #working-directory: ${{ env.working-directory }}
 
       - name: Push Go coverage
         uses: codecov/codecov-action@v2
