@@ -8,12 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/modules/admin"
-	"ivankprod.ru/src/server/modules/auth"
-	"ivankprod.ru/src/server/modules/models"
-	"ivankprod.ru/src/server/modules/monitor"
-	"ivankprod.ru/src/server/modules/routes"
-	"ivankprod.ru/src/server/modules/utils"
+	"ivankprod.ru/src/server/internal/admin"
+	"ivankprod.ru/src/server/internal/auth"
+	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/monitor"
+	"ivankprod.ru/src/server/internal/routes"
+	"ivankprod.ru/src/server/internal/utils"
 )
 
 // All errors

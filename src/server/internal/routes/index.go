@@ -4,11 +4,12 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"ivankprod.ru/src/server/modules/models"
-	"ivankprod.ru/src/server/modules/utils"
+
+	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/utils"
 )
 
-func RouteAboutIndex(c *fiber.Ctx) error {
+func RouteHomeIndex(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil
@@ -20,18 +21,18 @@ func RouteAboutIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("about", fiber.Map{
+	err := c.Render("index", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "О компании - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    "Главная - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-		"pageScope":    "about",
+		"pageScope":    "home",
 		"ogTags": fiber.Map{
-			"title": "О компании - " + os.Getenv("INFO_TITLE_BASE"),
+			"title": os.Getenv("INFO_TITLE_BASE"),
 			"type":  "website",
 		},
-		"activeAbout": true,
-		"data":        data,
+		"activeHome": true,
+		"data":       data,
 	})
 
 	if err == nil {

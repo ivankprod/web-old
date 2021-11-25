@@ -4,8 +4,9 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"ivankprod.ru/src/server/modules/models"
-	"ivankprod.ru/src/server/modules/utils"
+
+	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/utils"
 )
 
 func RouteProjectsIndex(c *fiber.Ctx) error {

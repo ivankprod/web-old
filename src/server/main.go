@@ -23,9 +23,9 @@ import (
 	"github.com/markbates/pkger/pkging"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/modules/db"
-	"ivankprod.ru/src/server/modules/router"
-	"ivankprod.ru/src/server/modules/utils"
+	"ivankprod.ru/src/server/internal/db"
+	"ivankprod.ru/src/server/internal/router"
+	"ivankprod.ru/src/server/internal/utils"
 )
 
 var (

@@ -8,10 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/handlebars"
 
-	"ivankprod.ru/src/server/modules/models"
+	"ivankprod.ru/src/server/internal/models"
 )
 
-func TestRouteServicesIndex(t *testing.T) {
+func TestRouteContactsIndex(t *testing.T) {
 	if e := os.Mkdir("./logs", 0666); e != nil && !os.IsExist(e) {
 		t.Errorf("Error during test: %v", e.Error())
 	}
@@ -62,31 +62,31 @@ func TestRouteServicesIndex(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Services route should return code 200 with logger",
+			name: "Contacts route should return code 200 with logger",
 			args: args{
 				method:     "GET",
-				route:      "/services/",
-				handler:    RouteServicesIndex,
+				route:      "/contacts/",
+				handler:    RouteContactsIndex,
 				middleware: middlewareLogger,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Services route should return code 200 with locals",
+			name: "Contacts route should return code 200 with locals",
 			args: args{
 				method:     "GET",
-				route:      "/services/",
-				handler:    RouteServicesIndex,
+				route:      "/contacts/",
+				handler:    RouteContactsIndex,
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Services route should return code 404",
+			name: "Contacts route should return code 404",
 			args: args{
 				method:     "GET",
-				route:      "/servicesss/",
-				handler:    RouteServicesIndex,
+				route:      "/contactsss/",
+				handler:    RouteContactsIndex,
 				middleware: middlewareSkip,
 			},
 			wantCode: 404,
@@ -101,17 +101,17 @@ func TestRouteServicesIndex(t *testing.T) {
 				StrictRouting: true,
 			})
 
-			app.Add(tt.args.method, "/services/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+			app.Add(tt.args.method, "/contacts/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)
 
 			if err != nil {
-				t.Errorf("RouteServicesIndex() error = %v, want no errors", err)
+				t.Errorf("RouteContactsIndex() error = %v, want no errors", err)
 			}
 
 			if resp.StatusCode != tt.wantCode {
-				t.Errorf("RouteServicesIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
+				t.Errorf("RouteContactsIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
 			}
 		})
 	}
