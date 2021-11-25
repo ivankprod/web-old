@@ -46,8 +46,8 @@ jobs:
           version: latest
           working-directory: ${{ env.working-directory }}
           args: -v
-          #skip-pkg-cache: true
-          #skip-build-cache: true
+          skip-pkg-cache: true
+          skip-build-cache: true
           skip-go-installation: true
 
       - name: Go Test
