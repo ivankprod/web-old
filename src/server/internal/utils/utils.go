@@ -167,40 +167,44 @@ func (p *URLParams) ToString(escaped bool) string {
 
 // OAuth links
 func GetAuthLinks() fiber.Map {
-	query_vk := &URLParams{}
-	(*query_vk)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
-	(*query_vk)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query_vk)["scope"] = "email"
-	(*query_vk)["response_type"] = "code"
-	(*query_vk)["state"] = "vk"
+	queryVK := &URLParams{
+		"client_id":     os.Getenv("AUTH_VK_CLIENT_ID"),
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"scope":         "email",
+		"response_type": "code",
+		"state":         "vk",
+	}
 
-	query_fb := &URLParams{}
-	(*query_fb)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
-	(*query_fb)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query_fb)["scope"] = "email"
-	(*query_fb)["response_type"] = "code"
-	(*query_fb)["state"] = "facebook"
+	queryFB := &URLParams{
+		"client_id":     os.Getenv("AUTH_FB_CLIENT_ID"),
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"scope":         "email",
+		"response_type": "code",
+		"state":         "facebook",
+	}
 
-	query_ya := &URLParams{}
-	(*query_ya)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
-	(*query_ya)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query_ya)["response_type"] = "code"
-	(*query_ya)["state"] = "yandex"
+	queryYA := &URLParams{
+		"client_id":     os.Getenv("AUTH_YA_CLIENT_ID"),
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"response_type": "code",
+		"state":         "yandex",
+	}
 
-	query_gl := &URLParams{}
-	(*query_gl)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
-	(*query_gl)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query_gl)["scope"] = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
-	(*query_gl)["access_type"] = "online"
-	(*query_gl)["include_granted_scopes"] = "false"
-	(*query_gl)["response_type"] = "code"
-	(*query_gl)["state"] = "google"
+	queryGL := &URLParams{
+		"client_id":              os.Getenv("AUTH_GL_CLIENT_ID"),
+		"redirect_uri":           "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"scope":                  "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+		"access_type":            "online",
+		"include_granted_scopes": "false",
+		"response_type":          "code",
+		"state":                  "google",
+	}
 
 	return fiber.Map{
-		"vk": "https://oauth.vk.com/authorize" + (*query_vk).ToString(true),
-		"fb": "https://www.facebook.com/v11.0/dialog/oauth" + (*query_fb).ToString(true),
-		"ya": "https://oauth.yandex.ru/authorize" + (*query_ya).ToString(true),
-		"gl": "https://accounts.google.com/o/oauth2/v2/auth" + (*query_gl).ToString(true),
+		"vk": "https://oauth.vk.com/authorize" + queryVK.ToString(true),
+		"fb": "https://www.facebook.com/v11.0/dialog/oauth" + queryFB.ToString(true),
+		"ya": "https://oauth.yandex.ru/authorize" + queryYA.ToString(true),
+		"gl": "https://accounts.google.com/o/oauth2/v2/auth" + queryGL.ToString(true),
 	}
 }
 
