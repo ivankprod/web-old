@@ -58,12 +58,12 @@ func WebmasterAdministratorAccess(c *fiber.Ctx) error {
 
 //  VK authentication
 func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
-	query := &utils.URLParams{}
-
-	(*query)["client_id"] = os.Getenv("AUTH_VK_CLIENT_ID")
-	(*query)["client_secret"] = os.Getenv("AUTH_VK_CLIENT_SECRET")
-	(*query)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query)["code"] = c.Query("code")
+	query := &utils.URLParams{
+		"client_id":     os.Getenv("AUTH_VK_CLIENT_ID"),
+		"client_secret": os.Getenv("AUTH_VK_CLIENT_SECRET"),
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"code":          c.Query("code"),
+	}
 
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
 
@@ -91,14 +91,14 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 	userID := strconv.FormatFloat((*ress1)["user_id"].(float64), 'f', 0, 64)
 
 	if (*ress1)["access_token"] != nil {
-		query := &utils.URLParams{}
+		query := &utils.URLParams{
+			"v":            "5.131",
+			"uids":         userID,
+			"access_token": (*ress1)["access_token"].(string),
+			"fields":       "photo_400_orig",
+		}
 
-		(*query)["v"] = "5.131"
-		(*query)["uids"] = userID
-		(*query)["access_token"] = (*ress1)["access_token"].(string)
-		(*query)["fields"] = "photo_400_orig"
-
-		code, res, errs := (*req).Get("https://api.vk.com/method/users.get" + (*query).ToString(true)).Bytes()
+		code, res, errs := req.Get("https://api.vk.com/method/users.get" + query.ToString(true)).Bytes()
 
 		if (code != 200 && code != 400) || len(errs) > 0 {
 			for _, v := range errs {
@@ -130,7 +130,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 			Type:        0,
 		}
 
-		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 0)
+		id, _, _, err := models.ExistsUser(db, user.SocialID, 0)
 		if err != nil {
 			return err
 		}
@@ -141,8 +141,8 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 			}
 		} else {
 			if userExisting != nil {
-				(*user).Group = (*userExisting).Group
-				(*user).Role = (*userExisting).Role
+				user.Group = userExisting.Group
+				user.Role = userExisting.Role
 			}
 
 			id, err = models.AddUser(db, user)
@@ -154,7 +154,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+userID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+user.SocialID+user.AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -170,16 +170,16 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 
 //  Facebook authentication
 func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
-	query := &utils.URLParams{}
-
-	(*query)["client_id"] = os.Getenv("AUTH_FB_CLIENT_ID")
-	(*query)["client_secret"] = os.Getenv("AUTH_FB_CLIENT_SECRET")
-	(*query)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query)["auth_type"] = "rerequest"
-	(*query)["code"] = c.Query("code")
+	query := &utils.URLParams{
+		"client_id":     os.Getenv("AUTH_FB_CLIENT_ID"),
+		"client_secret": os.Getenv("AUTH_FB_CLIENT_SECRET"),
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"auth_type":     "rerequest",
+		"code":          c.Query("code"),
+	}
 
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
-	code, res, errs := (*req).Get("https://graph.facebook.com/v11.0/oauth/access_token" + (*query).ToString(true)).Bytes()
+	code, res, errs := req.Get("https://graph.facebook.com/v11.0/oauth/access_token" + query.ToString(true)).Bytes()
 
 	if (code != 200 && code != 400) || len(errs) > 0 {
 		for _, v := range errs {
@@ -201,12 +201,12 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 	}
 
 	if (*ress1)["access_token"] != nil {
-		query := &utils.URLParams{}
+		query := &utils.URLParams{
+			"access_token": (*ress1)["access_token"].(string),
+			"fields":       "id,email,first_name,last_name,picture.width(400)",
+		}
 
-		(*query)["access_token"] = (*ress1)["access_token"].(string)
-		(*query)["fields"] = "id,email,first_name,last_name,picture.width(400)"
-
-		code, res, errs := (*req).Get("https://graph.facebook.com/me" + (*query).ToString(true)).Bytes()
+		code, res, errs := req.Get("https://graph.facebook.com/me" + query.ToString(true)).Bytes()
 
 		if (code != 200 && code != 400) || len(errs) > 0 {
 			for _, v := range errs {
@@ -237,7 +237,7 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 			Type:        2,
 		}
 
-		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 2)
+		id, _, _, err := models.ExistsUser(db, user.SocialID, 2)
 		if err != nil {
 			return err
 		}
@@ -248,8 +248,8 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 			}
 		} else {
 			if userExisting != nil {
-				(*user).Group = (*userExisting).Group
-				(*user).Role = (*userExisting).Role
+				user.Group = userExisting.Group
+				user.Role = userExisting.Role
 			}
 
 			id, err = models.AddUser(db, user)
@@ -261,7 +261,7 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+user.SocialID+user.AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -277,12 +277,12 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 
 //  Yandex authentication
 func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
-	query := &utils.URLParams{}
-
-	(*query)["client_id"] = os.Getenv("AUTH_YA_CLIENT_ID")
-	(*query)["client_secret"] = os.Getenv("AUTH_YA_CLIENT_SECRET")
-	(*query)["grant_type"] = "authorization_code"
-	(*query)["code"] = c.Query("code")
+	query := &utils.URLParams{
+		"client_id":     os.Getenv("AUTH_YA_CLIENT_ID"),
+		"client_secret": os.Getenv("AUTH_YA_CLIENT_SECRET"),
+		"grant_type":    "authorization_code",
+		"code":          c.Query("code"),
+	}
 
 	a := fiber.AcquireAgent()
 	req := a.Request()
@@ -360,7 +360,7 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			Type:        1,
 		}
 
-		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 1)
+		id, _, _, err := models.ExistsUser(db, user.SocialID, 1)
 		if err != nil {
 			return err
 		}
@@ -371,8 +371,8 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			}
 		} else {
 			if userExisting != nil {
-				(*user).Group = (*userExisting).Group
-				(*user).Role = (*userExisting).Role
+				user.Group = userExisting.Group
+				user.Role = userExisting.Role
 			}
 
 			id, err = models.AddUser(db, user)
@@ -384,7 +384,7 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+user.SocialID+user.AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
@@ -400,16 +400,16 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 
 //  Google authentication
 func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
-	query := &utils.URLParams{}
-
-	(*query)["client_id"] = os.Getenv("AUTH_GL_CLIENT_ID")
-	(*query)["client_secret"] = os.Getenv("AUTH_GL_CLIENT_SECRET")
-	(*query)["grant_type"] = "authorization_code"
-	(*query)["redirect_uri"] = "https://" + os.Getenv("SERVER_HOST") + "/auth/"
-	(*query)["code"] = c.Query("code")
+	query := &utils.URLParams{
+		"client_id":     os.Getenv("AUTH_GL_CLIENT_ID"),
+		"client_secret": os.Getenv("AUTH_GL_CLIENT_SECRET"),
+		"grant_type":    "authorization_code",
+		"redirect_uri":  "https://" + os.Getenv("SERVER_HOST") + "/auth/",
+		"code":          c.Query("code"),
+	}
 
 	req := &fiber.Client{NoDefaultUserAgentHeader: false}
-	code, res, errs := (*req).Post("https://oauth2.googleapis.com/token" + (*query).ToString(true)).Bytes()
+	code, res, errs := req.Post("https://oauth2.googleapis.com/token" + query.ToString(true)).Bytes()
 
 	if (code != 200 && code != 400) || len(errs) > 0 {
 		for _, v := range errs {
@@ -432,7 +432,7 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 	}
 
 	if (*ress1)["access_token"] != nil {
-		a := (*req).Get("https://www.googleapis.com/oauth2/v1/userinfo?alt=json")
+		a := req.Get("https://www.googleapis.com/oauth2/v1/userinfo?alt=json")
 		a.Request().Header.Set("authorization", "Bearer "+(*ress1)["access_token"].(string))
 
 		code, res, errs := a.Bytes()
@@ -467,7 +467,7 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			Type:        3,
 		}
 
-		id, _, _, err := models.ExistsUser(db, (*user).SocialID, 3)
+		id, _, _, err := models.ExistsUser(db, user.SocialID, 3)
 		if err != nil {
 			return err
 		}
@@ -478,8 +478,8 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			}
 		} else {
 			if userExisting != nil {
-				(*user).Group = (*userExisting).Group
-				(*user).Role = (*userExisting).Role
+				user.Group = userExisting.Group
+				user.Role = userExisting.Role
 			}
 
 			id, err = models.AddUser(db, user)
@@ -491,7 +491,7 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 		if userExisting == nil {
 			c.Cookie(&fiber.Cookie{
 				Name:     "session",
-				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+(*user).SocialID+(*user).AccessToken+c.Get("user-agent")),
+				Value:    strconv.FormatUint(id, 10) + ":" + utils.HashSHA512(strconv.FormatUint(id, 10)+user.SocialID+user.AccessToken+c.Get("user-agent")),
 				Path:     "/",
 				MaxAge:   86400 * 7,
 				Expires:  time.Now().Add(time.Hour * 168),
