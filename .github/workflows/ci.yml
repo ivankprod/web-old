@@ -40,22 +40,17 @@ jobs:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
           key: ${{ runner.os }}-go-mod-${{ hashFiles('src/server/go.sum') }}
 
-      - name: Change workdir
-        run: cd ${{ env.working-directory }}
-
-      # go install github.com/securego/gosec/v2/cmd/gosec@latest
       - name: Run Gosec
-        env:
-          GO111MODULE: off
         run: |
           curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
-          go get -d
           gosec -exclude=G402 -exclude-generated ./...
+        working-directory: ${{ env.working-directory }}
 
       - name: Go Lint
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
+          working-directory: ${{ env.working-directory }}
           args: -v
           skip-pkg-cache: true
           skip-build-cache: true
@@ -63,12 +58,13 @@ jobs:
 
       - name: Go Test
         run: sudo go test -coverprofile=coverage.out -v ./...
+        working-directory: ${{ env.working-directory }}
 
       - name: Push Go coverage
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.out
+          files: ${{ env.working-directory }}/coverage.out
           verbose: true
 
   frontend:
