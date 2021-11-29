@@ -14,7 +14,6 @@ jobs:
         os: [ ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     env:
-      GO111MODULE: on
       working-directory: ./src/server
     steps:
       - uses: actions/setup-go@v2
@@ -46,6 +45,10 @@ jobs:
       
       - name: Run Gosec
         uses: securego/gosec@master
+        env:
+          GO111MODULE: on
+          GOROOT:
+          working-directory:
         with:
           args: '-exclude=G402 -exclude-generated ./...'
 
