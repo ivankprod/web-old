@@ -47,8 +47,8 @@ jobs:
         uses: securego/gosec@master
         env:
           GO111MODULE: on
-          GOROOT:
-          working-directory:
+          GOROOT: ''
+          working-directory: ''
         with:
           args: '-exclude=G402 -exclude-generated ./...'
 
