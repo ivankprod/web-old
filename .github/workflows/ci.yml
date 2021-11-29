@@ -42,15 +42,11 @@ jobs:
 
       - name: Change workdir
         run: cd ${{ env.working-directory }}
-      
+
       - name: Run Gosec
-        uses: securego/gosec@master
-        env:
-          GO111MODULE: on
-          GOROOT: ''
-          working-directory: ''
-        with:
-          args: '-exclude=G402 -exclude-generated ./...'
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -exclude=G402 -exclude-generated ./...
 
       - name: Go Lint
         uses: golangci/golangci-lint-action@v2
