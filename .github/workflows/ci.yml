@@ -46,9 +46,10 @@ jobs:
       # go install github.com/securego/gosec/v2/cmd/gosec@latest
       - name: Run Gosec
         env:
-          GO111MODULE: on
+          GO111MODULE: off
         run: |
           curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
+          go get -d
           gosec -exclude=G402 -exclude-generated ./...
 
       - name: Go Lint
