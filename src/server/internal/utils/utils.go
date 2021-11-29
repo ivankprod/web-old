@@ -87,9 +87,9 @@ func (p *Sitemap) Nest() *Sitemap {
 	var added []int64
 
 	// insert childs
-	for _, v := range *p {
+	for i, v := range *p {
 		if v.ParentID != 0 {
-			(*p).addChild(v.ParentID, &v)
+			(*p).addChild(v.ParentID, &(*p)[i])
 
 			added = append(added, v.ID)
 		}
@@ -114,8 +114,8 @@ func childLookup(item *SitemapPath) string {
 	html := "\n<li><a href=\"" + item.Path + "\" class=\"spa\">" + item.Title + "</a>"
 
 	if len(item.Children) > 0 {
-		for _, v := range item.Children {
-			html += "<ul>" + childLookup(&v) + "</ul>"
+		for i := range item.Children {
+			html += "<ul>" + childLookup(&item.Children[i]) + "</ul>"
 		}
 	}
 
@@ -287,21 +287,25 @@ func DevLogger(uri string, ip string, status int) bool {
 	memStats := &runtime.MemStats{}
 	runtime.ReadMemStats(memStats)
 
-	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+"_dev.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+"_dev.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 
 	if err != nil {
+		log.SetPrefix(TimeMSK_ToLocaleString() + "\n")
 		log.Printf("Error opening devlog file: %v\n", err)
 
 		return false
 	} else {
 		log.SetFlags(0)
+		log.SetPrefix(TimeMSK_ToLocaleString() + "\n")
 		log.SetOutput(f)
 
-		log.Printf("\nREQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",
+		log.Printf("REQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",
 			TimeMSK_ToLocaleString(), uri, ip, status,
 			memStats.Alloc/1024, memStats.TotalAlloc/1024, memStats.Sys/1024, memStats.NumGC)
 
-		defer f.Close()
+		defer func(f *os.File) {
+			_ = f.Close()
+		}(f)
 	}
 
 	return true

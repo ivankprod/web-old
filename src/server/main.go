@@ -65,11 +65,17 @@ func loadSitemap(fileSitemapJSON *pkging.File) *string {
 
 func main() {
 	// Logging file
-	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Fatalf("Error opening log file: %v\n", err)
 	}
-	defer f.Close()
+
+	defer func(f *os.File) {
+		if err := f.Close(); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+			log.Printf("Error closing log file: %v\n", err)
+		}
+	}(f)
 
 	// Server base logging
 	log.SetFlags(0)
@@ -224,7 +230,7 @@ func main() {
 	}
 
 	// HTTPS listener
-	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+	config := &tls.Config{Certificates: []tls.Certificate{cer}, MinVersion: tls.VersionTLS13}
 	ln, err := tls.Listen("tcp" /*os.Getenv("SERVER_HOST")+*/, ":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
@@ -254,10 +260,16 @@ func main() {
 // App fail
 func (app *App) fail(msg ...string) {
 	if app.DBM != nil {
-		app.DBM.Close()
+		if err := app.DBM.Close(); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+			log.Println(err)
+		}
 	}
 	if app.DBT != nil {
-		app.DBT.Close()
+		if err := app.DBT.Close(); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+			log.Println(err)
+		}
 	}
 
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
@@ -272,10 +284,16 @@ func (app *App) fail(msg ...string) {
 // App exit
 func (app *App) exit(msg ...string) {
 	if app.DBM != nil {
-		app.DBM.Close()
+		if err := app.DBM.Close(); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+			log.Println(err)
+		}
 	}
 	if app.DBT != nil {
-		app.DBT.Close()
+		if err := app.DBT.Close(); err != nil {
+			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+			log.Println(err)
+		}
 	}
 
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
