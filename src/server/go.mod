@@ -9,7 +9,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/here v0.6.2 // indirect
 	github.com/gofiber/adaptor/v2 v2.1.14 // indirect
-	github.com/gofiber/fiber/v2 v2.22.0
+	github.com/gofiber/fiber/v2 v2.23.0
 	github.com/gofiber/helmet/v2 v2.2.4
 	github.com/gofiber/template v1.6.19
 	github.com/jmoiron/sqlx v1.3.4
