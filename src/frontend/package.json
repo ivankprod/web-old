@@ -47,7 +47,7 @@
     "webpack-subresource-integrity": "^5.0.0"
   },
   "dependencies": {
-    "core-js": "^3.19.2",
+    "core-js": "^3.19.3",
     "normalize.css": "^8.0.1"
   }
 }
