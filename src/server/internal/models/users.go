@@ -13,6 +13,14 @@ import (
 	"ivankprod.ru/src/server/internal/utils"
 )
 
+// User Role constants
+const (
+	USER_ROLE_ADMINISTRATOR uint64 = 4
+	USER_ROLE_WEBMASTER     uint64 = 3
+	USER_ROLE_GUEST         uint64 = 2
+	USER_ROLE_BANNED        uint64 = 1
+)
+
 // Tarantool param type
 type AX []interface{}
 
@@ -386,7 +394,7 @@ func AddUser(db *tarantool.Connection, user *User) (uint64, error) {
 	var tuplesUsers Users
 
 	if user.Role == 0 {
-		user.Role = 2
+		user.Role = USER_ROLE_GUEST
 	}
 
 	err := db.InsertTyped("users", AX{

@@ -695,6 +695,44 @@ func Test_IsEmptyStruct(t *testing.T) {
 	}
 }
 
+func TestContains(t *testing.T) {
+	type args struct {
+		val   uint64
+		slice []uint64
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "[1, 2, 3] contains 1",
+			args: args{
+				val:   1,
+				slice: []uint64{1, 2, 3},
+			},
+			want: true,
+		},
+		{
+			name: "[1, 2, 3] not contains 4",
+			args: args{
+				val:   4,
+				slice: []uint64{1, 2, 3},
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Contains(tt.args.val, tt.args.slice...); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestTimeMSK_ToTime(t *testing.T) {
 	tNow := time.Now()
 

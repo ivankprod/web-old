@@ -100,12 +100,12 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 	})
 
 	// Admin
-	adminGroup := app.Group("/admin/", auth.WebmasterAdministratorAccess)
+	adminGroup := app.Group("/admin/", auth.Access(models.USER_ROLE_ADMINISTRATOR, models.USER_ROLE_WEBMASTER))
 	adminGroup.Get("/", admin.RouteAdminIndex)
 
 	// Monitoring routes
-	adminGroup.Group("/monitor/prometheus/", auth.WebmasterAccess, monitor.RoutePrometheus)
-	adminGroup.Group("/monitor/grafana/", auth.WebmasterAccess, monitor.RouteGrafana)
+	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RoutePrometheus)
+	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
 
 	// Routes
 	app.Get("/", routes.RouteHomeIndex)

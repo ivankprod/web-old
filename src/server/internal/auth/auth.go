@@ -14,6 +14,22 @@ import (
 	"ivankprod.ru/src/server/internal/utils"
 )
 
+// Page access middleware
+func Access(roles ...uint64) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		uAuth, ok := c.Locals("user_auth").(*models.User)
+		if !ok {
+			uAuth = nil
+		}
+
+		if uAuth == nil || !utils.Contains(uAuth.Role, roles...) {
+			return fiber.NewError(fiber.StatusForbidden, "Доступ к запрашиваемой странице запрещен")
+		}
+
+		return c.Next()
+	}
+}
+
 //  Webmaster access middleware
 func WebmasterAccess(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)

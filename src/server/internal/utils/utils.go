@@ -240,6 +240,17 @@ func IsEmptyStruct(object interface{}) bool {
 	return reflect.DeepEqual(object, empty)
 }
 
+// Contains for uint64[]
+func Contains(val uint64, slice ...uint64) bool {
+	for _, v := range slice {
+		if val == v {
+			return true
+		}
+	}
+
+	return false
+}
+
 // Time functions: to time
 func TimeMSK_ToTime(mock ...time.Time) time.Time {
 	now := time.Now()
