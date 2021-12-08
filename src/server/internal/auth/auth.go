@@ -30,48 +30,6 @@ func Access(roles ...uint64) func(c *fiber.Ctx) error {
 	}
 }
 
-//  Webmaster access middleware
-func WebmasterAccess(c *fiber.Ctx) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
-	if !ok {
-		uAuth = nil
-	}
-
-	if uAuth == nil || uAuth.Role != 3 {
-		return fiber.NewError(fiber.StatusForbidden, "Доступ к запрашиваемой странице запрещен")
-	}
-
-	return c.Next()
-}
-
-//  Administrator access middleware
-func AdministratorAccess(c *fiber.Ctx) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
-	if !ok {
-		uAuth = nil
-	}
-
-	if uAuth == nil || uAuth.Role != 4 {
-		return fiber.NewError(fiber.StatusForbidden, "Доступ к запрашиваемой странице запрещен")
-	}
-
-	return c.Next()
-}
-
-//  Webmaster & Administrator access middleware
-func WebmasterAdministratorAccess(c *fiber.Ctx) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
-	if !ok {
-		uAuth = nil
-	}
-
-	if uAuth == nil || (uAuth.Role != 3 && uAuth.Role != 4) {
-		return fiber.NewError(fiber.StatusForbidden, "Доступ к запрашиваемой странице запрещен")
-	}
-
-	return c.Next()
-}
-
 //  VK authentication
 func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
 	query := &utils.URLParams{

@@ -99,14 +99,16 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 		return c.Next()
 	})
 
+	// Monitoring Grafana WebSocket route
+	app.All("/admin/monitor/grafana/api/live/ws", auth.Access(models.USER_ROLE_WEBMASTER), monitor.GrafanaWSProxy)
+
 	// Admin
 	adminGroup := app.Group("/admin/", auth.Access(models.USER_ROLE_ADMINISTRATOR, models.USER_ROLE_WEBMASTER))
 	adminGroup.Get("/", admin.RouteAdminIndex)
 
 	// Monitoring routes
 	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RoutePrometheus)
-	grafanaGroup := adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
-	grafanaGroup.All("/api/live/ws", monitor.GrafanaWSProxy)
+	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
 
 	// Routes
 	app.Get("/", routes.RouteHomeIndex)

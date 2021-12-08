@@ -2,11 +2,13 @@ package monitor
 
 import (
 	"crypto/tls"
-	"fmt"
+	"net/http"
 	"sync"
 
+	"github.com/fasthttp/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/proxy"
+	"github.com/valyala/fasthttp"
 	wsproxy "github.com/yeqown/fasthttp-reverse-proxy/v2"
 )
 
@@ -30,17 +32,26 @@ func GrafanaWSProxy(c *fiber.Ctx) error {
 	once.Do(func() {
 		var err error
 
+		dialer := &websocket.Dialer{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+
 		proxyServer, err = wsproxy.NewWSReverseProxyWith(
 			wsproxy.WithURL_OptionWS("wss://grafana:3000/admin/monitor/grafana/api/live/ws"),
-			//wsproxy.WithTLSConfig(&tls.Config{InsecureSkipVerify: true}),
+			wsproxy.WithDialer_OptionWS(dialer),
+			wsproxy.WithForwardHeadersHandlers_OptionWS(func(ctx *fasthttp.RequestCtx) (forwardHeader http.Header) {
+				headers := http.Header{}
+
+				if auth := ctx.Request.Header.Peek("Cookie"); string(auth) != "" {
+					headers.Add("Cookie", string(auth))
+				}
+
+				return headers
+			}),
 		)
 
 		if err != nil {
 			panic(err)
 		}
 	})
-
-	fmt.Println("PROXY!")
 
 	proxyServer.ServeHTTP(c.Context())
 	return nil
