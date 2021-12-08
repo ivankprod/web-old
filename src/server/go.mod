@@ -19,6 +19,7 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
+	github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.1
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309 // indirect
 	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect

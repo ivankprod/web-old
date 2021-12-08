@@ -105,7 +105,8 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 
 	// Monitoring routes
 	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RoutePrometheus)
-	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
+	grafanaGroup := adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
+	grafanaGroup.All("/api/live/ws", monitor.GrafanaWSProxy)
 
 	// Routes
 	app.Get("/", routes.RouteHomeIndex)
