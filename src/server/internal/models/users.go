@@ -33,7 +33,7 @@ type User struct {
 	NameLast       string `json:"userNameLast"`
 	AvatarPath     string `json:"userAvatarPath"`
 	Email          string `json:"userEmail"`
-	AccessToken    string `json:"userAccessToken"`
+	AccessToken    string `json:"-"`
 	LastAccessTime string `json:"userLastAccessTime"`
 	Role           uint64 `json:"userRole"`
 	RoleDesc       string `json:"userRoleDesc"`

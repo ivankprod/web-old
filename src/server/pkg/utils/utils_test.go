@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -689,6 +691,79 @@ func Test_IsEmptyStruct(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := IsEmptyStruct(tt.args.object); got != tt.want {
 				t.Errorf("IsEmptyStruct() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIterateStruct(t *testing.T) {
+	type AX []interface{}
+
+	type struct1 struct {
+		Id  *int
+		Str *string
+	}
+
+	type struct2 struct {
+		Id  *int
+		Str *string
+		Rts *int
+	}
+
+	id := 5
+	str := "asd"
+
+	type args struct {
+		s interface{}
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		wantSet string
+	}{
+		{
+			name: "Test for struct{*int, *string}",
+			args: args{
+				s: struct1{
+					Id:  &id,
+					Str: &str,
+				},
+			},
+			wantSet: "[[= field_id 5] [= field_str asd]]",
+		},
+		{
+			name: "Test for pointer to struct{*int, *string}",
+			args: args{
+				s: &struct1{
+					Id:  &id,
+					Str: &str,
+				},
+			},
+			wantSet: "[[= field_id 5] [= field_str asd]]",
+		},
+		{
+			name: "Test for pointer to struct{*int, *string, nil}",
+			args: args{
+				s: &struct2{
+					Id:  &id,
+					Str: &str,
+				},
+			},
+			wantSet: "[[= field_id 5] [= field_str asd]]",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			set := make([]interface{}, 0)
+
+			IterateStruct(tt.args.s, func(field string, value interface{}) {
+				set = append(set, AX{"=", "field_" + strings.ToLower(field), value})
+			})
+
+			if fmt.Sprint(set) != tt.wantSet {
+				t.Errorf("IterateStruct() = %v, wantSet %v", fmt.Sprint(set), tt.wantSet)
 			}
 		})
 	}

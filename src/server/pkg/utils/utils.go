@@ -238,6 +238,27 @@ func IsEmptyStruct(object interface{}) bool {
 	return reflect.DeepEqual(object, empty)
 }
 
+// Iterate over struct with callback
+func IterateStruct(s interface{}, callback func(field string, value interface{})) {
+	v := reflect.ValueOf(s)
+
+	if v.Kind() == reflect.Ptr && !v.IsNil() {
+		v = v.Elem()
+	}
+
+	if v.Kind() == reflect.Struct {
+		for i := 0; i < v.NumField(); i++ {
+			vv := v.Field(i)
+
+			if vv.Kind() == reflect.Ptr && vv.IsNil() {
+				break
+			}
+
+			callback(v.Type().Field(i).Name, vv.Elem().Interface())
+		}
+	}
+}
+
 // Contains for uint64[]
 func Contains(val uint64, slice ...uint64) bool {
 	for _, v := range slice {
