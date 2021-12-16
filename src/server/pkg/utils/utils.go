@@ -4,11 +4,9 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"reflect"
-	"runtime"
 	"sort"
 	"time"
 
@@ -291,33 +289,4 @@ func HashSHA512(str string) string {
 	hash.Write([]byte(str))
 
 	return hex.EncodeToString(hash.Sum(nil))
-}
-
-// Logger (for dev only)
-func DevLogger(uri string, ip string, status int) bool {
-	memStats := &runtime.MemStats{}
-	runtime.ReadMemStats(memStats)
-
-	f, err := os.OpenFile("./logs/"+DateMSK_ToLocaleSepString()+"_dev.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
-
-	if err != nil {
-		log.SetPrefix(TimeMSK_ToLocaleString() + "\n")
-		log.Printf("Error opening devlog file: %v\n", err)
-
-		return false
-	} else {
-		log.SetFlags(0)
-		log.SetPrefix(TimeMSK_ToLocaleString() + "\n")
-		log.SetOutput(f)
-
-		log.Printf("REQUEST (%s): %s\nFROM: %s\nSTATUS: %d\nMEMORY USAGE (KiB): Alloc = %v; TotalAlloc = %v; Sys = %v; NumGC = %v;\n\n",
-			TimeMSK_ToLocaleString(), uri, ip, status,
-			memStats.Alloc/1024, memStats.TotalAlloc/1024, memStats.Sys/1024, memStats.NumGC)
-
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(f)
-	}
-
-	return true
 }

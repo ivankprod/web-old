@@ -25,7 +25,7 @@ import (
 
 	"ivankprod.ru/src/server/internal/db"
 	"ivankprod.ru/src/server/internal/router"
-	"ivankprod.ru/src/server/internal/utils"
+	"ivankprod.ru/src/server/pkg/utils"
 )
 
 var (

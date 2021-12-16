@@ -11,7 +11,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/internal/models"
-	"ivankprod.ru/src/server/internal/utils"
+	"ivankprod.ru/src/server/pkg/utils"
 )
 
 // Page access middleware

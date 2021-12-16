@@ -10,7 +10,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"gopkg.in/vmihailenco/msgpack.v2"
 
-	"ivankprod.ru/src/server/internal/utils"
+	"ivankprod.ru/src/server/pkg/utils"
 )
 
 // User Role constants

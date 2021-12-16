@@ -2,7 +2,6 @@ package routes
 
 import (
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,22 +11,6 @@ import (
 )
 
 func TestRouteBlogIndex(t *testing.T) {
-	if e := os.Mkdir("./logs", 0666); e != nil && !os.IsExist(e) {
-		t.Errorf("Error during test: %v", e.Error())
-	}
-
-	t.Cleanup(func() { os.RemoveAll("./logs") })
-
-	middlewareSkip := func(c *fiber.Ctx) error {
-		return c.Next()
-	}
-
-	middlewareLogger := func(c *fiber.Ctx) error {
-		os.Setenv("STAGE_MODE", "dev")
-
-		return c.Next()
-	}
-
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -62,12 +45,11 @@ func TestRouteBlogIndex(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Blog route should return code 200 with logger",
+			name: "Blog route should return code 200",
 			args: args{
-				method:     "GET",
-				route:      "/blog/",
-				handler:    RouteBlogIndex,
-				middleware: middlewareLogger,
+				method:  "GET",
+				route:   "/blog/",
+				handler: RouteBlogIndex,
 			},
 			wantCode: 200,
 		},
@@ -84,10 +66,9 @@ func TestRouteBlogIndex(t *testing.T) {
 		{
 			name: "Blog route should return code 404",
 			args: args{
-				method:     "GET",
-				route:      "/bloggg/",
-				handler:    RouteBlogIndex,
-				middleware: middlewareSkip,
+				method:  "GET",
+				route:   "/bloggg/",
+				handler: RouteBlogIndex,
 			},
 			wantCode: 404,
 		},
@@ -101,7 +82,11 @@ func TestRouteBlogIndex(t *testing.T) {
 				StrictRouting: true,
 			})
 
-			app.Add(tt.args.method, "/blog/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+			if tt.args.middleware != nil {
+				app.Add(tt.args.method, "/blog/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+			} else {
+				app.Add(tt.args.method, "/blog/"+tt.args.routePath, tt.args.handler)
+			}
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)

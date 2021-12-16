@@ -2,7 +2,6 @@ package routes
 
 import (
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,22 +11,6 @@ import (
 )
 
 func TestRouteProjectsIndexView(t *testing.T) {
-	if e := os.Mkdir("./logs", 0666); e != nil && !os.IsExist(e) {
-		t.Errorf("Error during test: %v", e.Error())
-	}
-
-	t.Cleanup(func() { os.RemoveAll("./logs") })
-
-	middlewareSkip := func(c *fiber.Ctx) error {
-		return c.Next()
-	}
-
-	middlewareLogger := func(c *fiber.Ctx) error {
-		os.Setenv("STAGE_MODE", "dev")
-
-		return c.Next()
-	}
-
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -62,12 +45,11 @@ func TestRouteProjectsIndexView(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Projects route should return code 200 with logger",
+			name: "Projects route should return code 200",
 			args: args{
-				method:     "GET",
-				route:      "/projects/",
-				handler:    RouteProjectsIndex,
-				middleware: middlewareLogger,
+				method:  "GET",
+				route:   "/projects/",
+				handler: RouteProjectsIndex,
 			},
 			wantCode: 200,
 		},
@@ -84,22 +66,20 @@ func TestRouteProjectsIndexView(t *testing.T) {
 		{
 			name: "Projects route should return code 404",
 			args: args{
-				method:     "GET",
-				route:      "/projectsss/",
-				handler:    RouteProjectsIndex,
-				middleware: middlewareSkip,
+				method:  "GET",
+				route:   "/projectsss/",
+				handler: RouteProjectsIndex,
 			},
 			wantCode: 404,
 		},
 		{
-			name: "Projects view route should return code 200 with logger",
+			name: "Projects view route should return code 200",
 
 			args: args{
-				method:     "GET",
-				route:      "/projects/it/",
-				routePath:  ":type/",
-				handler:    RouteProjectsView,
-				middleware: middlewareLogger,
+				method:    "GET",
+				route:     "/projects/it/",
+				routePath: ":type/",
+				handler:   RouteProjectsView,
 			},
 			wantCode: 200,
 		},
@@ -119,11 +99,10 @@ func TestRouteProjectsIndexView(t *testing.T) {
 			name: "Projects view route should return code 404",
 
 			args: args{
-				method:     "GET",
-				route:      "/projects/itt/",
-				routePath:  ":type/",
-				handler:    RouteProjectsView,
-				middleware: middlewareSkip,
+				method:    "GET",
+				route:     "/projects/itt/",
+				routePath: ":type/",
+				handler:   RouteProjectsView,
 			},
 			wantCode: 404,
 		},
@@ -137,7 +116,11 @@ func TestRouteProjectsIndexView(t *testing.T) {
 				StrictRouting: true,
 			})
 
-			app.Add(tt.args.method, "/projects/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+			if tt.args.middleware != nil {
+				app.Add(tt.args.method, "/projects/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+			} else {
+				app.Add(tt.args.method, "/projects/"+tt.args.routePath, tt.args.handler)
+			}
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)

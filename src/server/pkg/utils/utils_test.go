@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -931,56 +930,6 @@ func TestHashSHA512(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := HashSHA512(tt.args.str); got != tt.want {
 				t.Errorf("HashSHA512() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestDevLogger(t *testing.T) {
-	type args struct {
-		uri        string
-		ip         string
-		status     int
-		beforeTest func() error
-	}
-
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "DevLogger to true",
-			args: args{
-				uri:        "/some/",
-				ip:         "127.0.0.1",
-				status:     200,
-				beforeTest: func() error { return os.Mkdir("./logs", 0666) },
-			},
-			want: true,
-		},
-		{
-			name: "DevLogger to false",
-			args: args{
-				uri:        "/some/",
-				ip:         "127.0.0.1",
-				status:     200,
-				beforeTest: func() error { return os.RemoveAll("./logs") },
-			},
-			want: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if tt.args.beforeTest != nil {
-				if err := tt.args.beforeTest(); err != nil {
-					t.Errorf("DevLogger() error = %v", err)
-				}
-			}
-
-			if got := DevLogger(tt.args.uri, tt.args.ip, tt.args.status); got != tt.want {
-				t.Errorf("DevLogger() = %v, want %v", got, tt.want)
 			}
 		})
 	}

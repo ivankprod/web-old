@@ -8,7 +8,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/internal/models"
-	"ivankprod.ru/src/server/internal/utils"
+	"ivankprod.ru/src/server/pkg/utils"
 )
 
 func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
@@ -73,12 +73,6 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 			"data": data,
 		})
 
-		if err == nil {
-			if os.Getenv("STAGE_MODE") == "dev" {
-				go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-			}
-		}
-
 		return err
 	}
 }
@@ -99,10 +93,6 @@ func RouteAuthLogout(c *fiber.Ctx) error {
 		HTTPOnly: true,
 		SameSite: "Lax",
 	})
-
-	if os.Getenv("STAGE_MODE") == "dev" {
-		go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-	}
 
 	return c.Redirect("/auth/", 303)
 }

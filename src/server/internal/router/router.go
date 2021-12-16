@@ -13,7 +13,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 	"ivankprod.ru/src/server/internal/monitor"
 	"ivankprod.ru/src/server/internal/routes"
-	"ivankprod.ru/src/server/internal/utils"
+	"ivankprod.ru/src/server/pkg/utils"
 )
 
 // All errors
@@ -58,10 +58,6 @@ func HandleError(c *fiber.Ctx, err error) error {
 		},
 		"data": data,
 	})
-
-	if os.Getenv("STAGE_MODE") == "dev" {
-		go utils.DevLogger(c.Request().URI().String(), c.IP(), code)
-	}
 
 	return rerr
 }
@@ -147,15 +143,8 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 			},
 			"data": data,
 		})
-		if err == nil {
-			if os.Getenv("STAGE_MODE") == "dev" {
-				go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-			}
 
-			return nil
-		}
-
-		return fiber.NewError(fiber.StatusNotFound, "Запрашиваемая страница не найдена либо ещё не создана")
+		return err
 	})
 
 	// 404 error
@@ -183,10 +172,6 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 			},
 			"data": data,
 		})
-
-		if os.Getenv("STAGE_MODE") == "dev" {
-			go utils.DevLogger(c.Request().URI().String(), c.IP(), fiber.StatusNotFound)
-		}
 
 		return err
 	})

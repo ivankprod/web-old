@@ -6,7 +6,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"ivankprod.ru/src/server/internal/models"
-	"ivankprod.ru/src/server/internal/utils"
 )
 
 func RouteBlogIndex(c *fiber.Ctx) error {
@@ -34,12 +33,6 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		"activeBlog": true,
 		"data":       data,
 	})
-
-	if err == nil {
-		if os.Getenv("STAGE_MODE") == "dev" {
-			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-		}
-	}
 
 	return err
 }

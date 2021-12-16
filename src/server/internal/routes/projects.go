@@ -6,7 +6,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"ivankprod.ru/src/server/internal/models"
-	"ivankprod.ru/src/server/internal/utils"
 )
 
 func RouteProjectsIndex(c *fiber.Ctx) error {
@@ -35,12 +34,6 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 		"data":           data,
 	})
 
-	if err == nil {
-		if os.Getenv("STAGE_MODE") == "dev" {
-			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-		}
-	}
-
 	return err
 }
 
@@ -65,7 +58,7 @@ func RouteProjectsView(c *fiber.Ctx) error {
 
 	path := "projects_" + c.Params("type")
 
-	err := c.Render(path, fiber.Map{
+	if err := c.Render(path, fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
 		"pageTitle":    title + " - " + os.Getenv("INFO_TITLE_BASE"),
@@ -77,13 +70,7 @@ func RouteProjectsView(c *fiber.Ctx) error {
 		},
 		"activeProjects": true,
 		"data":           data,
-	})
-
-	if err == nil {
-		if os.Getenv("STAGE_MODE") == "dev" {
-			go utils.DevLogger(c.Request().URI().String(), c.IP(), 200)
-		}
-
+	}); err == nil {
 		return nil
 	}
 
