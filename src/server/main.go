@@ -23,8 +23,8 @@ import (
 	"github.com/markbates/pkger/pkging"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/internal/db"
 	"ivankprod.ru/src/server/internal/router"
+	"ivankprod.ru/src/server/pkg/db"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 

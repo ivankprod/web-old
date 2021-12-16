@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http/httptest"
@@ -10,7 +10,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func TestRouteProjectsIndexView(t *testing.T) {
+func TestHandlerProjectsIndexView(t *testing.T) {
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -49,7 +49,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 			args: args{
 				method:  "GET",
 				route:   "/projects/",
-				handler: RouteProjectsIndex,
+				handler: HandlerProjectsIndex,
 			},
 			wantCode: 200,
 		},
@@ -58,7 +58,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 			args: args{
 				method:     "GET",
 				route:      "/projects/",
-				handler:    RouteProjectsIndex,
+				handler:    HandlerProjectsIndex,
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
@@ -68,7 +68,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 			args: args{
 				method:  "GET",
 				route:   "/projectsss/",
-				handler: RouteProjectsIndex,
+				handler: HandlerProjectsIndex,
 			},
 			wantCode: 404,
 		},
@@ -79,7 +79,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 				method:    "GET",
 				route:     "/projects/it/",
 				routePath: ":type/",
-				handler:   RouteProjectsView,
+				handler:   HandlerProjectsView,
 			},
 			wantCode: 200,
 		},
@@ -90,7 +90,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 				method:     "GET",
 				route:      "/projects/it/",
 				routePath:  ":type/",
-				handler:    RouteProjectsView,
+				handler:    HandlerProjectsView,
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
@@ -102,7 +102,7 @@ func TestRouteProjectsIndexView(t *testing.T) {
 				method:    "GET",
 				route:     "/projects/itt/",
 				routePath: ":type/",
-				handler:   RouteProjectsView,
+				handler:   HandlerProjectsView,
 			},
 			wantCode: 404,
 		},
@@ -126,11 +126,11 @@ func TestRouteProjectsIndexView(t *testing.T) {
 			resp, err := app.Test(req)
 
 			if err != nil {
-				t.Errorf("RouteProjectsIndexView() error = %v, want no errors", err)
+				t.Errorf("HandlerProjectsIndexView() error = %v, want no errors", err)
 			}
 
 			if resp.StatusCode != tt.wantCode {
-				t.Errorf("RouteProjectsIndexView() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
+				t.Errorf("HandlerProjectsIndexView() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
 			}
 		})
 	}

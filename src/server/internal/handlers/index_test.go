@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http/httptest"
@@ -10,7 +10,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func TestRouteBlogIndex(t *testing.T) {
+func TestHandlerHomeIndex(t *testing.T) {
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -34,7 +34,6 @@ func TestRouteBlogIndex(t *testing.T) {
 	type args struct {
 		method     string
 		route      string
-		routePath  string
 		handler    fiber.Handler
 		middleware fiber.Handler
 	}
@@ -45,32 +44,23 @@ func TestRouteBlogIndex(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Blog route should return code 200",
+			name: "Home route should return code 200",
 			args: args{
 				method:  "GET",
-				route:   "/blog/",
-				handler: RouteBlogIndex,
+				route:   "/",
+				handler: HandlerHomeIndex,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Blog route should return code 200 with locals",
+			name: "Home route should return code 200 with locals",
 			args: args{
 				method:     "GET",
-				route:      "/blog/",
-				handler:    RouteBlogIndex,
+				route:      "/",
+				handler:    HandlerHomeIndex,
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
-		},
-		{
-			name: "Blog route should return code 404",
-			args: args{
-				method:  "GET",
-				route:   "/bloggg/",
-				handler: RouteBlogIndex,
-			},
-			wantCode: 404,
 		},
 	}
 
@@ -83,20 +73,20 @@ func TestRouteBlogIndex(t *testing.T) {
 			})
 
 			if tt.args.middleware != nil {
-				app.Add(tt.args.method, "/blog/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+				app.Add(tt.args.method, "/", tt.args.middleware, tt.args.handler)
 			} else {
-				app.Add(tt.args.method, "/blog/"+tt.args.routePath, tt.args.handler)
+				app.Add(tt.args.method, "/", tt.args.handler)
 			}
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)
 
 			if err != nil {
-				t.Errorf("RouteBlogIndex() error = %v, want no errors", err)
+				t.Errorf("HandlerHomeIndex() error = %v, want no errors", err)
 			}
 
 			if resp.StatusCode != tt.wantCode {
-				t.Errorf("RouteBlogIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
+				t.Errorf("HandlerHomeIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
 			}
 		})
 	}

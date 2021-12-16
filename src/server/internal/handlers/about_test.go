@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http/httptest"
@@ -10,7 +10,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func TestRouteServicesIndex(t *testing.T) {
+func TestHandlerAboutIndex(t *testing.T) {
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -45,30 +45,30 @@ func TestRouteServicesIndex(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Services route should return code 200",
+			name: "About route should return code 200",
 			args: args{
 				method:  "GET",
-				route:   "/services/",
-				handler: RouteServicesIndex,
+				route:   "/about/",
+				handler: HandlerAboutIndex,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Services route should return code 200 with locals",
+			name: "About route should return code 200 with locals",
 			args: args{
 				method:     "GET",
-				route:      "/services/",
-				handler:    RouteServicesIndex,
+				route:      "/about/",
+				handler:    HandlerAboutIndex,
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Services route should return code 404",
+			name: "About route should return code 404",
 			args: args{
 				method:  "GET",
-				route:   "/servicesss/",
-				handler: RouteServicesIndex,
+				route:   "/abouttt/",
+				handler: HandlerAboutIndex,
 			},
 			wantCode: 404,
 		},
@@ -83,20 +83,20 @@ func TestRouteServicesIndex(t *testing.T) {
 			})
 
 			if tt.args.middleware != nil {
-				app.Add(tt.args.method, "/services/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+				app.Add(tt.args.method, "/about/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
 			} else {
-				app.Add(tt.args.method, "/services/"+tt.args.routePath, tt.args.handler)
+				app.Add(tt.args.method, "/about/"+tt.args.routePath, tt.args.handler)
 			}
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)
 
 			if err != nil {
-				t.Errorf("RouteServicesIndex() error = %v, want no errors", err)
+				t.Errorf("HandlerAboutIndex() error = %v, want no errors", err)
 			}
 
 			if resp.StatusCode != tt.wantCode {
-				t.Errorf("RouteServicesIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
+				t.Errorf("HandlerAboutIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
 			}
 		})
 	}

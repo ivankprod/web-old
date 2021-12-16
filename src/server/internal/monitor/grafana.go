@@ -17,7 +17,7 @@ var (
 	once        sync.Once
 )
 
-func RouteGrafana(c *fiber.Ctx) error {
+func HandlerGrafana(c *fiber.Ctx) error {
 	proxy.WithTlsConfig(&tls.Config{InsecureSkipVerify: true})
 
 	if err := proxy.Do(c, "https://grafana:3000"+c.OriginalURL()); err != nil {
@@ -28,7 +28,7 @@ func RouteGrafana(c *fiber.Ctx) error {
 	return nil
 }
 
-func GrafanaWSProxy(c *fiber.Ctx) error {
+func HandlerGrafanaWSProxy(c *fiber.Ctx) error {
 	once.Do(func() {
 		var err error
 

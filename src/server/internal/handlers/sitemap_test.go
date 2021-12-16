@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http/httptest"
@@ -10,7 +10,9 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func TestRouteContactsIndex(t *testing.T) {
+func TestHandlerSitemapIndex(t *testing.T) {
+	sitemapTest := ""
+
 	middlewareAuth := func(c *fiber.Ctx) error {
 		c.Locals("user_auth", &models.User{
 			ID:             0,
@@ -45,30 +47,30 @@ func TestRouteContactsIndex(t *testing.T) {
 		wantCode int
 	}{
 		{
-			name: "Contacts route should return code 200",
+			name: "Sitemap route should return code 200",
 			args: args{
 				method:  "GET",
-				route:   "/contacts/",
-				handler: RouteContactsIndex,
+				route:   "/sitemap/",
+				handler: HandlerSitemapIndex(&sitemapTest),
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Contacts route should return code 200 with locals",
+			name: "Sitemap route should return code 200 with locals",
 			args: args{
 				method:     "GET",
-				route:      "/contacts/",
-				handler:    RouteContactsIndex,
+				route:      "/sitemap/",
+				handler:    HandlerSitemapIndex(&sitemapTest),
 				middleware: middlewareAuth,
 			},
 			wantCode: 200,
 		},
 		{
-			name: "Contacts route should return code 404",
+			name: "Sitemap route should return code 404",
 			args: args{
 				method:  "GET",
-				route:   "/contactsss/",
-				handler: RouteContactsIndex,
+				route:   "/sitemappp/",
+				handler: HandlerSitemapIndex(&sitemapTest),
 			},
 			wantCode: 404,
 		},
@@ -83,20 +85,20 @@ func TestRouteContactsIndex(t *testing.T) {
 			})
 
 			if tt.args.middleware != nil {
-				app.Add(tt.args.method, "/contacts/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
+				app.Add(tt.args.method, "/sitemap/"+tt.args.routePath, tt.args.middleware, tt.args.handler)
 			} else {
-				app.Add(tt.args.method, "/contacts/"+tt.args.routePath, tt.args.handler)
+				app.Add(tt.args.method, "/sitemap/"+tt.args.routePath, tt.args.handler)
 			}
 
 			req := httptest.NewRequest(tt.args.method, tt.args.route, nil)
 			resp, err := app.Test(req)
 
 			if err != nil {
-				t.Errorf("RouteContactsIndex() error = %v, want no errors", err)
+				t.Errorf("HandlerSitemapIndex() error = %v, want no errors", err)
 			}
 
 			if resp.StatusCode != tt.wantCode {
-				t.Errorf("RouteContactsIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
+				t.Errorf("HandlerSitemapIndex() status code = %v, wantCode %v", resp.StatusCode, tt.wantCode)
 			}
 		})
 	}

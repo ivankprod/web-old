@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/proxy"
 )
 
-func RoutePrometheus(c *fiber.Ctx) error {
+func HandlerPrometheus(c *fiber.Ctx) error {
 	proxy.WithTlsConfig(&tls.Config{InsecureSkipVerify: true})
 
 	if err := proxy.Do(c, "https://prometheus:9090"+c.OriginalURL()); err != nil {

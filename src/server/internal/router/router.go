@@ -10,9 +10,9 @@ import (
 
 	"ivankprod.ru/src/server/internal/admin"
 	"ivankprod.ru/src/server/internal/auth"
+	"ivankprod.ru/src/server/internal/handlers"
 	"ivankprod.ru/src/server/internal/models"
 	"ivankprod.ru/src/server/internal/monitor"
-	"ivankprod.ru/src/server/internal/routes"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
@@ -96,56 +96,27 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 	})
 
 	// Monitoring Grafana WebSocket route
-	app.All("/admin/monitor/grafana/api/live/ws", auth.Access(models.USER_ROLE_WEBMASTER), monitor.GrafanaWSProxy)
+	app.All("/admin/monitor/grafana/api/live/ws", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerGrafanaWSProxy)
 
 	// Admin
 	adminGroup := app.Group("/admin/", auth.Access(models.USER_ROLE_ADMINISTRATOR, models.USER_ROLE_WEBMASTER))
 	adminGroup.Get("/", admin.RouteAdminIndex)
 
 	// Monitoring routes
-	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RoutePrometheus)
-	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.RouteGrafana)
+	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerPrometheus)
+	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerGrafana)
 
 	// Routes
-	app.Get("/", routes.RouteHomeIndex)
-	app.Get("/projects/", routes.RouteProjectsIndex)
-	app.Get("/projects/:type/", routes.RouteProjectsView)
-	app.Get("/services/", routes.RouteServicesIndex)
-	app.Get("/blog/", routes.RouteBlogIndex)
-	app.Get("/about/", routes.RouteAboutIndex)
-	app.Get("/contacts/", routes.RouteContactsIndex)
-	app.Get("/auth/", auth.RouteAuthIndex(dbt))
-	app.Get("/auth/logout/", auth.RouteAuthLogout)
-
-	// Sitemap route
-	app.Get("/sitemap/", func(c *fiber.Ctx) error {
-		uAuth, ok := c.Locals("user_auth").(*models.User)
-		if !ok {
-			uAuth = nil
-		}
-
-		data := make(fiber.Map)
-
-		if uAuth != nil {
-			data["user"] = *uAuth
-		}
-
-		data["sitemap"] = *sitemap
-
-		err := c.Render("sitemap", fiber.Map{
-			"urlBase":      c.BaseURL(),
-			"urlCanonical": c.BaseURL() + c.Path(),
-			"pageTitle":    "Карта сайта - " + os.Getenv("INFO_TITLE_BASE"),
-			"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-			"pageScope":    "sitemap",
-			"ogTags": fiber.Map{
-				"title": os.Getenv("INFO_TITLE_BASE"),
-			},
-			"data": data,
-		})
-
-		return err
-	})
+	app.Get("/", handlers.HandlerHomeIndex)
+	app.Get("/projects/", handlers.HandlerProjectsIndex)
+	app.Get("/projects/:type/", handlers.HandlerProjectsView)
+	app.Get("/services/", handlers.HandlerServicesIndex)
+	app.Get("/blog/", handlers.HandlerBlogIndex)
+	app.Get("/about/", handlers.HandlerAboutIndex)
+	app.Get("/contacts/", handlers.HandlerContactsIndex)
+	app.Get("/auth/", auth.HandlerAuthIndex(dbt))
+	app.Get("/auth/logout/", auth.HandlerAuthLogout)
+	app.Get("/sitemap/", handlers.HandlerSitemapIndex(sitemap))
 
 	// 404 error
 	app.Use(func(c *fiber.Ctx) error {

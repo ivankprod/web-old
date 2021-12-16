@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func RouteProjectsIndex(c *fiber.Ctx) error {
+func HandlerProjectsIndex(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil
@@ -37,7 +37,7 @@ func RouteProjectsIndex(c *fiber.Ctx) error {
 	return err
 }
 
-func RouteProjectsView(c *fiber.Ctx) error {
+func HandlerProjectsView(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil

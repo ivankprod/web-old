@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func RouteBlogIndex(c *fiber.Ctx) error {
+func HandlerHomeIndex(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil
@@ -20,17 +20,17 @@ func RouteBlogIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("blog", fiber.Map{
+	err := c.Render("index", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "Блог - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    "Главная - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-		"pageScope":    "blog",
+		"pageScope":    "home",
 		"ogTags": fiber.Map{
-			"title": "Блог - " + os.Getenv("INFO_TITLE_BASE"),
+			"title": os.Getenv("INFO_TITLE_BASE"),
 			"type":  "website",
 		},
-		"activeBlog": true,
+		"activeHome": true,
 		"data":       data,
 	})
 

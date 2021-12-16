@@ -11,7 +11,7 @@ import (
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
-func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
+func HandlerAuthIndex(db *tarantool.Connection) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uAuth, ok := c.Locals("user_auth").(*models.User)
 		if !ok {
@@ -77,7 +77,7 @@ func RouteAuthIndex(db *tarantool.Connection) fiber.Handler {
 	}
 }
 
-func RouteAuthLogout(c *fiber.Ctx) error {
+func HandlerAuthLogout(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok || uAuth == nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "Для того, чтобы выйти из системы, Вы должны быть авторизованы")

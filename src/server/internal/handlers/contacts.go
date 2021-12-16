@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"ivankprod.ru/src/server/internal/models"
 )
 
-func RouteAboutIndex(c *fiber.Ctx) error {
+func HandlerContactsIndex(c *fiber.Ctx) error {
 	uAuth, ok := c.Locals("user_auth").(*models.User)
 	if !ok {
 		uAuth = nil
@@ -20,18 +20,18 @@ func RouteAboutIndex(c *fiber.Ctx) error {
 		data["user"] = *uAuth
 	}
 
-	err := c.Render("about", fiber.Map{
+	err := c.Render("contacts", fiber.Map{
 		"urlBase":      c.BaseURL(),
 		"urlCanonical": c.BaseURL() + c.Path(),
-		"pageTitle":    "О компании - " + os.Getenv("INFO_TITLE_BASE"),
+		"pageTitle":    "Контакты - " + os.Getenv("INFO_TITLE_BASE"),
 		"pageDesc":     os.Getenv("INFO_DESC_BASE"),
-		"pageScope":    "about",
+		"pageScope":    "contacts",
 		"ogTags": fiber.Map{
-			"title": "О компании - " + os.Getenv("INFO_TITLE_BASE"),
+			"title": "Контакты - " + os.Getenv("INFO_TITLE_BASE"),
 			"type":  "website",
 		},
-		"activeAbout": true,
-		"data":        data,
+		"activeContacts": true,
+		"data":           data,
 	})
 
 	return err
