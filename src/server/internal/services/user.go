@@ -9,7 +9,12 @@ import (
 )
 
 type UserService interface {
+	Create(uDTO *domain.UserCreateDTO) (*domain.User, error)
 	FindOne(uID uint64, restricted bool) (*domain.User, error)
+	FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error)
+	FindGroup(uGroup uint64) (*domain.Users, error)
+	FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error)
+	Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error)
 	IsAuthenticated(uAuth string, uAgent string) (*domain.User, error)
 }
 
@@ -23,10 +28,64 @@ func NewUserService(r repositories.UserRepository) UserService {
 	}
 }
 
+func (s *userService) Create(uDTO *domain.UserCreateDTO) (*domain.User, error) {
+	result, err := s.repository.Create(uDTO)
+
+	if result != nil {
+		result.AccessToken = ""
+	}
+
+	return result, err
+}
+
 func (s *userService) FindOne(uID uint64, restricted bool) (*domain.User, error) {
 	result, err := s.repository.FindOne(uID)
 
 	if result != nil && restricted {
+		result.AccessToken = ""
+	}
+
+	return result, err
+}
+
+func (s *userService) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error) {
+	result, err := s.repository.FindOneBySocialID(uDTO)
+
+	if result != nil {
+		result.AccessToken = ""
+	}
+
+	return result, err
+}
+
+func (s *userService) FindGroup(uGroup uint64) (*domain.Users, error) {
+	result, err := s.repository.FindGroup(uGroup)
+
+	if result != nil {
+		for i := range *result {
+			(*result)[i].AccessToken = ""
+		}
+	}
+
+	return result, err
+}
+
+func (s *userService) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error) {
+	result, err := s.repository.FindAll(uDTO)
+
+	if result != nil {
+		for i := range *result {
+			(*result)[i].AccessToken = ""
+		}
+	}
+
+	return result, err
+}
+
+func (s *userService) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error) {
+	result, err := s.repository.Update(uID, uDTO)
+
+	if result != nil {
 		result.AccessToken = ""
 	}
 
@@ -52,7 +111,7 @@ func (s *userService) IsAuthenticated(uAuth string, uAgent string) (*domain.User
 
 	uSessionHash := utils.HashSHA512(strconv.FormatUint(result.ID, 10) + result.SocialID + result.AccessToken + uAgent)
 	if uSessionHash == uAuthParsed.Hash {
-		result.AccessToken = "<restricted>"
+		result.AccessToken = ""
 		result.LastAccessTime = utils.TimeMSK_ToLocaleString()
 
 		return result, nil

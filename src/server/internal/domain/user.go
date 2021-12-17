@@ -35,8 +35,34 @@ type User struct {
 	TypeDesc       string `json:"userTypeDesc"`
 }
 
-// UserDTO struct
-type UserDTO struct {
+// UserUpdateDTO struct
+type UserCreateDTO struct {
+	Group       uint64
+	SocialID    string
+	NameFirst   string
+	NameLast    string
+	AvatarPath  string
+	Email       string
+	AccessToken string
+	Role        uint64
+	Type        uint64
+}
+
+// UserFindOneBySocialIDDTO struct
+type UserFindOneBySocialIDDTO struct {
+	SocialID string
+	Type     uint64
+}
+
+// UserFindAllDTO struct
+type UserFindAllDTO struct {
+	Search *string
+	Role   *uint64
+	Page   *uint64
+}
+
+// UserUpdateDTO struct
+type UserUpdateDTO struct {
 	Group          *uint64
 	SocialID       *string
 	NameFirst      *string
