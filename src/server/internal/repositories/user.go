@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -290,9 +291,11 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 	}
 
 	set := make([]interface{}, 0)
+	re := regexp.MustCompile(`[A-Z][a-z0-9]*`)
 
 	utils.IterateStruct(uDTO, func(field string, value interface{}) {
-		set = append(set, AX{"=", "user_" + strings.ToLower(field), value})
+		f := strings.Join(re.FindAllString(field, -1), "_")
+		set = append(set, AX{"=", "user_" + strings.ToLower(f), value})
 	})
 
 	err = r.db.UpdateTyped("users", "primary_id", AX{uID}, set, &tuplesUsers)

@@ -10,6 +10,7 @@ import (
 
 	"ivankprod.ru/src/server/internal/admin"
 	"ivankprod.ru/src/server/internal/auth"
+	"ivankprod.ru/src/server/internal/domain"
 	"ivankprod.ru/src/server/internal/handlers"
 	"ivankprod.ru/src/server/internal/models"
 	"ivankprod.ru/src/server/internal/monitor"
@@ -18,7 +19,7 @@ import (
 
 // All errors
 func HandleError(c *fiber.Ctx, err error) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
+	uAuth, ok := c.Locals("user_auth").(*domain.User)
 	if !ok {
 		uAuth = nil
 	}

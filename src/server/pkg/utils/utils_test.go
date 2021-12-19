@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -710,6 +711,12 @@ func TestIterateStruct(t *testing.T) {
 		Rts *int
 	}
 
+	type struct3 struct {
+		Id       int
+		StrFirst string
+		Rts      *int
+	}
+
 	id := 5
 	str := "asd"
 
@@ -752,14 +759,26 @@ func TestIterateStruct(t *testing.T) {
 			},
 			wantSet: "[[= field_id 5] [= field_str asd]]",
 		},
+		{
+			name: "Test for pointer to struct{*int, *string, nil} with big field names",
+			args: args{
+				s: &struct3{
+					Id:       id,
+					StrFirst: str,
+				},
+			},
+			wantSet: "[[= field_id 5] [= field_str_first asd]]",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			set := make([]interface{}, 0)
+			re := regexp.MustCompile(`[A-Z][a-z0-9]*`)
 
 			IterateStruct(tt.args.s, func(field string, value interface{}) {
-				set = append(set, AX{"=", "field_" + strings.ToLower(field), value})
+				f := strings.Join(re.FindAllString(field, -1), "_")
+				set = append(set, AX{"=", "field_" + strings.ToLower(f), value})
 			})
 
 			if fmt.Sprint(set) != tt.wantSet {

@@ -15,6 +15,8 @@ type UserService interface {
 	FindGroup(uGroup uint64) (*domain.Users, error)
 	FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error)
 	Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error)
+	UpdateLastAccessTime(uID uint64) (*domain.User, error)
+	SignIn(uID uint64, uDTO *domain.UserSignInDTO) (*domain.User, error)
 	IsAuthenticated(uAuth string, uAgent string) (*domain.User, error)
 }
 
@@ -84,6 +86,39 @@ func (s *userService) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error
 
 func (s *userService) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error) {
 	result, err := s.repository.Update(uID, uDTO)
+
+	if result != nil {
+		result.AccessToken = ""
+	}
+
+	return result, err
+}
+
+func (s *userService) UpdateLastAccessTime(uID uint64) (*domain.User, error) {
+	now := utils.TimeMSK_ToLocaleString()
+
+	result, err := s.repository.Update(uID, &domain.UserUpdateDTO{
+		LastAccess: &now,
+	})
+
+	if result != nil {
+		result.AccessToken = ""
+	}
+
+	return result, err
+}
+
+func (s *userService) SignIn(uID uint64, uDTO *domain.UserSignInDTO) (*domain.User, error) {
+	now := utils.TimeMSK_ToLocaleString()
+
+	result, err := s.repository.Update(uID, &domain.UserUpdateDTO{
+		NameFirst:   &uDTO.NameFirst,
+		NameLast:    &uDTO.NameLast,
+		AvatarPath:  &uDTO.AvatarPath,
+		Email:       &uDTO.Email,
+		AccessToken: &uDTO.AccessToken,
+		LastAccess:  &now,
+	})
 
 	if result != nil {
 		result.AccessToken = ""

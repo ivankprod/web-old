@@ -252,9 +252,11 @@ func IterateStruct(s interface{}, callback func(field string, value interface{})
 
 			if vv.Kind() == reflect.Ptr && vv.IsNil() {
 				break
+			} else if vv.Kind() == reflect.Ptr {
+				vv = vv.Elem()
 			}
 
-			callback(v.Type().Field(i).Name, vv.Elem().Interface())
+			callback(v.Type().Field(i).Name, vv.Interface())
 		}
 	}
 }

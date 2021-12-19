@@ -63,16 +63,25 @@ type UserFindAllDTO struct {
 
 // UserUpdateDTO struct
 type UserUpdateDTO struct {
-	Group          *uint64
-	SocialID       *string
-	NameFirst      *string
-	NameLast       *string
-	AvatarPath     *string
-	Email          *string
-	AccessToken    *string
-	LastAccessTime *string
-	Role           *uint64
-	Type           *uint64
+	Group       *uint64
+	SocialID    *string
+	NameFirst   *string
+	NameLast    *string
+	AvatarPath  *string
+	Email       *string
+	AccessToken *string
+	LastAccess  *string
+	Role        *uint64
+	Type        *uint64
+}
+
+// UserSignInDTO struct
+type UserSignInDTO struct {
+	NameFirst   string
+	NameLast    string
+	AvatarPath  string
+	Email       string
+	AccessToken string
 }
 
 // User struct: msgpack encoder
