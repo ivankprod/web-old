@@ -15,12 +15,27 @@ test('utils.sleep to be called', () => {
 });
 
 describe('utils.onScrollPB', () => {
+	test('to be undefined', () => {
+		utils.onScrollPB();
+
+		expect(document.getElementById('progress-bar')).toBeNull();
+	});
+
 	test('to position absolute', () => {
 		document.body.innerHTML = '<div id="progress-bar"></div>';
 
 		utils.onScrollPB();
 
 		expect(document.getElementById('progress-bar').style.position).toEqual('absolute');
+	});
+
+	test('to position fixed', () => {
+		document.body.innerHTML = '<div id="progress-bar"></div>';
+		document.documentElement.scrollTop = 25;
+
+		utils.onScrollPB();
+
+		expect(document.getElementById('progress-bar').style.position).toEqual('fixed');
 	});
 });
 
