@@ -207,14 +207,14 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app.App /*, app.DBM */, app.DBT, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App, app.DBT, loadSitemap(&fileSitemapJSON))
 
 	// HTTP listener
 	go func() {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 
-		if err := app.Listen( /*os.Getenv("SERVER_HOST") +*/ ":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
+		if err := app.Listen(":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 			log.Println(err)
 			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
@@ -231,7 +231,7 @@ func main() {
 
 	// HTTPS listener
 	config := &tls.Config{Certificates: []tls.Certificate{cer}, MinVersion: tls.VersionTLS13}
-	ln, err := tls.Listen("tcp" /*os.Getenv("SERVER_HOST")+*/, ":"+os.Getenv("SERVER_PORT_HTTPS"), config)
+	ln, err := tls.Listen("tcp", ":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)

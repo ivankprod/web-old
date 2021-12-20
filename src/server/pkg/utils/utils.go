@@ -251,7 +251,7 @@ func IterateStruct(s interface{}, callback func(field string, value interface{})
 			vv := v.Field(i)
 
 			if vv.Kind() == reflect.Ptr && vv.IsNil() {
-				break
+				continue
 			} else if vv.Kind() == reflect.Ptr {
 				vv = vv.Elem()
 			}

@@ -3,7 +3,6 @@ package router
 import (
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
@@ -12,8 +11,9 @@ import (
 	"ivankprod.ru/src/server/internal/auth"
 	"ivankprod.ru/src/server/internal/domain"
 	"ivankprod.ru/src/server/internal/handlers"
-	"ivankprod.ru/src/server/internal/models"
 	"ivankprod.ru/src/server/internal/monitor"
+	"ivankprod.ru/src/server/internal/repositories"
+	"ivankprod.ru/src/server/internal/services"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
@@ -64,50 +64,26 @@ func HandleError(c *fiber.Ctx, err error) error {
 }
 
 // Router
-func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap *string) {
-	// User authentication
-	app.Use(func(c *fiber.Ctx) error {
-		if c.Cookies("session") != "" {
-			auth, err := models.IsAuthenticated(dbt, c.Cookies("session"), c.Get("user-agent"))
-			if err != nil {
-				return err
-			}
+func Router(app *fiber.App, dbt *tarantool.Connection, sitemap *string) {
+	// User service
+	userRepository := repositories.NewUserRepository(dbt)
+	userService := services.NewUserService(userRepository)
 
-			if auth != nil {
-				c.Locals("user_auth", auth)
-				c.Cookie(&fiber.Cookie{
-					Name:     "session",
-					Value:    c.Cookies("session"),
-					Path:     "/",
-					MaxAge:   86400 * 7,
-					Expires:  time.Now().Add(time.Hour * 168),
-					Secure:   true,
-					HTTPOnly: true,
-					SameSite: "Lax",
-				})
+	// User authentication middleware
+	app.Use(auth.Middleware(userService))
 
-				// Update user last access time
-				go func(dbt *tarantool.Connection, id uint64) {
-					_ = models.UpdateUserAccessTime(dbt, id)
-				}(dbt, auth.ID)
-			}
-		}
+	// Monitoring Grafana WebSocket handler
+	app.All("/admin/monitor/grafana/api/live/ws", auth.Access(domain.USER_ROLE_WEBMASTER), monitor.HandlerGrafanaWSProxy)
 
-		return c.Next()
-	})
-
-	// Monitoring Grafana WebSocket route
-	app.All("/admin/monitor/grafana/api/live/ws", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerGrafanaWSProxy)
-
-	// Admin
-	adminGroup := app.Group("/admin/", auth.Access(models.USER_ROLE_ADMINISTRATOR, models.USER_ROLE_WEBMASTER))
+	// Admin handlers
+	adminGroup := app.Group("/admin/", auth.Access(domain.USER_ROLE_ADMINISTRATOR, domain.USER_ROLE_WEBMASTER))
 	adminGroup.Get("/", admin.RouteAdminIndex)
 
-	// Monitoring routes
-	adminGroup.Group("/monitor/prometheus/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerPrometheus)
-	adminGroup.Group("/monitor/grafana/", auth.Access(models.USER_ROLE_WEBMASTER), monitor.HandlerGrafana)
+	// Monitoring handlers
+	adminGroup.Group("/monitor/prometheus/", auth.Access(domain.USER_ROLE_WEBMASTER), monitor.HandlerPrometheus)
+	adminGroup.Group("/monitor/grafana/", auth.Access(domain.USER_ROLE_WEBMASTER), monitor.HandlerGrafana)
 
-	// Routes
+	// Handlers
 	app.Get("/", handlers.HandlerHomeIndex)
 	app.Get("/projects/", handlers.HandlerProjectsIndex)
 	app.Get("/projects/:type/", handlers.HandlerProjectsView)
@@ -115,13 +91,15 @@ func Router(app *fiber.App /*dbm *sqlx.DB,*/, dbt *tarantool.Connection, sitemap
 	app.Get("/blog/", handlers.HandlerBlogIndex)
 	app.Get("/about/", handlers.HandlerAboutIndex)
 	app.Get("/contacts/", handlers.HandlerContactsIndex)
-	app.Get("/auth/", auth.HandlerAuthIndex(dbt))
-	app.Get("/auth/logout/", auth.HandlerAuthLogout)
 	app.Get("/sitemap/", handlers.HandlerSitemapIndex(sitemap))
+
+	authHandler := auth.NewAuthHandler(userService)
+	app.Get("/auth/", authHandler.HandlerIndex)
+	app.Get("/auth/logout/", authHandler.HandlerLogout)
 
 	// 404 error
 	app.Use(func(c *fiber.Ctx) error {
-		uAuth, ok := c.Locals("user_auth").(*models.User)
+		uAuth, ok := c.Locals("user_auth").(*domain.User)
 		if !ok {
 			uAuth = nil
 		}

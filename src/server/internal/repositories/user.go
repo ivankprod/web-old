@@ -70,18 +70,18 @@ func (r *userRepository) Create(uDTO *domain.UserCreateDTO) (*domain.User, error
 		})
 	}
 
-	err = r.db.SelectTyped("users_roles", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesRoles)
+	err = r.db.SelectTyped("users_roles", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Role}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.SelectTyped("users_types", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesTypes)
+	err = r.db.SelectTyped("users_types", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Type}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
-	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+	tuplesUsers[0].RoleDesc = tuplesRoles[0].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[0].Type
 
 	return &tuplesUsers[0], nil
 }
@@ -104,18 +104,18 @@ func (r *userRepository) FindOne(uID uint64) (*domain.User, error) {
 		return nil, nil
 	}
 
-	err = r.db.SelectTyped("users_roles", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesRoles)
+	err = r.db.SelectTyped("users_roles", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Role}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.SelectTyped("users_types", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesTypes)
+	err = r.db.SelectTyped("users_types", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Type}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
-	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+	tuplesUsers[0].RoleDesc = tuplesRoles[0].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[0].Type
 
 	return &tuplesUsers[0], nil
 }
@@ -142,18 +142,18 @@ func (r *userRepository) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO
 		return nil, nil
 	}
 
-	err = r.db.SelectTyped("users_roles", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesRoles)
+	err = r.db.SelectTyped("users_roles", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Role}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.SelectTyped("users_types", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesTypes)
+	err = r.db.SelectTyped("users_types", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Type}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
-	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+	tuplesUsers[0].RoleDesc = tuplesRoles[0].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[0].Type
 
 	return &tuplesUsers[0], nil
 }
@@ -167,7 +167,7 @@ func (r *userRepository) FindGroup(uGroup uint64) (*domain.Users, error) {
 		err error
 	)
 
-	err = r.db.SelectTyped("users", "secondary_group", 0, 0, tarantool.IterEq, AX{uGroup}, &tuplesUsers)
+	err = r.db.SelectTyped("users", "secondary_group", 0, 100, tarantool.IterEq, AX{uGroup}, &tuplesUsers)
 	if err != nil {
 		return nil, err
 	}
@@ -176,12 +176,12 @@ func (r *userRepository) FindGroup(uGroup uint64) (*domain.Users, error) {
 		return nil, nil
 	}
 
-	err = r.db.SelectTyped("users_roles", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesRoles)
+	err = r.db.SelectTyped("users_roles", "primary_id", 0, 100, tarantool.IterEq, AX{}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.SelectTyped("users_types", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesTypes)
+	err = r.db.SelectTyped("users_types", "primary_id", 0, 100, tarantool.IterEq, AX{}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +293,7 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 	set := make([]interface{}, 0)
 	re := regexp.MustCompile(`[A-Z][a-z0-9]*`)
 
-	utils.IterateStruct(uDTO, func(field string, value interface{}) {
+	utils.IterateStruct(*uDTO, func(field string, value interface{}) {
 		f := strings.Join(re.FindAllString(field, -1), "_")
 		set = append(set, AX{"=", "user_" + strings.ToLower(f), value})
 	})
@@ -307,18 +307,18 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 		return nil, nil
 	}
 
-	err = r.db.SelectTyped("users_roles", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesRoles)
+	err = r.db.SelectTyped("users_roles", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Role}, &tuplesRoles)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.db.SelectTyped("users_types", "primary_id", 0, 0, tarantool.IterEq, AX{}, &tuplesTypes)
+	err = r.db.SelectTyped("users_types", "primary_id", 0, 1, tarantool.IterEq, AX{tuplesUsers[0].Type}, &tuplesTypes)
 	if err != nil {
 		return nil, err
 	}
 
-	tuplesUsers[0].RoleDesc = tuplesRoles[tuplesUsers[0].Role-1].Role
-	tuplesUsers[0].TypeDesc = tuplesTypes[tuplesUsers[0].Type].Type
+	tuplesUsers[0].RoleDesc = tuplesRoles[0].Role
+	tuplesUsers[0].TypeDesc = tuplesTypes[0].Type
 
 	return &tuplesUsers[0], nil
 }

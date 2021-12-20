@@ -5,11 +5,11 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/domain"
 )
 
 func HandlerAboutIndex(c *fiber.Ctx) error {
-	uAuth, ok := c.Locals("user_auth").(*models.User)
+	uAuth, ok := c.Locals("user_auth").(*domain.User)
 	if !ok {
 		uAuth = nil
 	}

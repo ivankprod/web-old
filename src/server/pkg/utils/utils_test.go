@@ -707,8 +707,8 @@ func TestIterateStruct(t *testing.T) {
 
 	type struct2 struct {
 		Id  *int
-		Str *string
 		Rts *int
+		Str *string
 	}
 
 	type struct3 struct {

@@ -8,16 +8,16 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/domain"
+	"ivankprod.ru/src/server/internal/services"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
 // Page access middleware
 func Access(roles ...uint64) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		uAuth, ok := c.Locals("user_auth").(*models.User)
+		uAuth, ok := c.Locals("user_auth").(*domain.User)
 		if !ok {
 			uAuth = nil
 		}
@@ -31,7 +31,7 @@ func Access(roles ...uint64) func(c *fiber.Ctx) error {
 }
 
 //  VK authentication
-func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authVK(service services.UserService, c *fiber.Ctx, userExisting *domain.User) error {
 	query := &utils.URLParams{
 		"client_id":     os.Getenv("AUTH_VK_CLIENT_ID"),
 		"client_secret": os.Getenv("AUTH_VK_CLIENT_SECRET"),
@@ -94,7 +94,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 		}
 
 		resp := (((*ress)["response"]).([]interface{})[0]).(map[string]interface{})
-		user := &models.User{
+		user := &domain.User{
 			SocialID:    userID,
 			NameFirst:   (resp["first_name"]).(string),
 			NameLast:    (resp["last_name"]).(string),
@@ -104,13 +104,24 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 			Type:        0,
 		}
 
-		id, _, _, err := models.ExistsUser(db, user.SocialID, 0)
+		ue, err := service.FindOneBySocialID(&domain.UserFindOneBySocialIDDTO{
+			SocialID: user.SocialID,
+			Type:     0,
+		})
 		if err != nil {
 			return err
 		}
 
+		id := ue.ID
+
 		if id > 0 {
-			if err := models.SignInUser(db, user, id); err != nil {
+			if _, err := service.SignIn(id, &domain.UserSignInDTO{
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+			}); err != nil {
 				return err
 			}
 		} else {
@@ -119,10 +130,22 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 				user.Role = userExisting.Role
 			}
 
-			id, err = models.AddUser(db, user)
+			ue, err = service.Create(&domain.UserCreateDTO{
+				Group:       user.Group,
+				SocialID:    user.SocialID,
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+				Role:        user.Role,
+				Type:        user.Type,
+			})
 			if err != nil {
 				return err
 			}
+
+			id = ue.ID
 		}
 
 		if userExisting == nil {
@@ -143,7 +166,7 @@ func authVK(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) e
 }
 
 //  Facebook authentication
-func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authFacebook(service services.UserService, c *fiber.Ctx, userExisting *domain.User) error {
 	query := &utils.URLParams{
 		"client_id":     os.Getenv("AUTH_FB_CLIENT_ID"),
 		"client_secret": os.Getenv("AUTH_FB_CLIENT_SECRET"),
@@ -201,7 +224,7 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 			return fiber.NewError(fiber.StatusBadRequest, "Facebook OAuth - "+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
 		}
 
-		user := &models.User{
+		user := &domain.User{
 			SocialID:    ((*ress)["id"]).(string),
 			NameFirst:   ((*ress)["first_name"]).(string),
 			NameLast:    ((*ress)["last_name"]).(string),
@@ -211,13 +234,24 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 			Type:        2,
 		}
 
-		id, _, _, err := models.ExistsUser(db, user.SocialID, 2)
+		ue, err := service.FindOneBySocialID(&domain.UserFindOneBySocialIDDTO{
+			SocialID: user.SocialID,
+			Type:     2,
+		})
 		if err != nil {
 			return err
 		}
 
+		id := ue.ID
+
 		if id > 0 {
-			if err := models.SignInUser(db, user, id); err != nil {
+			if _, err := service.SignIn(id, &domain.UserSignInDTO{
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+			}); err != nil {
 				return err
 			}
 		} else {
@@ -226,10 +260,22 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 				user.Role = userExisting.Role
 			}
 
-			id, err = models.AddUser(db, user)
+			ue, err = service.Create(&domain.UserCreateDTO{
+				Group:       user.Group,
+				SocialID:    user.SocialID,
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+				Role:        user.Role,
+				Type:        user.Type,
+			})
 			if err != nil {
 				return err
 			}
+
+			id = ue.ID
 		}
 
 		if userExisting == nil {
@@ -250,7 +296,7 @@ func authFacebook(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.U
 }
 
 //  Yandex authentication
-func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authYandex(service services.UserService, c *fiber.Ctx, userExisting *domain.User) error {
 	query := &utils.URLParams{
 		"client_id":     os.Getenv("AUTH_YA_CLIENT_ID"),
 		"client_secret": os.Getenv("AUTH_YA_CLIENT_SECRET"),
@@ -324,7 +370,7 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			return fiber.NewError(fiber.StatusBadRequest, "Яндекс OAuth - "+((*ress)["error_description"]).(string))
 		}
 
-		user := &models.User{
+		user := &domain.User{
 			SocialID:    ((*ress)["id"]).(string),
 			NameFirst:   ((*ress)["first_name"]).(string),
 			NameLast:    ((*ress)["last_name"]).(string),
@@ -334,13 +380,24 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			Type:        1,
 		}
 
-		id, _, _, err := models.ExistsUser(db, user.SocialID, 1)
+		ue, err := service.FindOneBySocialID(&domain.UserFindOneBySocialIDDTO{
+			SocialID: user.SocialID,
+			Type:     1,
+		})
 		if err != nil {
 			return err
 		}
 
+		id := ue.ID
+
 		if id > 0 {
-			if err := models.SignInUser(db, user, id); err != nil {
+			if _, err := service.SignIn(id, &domain.UserSignInDTO{
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+			}); err != nil {
 				return err
 			}
 		} else {
@@ -349,10 +406,22 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 				user.Role = userExisting.Role
 			}
 
-			id, err = models.AddUser(db, user)
+			ue, err = service.Create(&domain.UserCreateDTO{
+				Group:       user.Group,
+				SocialID:    user.SocialID,
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+				Role:        user.Role,
+				Type:        user.Type,
+			})
 			if err != nil {
 				return err
 			}
+
+			id = ue.ID
 		}
 
 		if userExisting == nil {
@@ -373,7 +442,7 @@ func authYandex(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 }
 
 //  Google authentication
-func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.User) error {
+func authGoogle(service services.UserService, c *fiber.Ctx, userExisting *domain.User) error {
 	query := &utils.URLParams{
 		"client_id":     os.Getenv("AUTH_GL_CLIENT_ID"),
 		"client_secret": os.Getenv("AUTH_GL_CLIENT_SECRET"),
@@ -431,7 +500,7 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			return fiber.NewError(fiber.StatusBadRequest, "Google OAuth - "+(((*ress)["error"]).(map[string]interface{})["message"]).(string))
 		}
 
-		user := &models.User{
+		user := &domain.User{
 			SocialID:    ((*ress)["id"]).(string),
 			NameFirst:   ((*ress)["given_name"]).(string),
 			NameLast:    ((*ress)["family_name"]).(string),
@@ -441,13 +510,24 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 			Type:        3,
 		}
 
-		id, _, _, err := models.ExistsUser(db, user.SocialID, 3)
+		ue, err := service.FindOneBySocialID(&domain.UserFindOneBySocialIDDTO{
+			SocialID: user.SocialID,
+			Type:     3,
+		})
 		if err != nil {
 			return err
 		}
 
+		id := ue.ID
+
 		if id > 0 {
-			if err := models.SignInUser(db, user, id); err != nil {
+			if _, err := service.SignIn(id, &domain.UserSignInDTO{
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+			}); err != nil {
 				return err
 			}
 		} else {
@@ -456,10 +536,22 @@ func authGoogle(c *fiber.Ctx, db *tarantool.Connection, userExisting *models.Use
 				user.Role = userExisting.Role
 			}
 
-			id, err = models.AddUser(db, user)
+			ue, err = service.Create(&domain.UserCreateDTO{
+				Group:       user.Group,
+				SocialID:    user.SocialID,
+				NameFirst:   user.NameFirst,
+				NameLast:    user.NameLast,
+				AvatarPath:  user.AvatarPath,
+				Email:       user.Email,
+				AccessToken: user.AccessToken,
+				Role:        user.Role,
+				Type:        user.Type,
+			})
 			if err != nil {
 				return err
 			}
+
+			id = ue.ID
 		}
 
 		if userExisting == nil {

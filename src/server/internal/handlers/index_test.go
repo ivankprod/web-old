@@ -7,12 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/handlebars"
 
-	"ivankprod.ru/src/server/internal/models"
+	"ivankprod.ru/src/server/internal/domain"
 )
 
 func TestHandlerHomeIndex(t *testing.T) {
 	middlewareAuth := func(c *fiber.Ctx) error {
-		c.Locals("user_auth", &models.User{
+		c.Locals("user_auth", &domain.User{
 			ID:             0,
 			Group:          0,
 			SocialID:       "",
