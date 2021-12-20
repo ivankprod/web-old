@@ -19,8 +19,6 @@ import (
 	"github.com/gofiber/template/handlebars"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
-	"github.com/markbates/pkger"
-	"github.com/markbates/pkger/pkging"
 	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/internal/router"
@@ -42,7 +40,7 @@ type App struct {
 }
 
 // Sitemap JSON to HTML
-func loadSitemap(fileSitemapJSON *pkging.File) *string {
+func loadSitemap(fileSitemapJSON *os.File) *string {
 	infoSitemapJSON, err := (*fileSitemapJSON).Stat()
 	if err != nil {
 		log.Fatalf("Error reading sitemap.json file: %v", err)
@@ -101,7 +99,7 @@ func main() {
 	}
 
 	// Open sitemap.json file for reading
-	fileSitemapJSON, err := pkger.Open("../misc/sitemap.json")
+	fileSitemapJSON, err := os.Open("./misc/sitemap.json")
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("Error opening sitemap.json file: %v\n", err)
@@ -207,7 +205,7 @@ func main() {
 	app.Static("/static/", "./static", fiber.Static{Compress: true, MaxAge: 86400})
 
 	// Setup router
-	router.Router(app.App, app.DBT, loadSitemap(&fileSitemapJSON))
+	router.Router(app.App, app.DBT, loadSitemap(fileSitemapJSON))
 
 	// HTTP listener
 	go func() {

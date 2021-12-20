@@ -8,7 +8,6 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/fasthttp/websocket v1.4.3
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gobuffalo/here v0.6.2 // indirect
 	github.com/gofiber/adaptor/v2 v2.1.14 // indirect
 	github.com/gofiber/fiber/v2 v2.23.0
 	github.com/gofiber/helmet/v2 v2.2.4
@@ -16,7 +15,6 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/markbates/pkger v0.17.1
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
