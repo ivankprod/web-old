@@ -15,7 +15,7 @@ os="$2"
 arch="$3"
 
 pkger
-GOOS=$os GOARCH=$arch GOMAXPROCS=4 go build -o ../../build_$mode -v -ldflags="-s -w"
+GOOS=$os GOARCH=$arch GOMAXPROCS=4 go build -o ../../build_$mode/server -v -ldflags="-s -w" ./cmd/main.go
 
 cp ../../$mode.env ../../build_$mode/.env
 mkdir -p ../../build_$mode/logs

@@ -101,7 +101,7 @@ func main() {
 	}
 
 	// Open sitemap.json file for reading
-	fileSitemapJSON, err := pkger.Open("/misc/sitemap.json")
+	fileSitemapJSON, err := pkger.Open("../misc/sitemap.json")
 	if err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Printf("Error opening sitemap.json file: %v\n", err)
