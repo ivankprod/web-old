@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/ansrivas/fiberprometheus/v2"
@@ -41,21 +42,30 @@ type App struct {
 
 // Sitemap JSON to HTML
 func loadSitemap(fileSitemapJSON *os.File) *string {
-	infoSitemapJSON, err := (*fileSitemapJSON).Stat()
+	infoSitemapJSON, err := fileSitemapJSON.Stat()
 	if err != nil {
-		log.Fatalf("Error reading sitemap.json file: %v", err)
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+		log.Printf("Error reading sitemap.json file: %v\n", err)
+		log.Fatalln("-- Server starting failed")
 	}
 
 	bytesSitemapJSON := make([]byte, infoSitemapJSON.Size())
-	_, err = (*fileSitemapJSON).Read(bytesSitemapJSON)
-	if err != nil {
-		log.Fatalf("Error reading sitemap.json file: %v", err)
+	if _, err = fileSitemapJSON.Read(bytesSitemapJSON); err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+		log.Printf("Error reading sitemap.json file: %v\n", err)
+		log.Fatalln("-- Server starting failed")
+	}
+
+	if err = fileSitemapJSON.Close(); err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+		log.Printf("Error closing sitemap.json file: %v\n", err)
 	}
 
 	sitemap := &utils.Sitemap{}
-	err = json.Unmarshal(bytesSitemapJSON, sitemap)
-	if err != nil {
-		log.Fatalf("Error unmarshalling sitemap.json file: %v", err)
+	if err = json.Unmarshal(bytesSitemapJSON, sitemap); err != nil {
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+		log.Printf("Error unmarshalling sitemap.json file: %v\n", err)
+		log.Fatalln("-- Server starting failed")
 	}
 
 	return sitemap.Nest().ToHTMLString()
@@ -65,7 +75,9 @@ func main() {
 	// Logging file
 	f, err := os.OpenFile("./logs/"+utils.DateMSK_ToLocaleSepString()+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
-		log.Fatalf("Error opening log file: %v\n", err)
+		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
+		log.Printf("Error opening log file: %v\n", err)
+		log.Fatalln("-- Server starting failed")
 	}
 
 	defer func(f *os.File) {
@@ -156,9 +168,9 @@ func main() {
 
 	// Logger
 	app.Use(logger.New(logger.Config{
-		Format:     "${method} | IP: ${ip} | TIME: ${time} UTC | STATUS: ${status}\nURL: ${protocol}://${host}${url}\n\n",
+		Format:     "${time} UTC | ${method} | IP: ${ip} | STATUS: ${status} | URL: ${url}\n",
 		TimeFormat: "02.01.2006 15:04:05",
-		TimeZone:   "Europe/Moscow",
+		TimeZone:   "UTC",
 		Output:     f,
 	}))
 
@@ -215,7 +227,7 @@ func main() {
 		if err := app.Listen(":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
 			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 			log.Println(err)
-			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
+			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
 		}
 	}()
 
@@ -246,12 +258,12 @@ func main() {
 
 	// LISTEN
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS") + "\n")
+	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS"))
 
 	if err = app.Listener(ln); err != nil {
 		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 		log.Println(err)
-		app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
+		app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
 	}
 }
 
@@ -273,7 +285,7 @@ func (app *App) fail(msg ...string) {
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 
 	if len(msg) > 0 {
-		log.Fatalln(msg[0])
+		log.Fatalln(strings.Trim(fmt.Sprint(msg), "[]"))
 	} else {
 		os.Exit(1)
 	}
@@ -297,9 +309,9 @@ func (app *App) exit(msg ...string) {
 	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
 
 	if len(msg) > 0 {
-		log.Println(msg[0])
+		log.Println(strings.Trim(fmt.Sprint(msg), "[]"))
 	}
 
-	log.Print("-- Server terminated\n\n")
+	log.Println("-- Server terminated")
 	_ = app.Shutdown()
 }

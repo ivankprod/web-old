@@ -30,8 +30,11 @@ services:
 
   app:
     container_name: ikpru_app
-    build: .
-    image: ivankprod/ivankprodru_app
+    build:
+      context: .
+      args:
+        STAGE_MODE: ${STAGE_MODE:-prod}
+    image: ivankprod/ivankprodru_app:latest
     restart: on-failure
     env_file:
       - ./build_${STAGE_MODE:-prod}/.env
