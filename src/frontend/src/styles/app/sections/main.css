@@ -9,8 +9,8 @@ html, body {
 	width:  100%;
 	min-width: 230px;
 
-	font-family: FuturaBookC, system-ui !important;
-	font-size:   16px;
+	font-family: Inter, system-ui !important;
+	font-size:   14px;
 	color:       #000;
 
 	background:  #fff;

@@ -5,49 +5,40 @@
 */
 
 @font-face {
-	font-family: 'FuturaBookC';
-	src: url('/static/fonts/futurabookc/FuturaBookC-Italic.eot');
-	src: local('Futura Book Italic Cyrillic'), local('FuturaBookC-Italic'),
-		url('/static/fonts/futurabookc/FuturaBookC-Italic.eot?#iefix') format('embedded-opentype'),
-		url('/static/fonts/futurabookc/FuturaBookC-Italic.woff') format('woff'),
-		url('/static/fonts/futurabookc/FuturaBookC-Italic.ttf') format('truetype');
-	font-weight: normal;
-	font-style: italic;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'FuturaBookC';
-	src: url('/static/fonts/futurabookc/FuturaBookC.eot');
-	src: local('Futura Book Cyrillic'), local('FuturaBookC'),
-		url('/static/fonts/futurabookc/FuturaBookC.eot?#iefix') format('embedded-opentype'),
-		url('/static/fonts/futurabookc/FuturaBookC.woff') format('woff'),
-		url('/static/fonts/futurabookc/FuturaBookC.ttf') format('truetype');
+	font-family: 'Inter';
+	src: url('/static/fonts/inter/Inter-Regular.eot');
+	src: local('Inter Regular'), local('Inter'),
+		url('/static/fonts/inter/Inter-Regular.eot?#iefix') format('embedded-opentype'),
+		url('/static/fonts/inter/Inter-Regular.woff2') format('woff2'),
+		url('/static/fonts/inter/Inter-Regular.woff') format('woff'),
+		url('/static/fonts/inter/Inter-Regular.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'FuturaDemiC';
-	src: url('/static/fonts/futurademic/FuturaDemiC-Italic.eot');
-	src: local('Futura Demi Italic Cyrillic'), local('FuturaDemiC-Italic'),
-		url('/static/fonts/futurademic/FuturaDemiC-Italic.eot?#iefix') format('embedded-opentype'),
-		url('/static/fonts/futurademic/FuturaDemiC-Italic.woff') format('woff'),
-		url('/static/fonts/futurademic/FuturaDemiC-Italic.ttf') format('truetype');
+	font-family: 'Inter';
+	src: url('/static/fonts/inter/Inter-Italic.eot');
+	src: local('Inter Italic'), local('Inter'),
+		url('/static/fonts/inter/Inter-Italic.eot?#iefix') format('embedded-opentype'),
+		url('/static/fonts/inter/Inter-Italic.woff2') format('woff2'),
+		url('/static/fonts/inter/Inter-Italic.woff') format('woff'),
+		url('/static/fonts/inter/Inter-Italic.ttf') format('truetype');
 	font-weight: normal;
 	font-style: italic;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'FuturaDemiC';
-	src: url('/static/fonts/futurademic/FuturaDemiC.eot');
-	src: local('Futura Demi Cyrillic'), local('FuturaDemiC'),
-		url('/static/fonts/futurademic/FuturaDemiC.eot?#iefix') format('embedded-opentype'),
-		url('/static/fonts/futurademic/FuturaDemiC.woff') format('woff'),
-		url('/static/fonts/futurademic/FuturaDemiC.ttf') format('truetype');
-	font-weight: normal;
+	font-family: 'Inter';
+	src: url('/static/fonts/inter/Inter-SemiBold.eot');
+	src: local('Inter SemiBold'), local('Inter'),
+		url('/static/fonts/inter/Inter-SemiBold.eot?#iefix') format('embedded-opentype'),
+		url('/static/fonts/inter/Inter-SemiBold.woff2') format('woff2'),
+		url('/static/fonts/inter/Inter-SemiBold.woff') format('woff'),
+		url('/static/fonts/inter/Inter-SemiBold.ttf') format('truetype');
+	font-weight: 600;
 	font-style: normal;
 	font-display: swap;
 }

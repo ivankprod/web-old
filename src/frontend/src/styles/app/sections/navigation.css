@@ -5,19 +5,18 @@
 */
 
 .nav-container {
-	font-size: 1rem;
-	font-family: FuturaDemiC;
-	letter-spacing: 0.06em;
+	font-size:   1.2rem;
+	font-weight: 600;
 }
 
-.nav-container ul.mnav li   { display: inline-block; padding-left: 16px; }
+.nav-container ul.mnav li { display: inline-block; padding-left: 16px; }
 
 .nav-container ul.mnav li a {
 	display: block;
 
 	position: relative;
 	
-	padding-bottom: 16px;
+	padding-bottom: 15px;
 	
 	color: #000;
 }
@@ -90,6 +89,7 @@
 
 	background: #fff;
 
+	font-size: 1.1rem;
 	color: #4a4a4a;
 
 	border-top: 1px solid #dedede;
