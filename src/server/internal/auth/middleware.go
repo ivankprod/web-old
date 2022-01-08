@@ -5,8 +5,26 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"ivankprod.ru/src/server/internal/domain"
 	"ivankprod.ru/src/server/internal/services"
+	"ivankprod.ru/src/server/pkg/utils"
 )
+
+// Page access middleware
+func Access(roles ...uint64) func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		uAuth, ok := c.Locals("user_auth").(*domain.User)
+		if !ok {
+			uAuth = nil
+		}
+
+		if uAuth == nil || !utils.Contains(uAuth.Role, roles...) {
+			return fiber.NewError(fiber.StatusForbidden, "Доступ к запрашиваемой странице запрещен")
+		}
+
+		return c.Next()
+	}
+}
 
 func Middleware(service services.UserService) fiber.Handler {
 	return func(c *fiber.Ctx) error {

@@ -60,6 +60,6 @@
 .breadcrumbs .breadcrumbs-last { margin-left: 12px; }
 
 .error-box                { width: 100%; padding: 48px; font-size: 1.2rem; }
-.error-box .error-title   { font-size: 2.4rem; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
+.error-box .error-title   { padding-bottom: 8px; font-size: 2.4rem; border-bottom: 2px solid rgba(0, 0, 0, 0.1); }
 .error-box .error-message { margin-top: 12px; }
 .error-box button         { margin: 24px auto 0 auto; text-transform: uppercase; }

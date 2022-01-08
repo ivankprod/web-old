@@ -38,7 +38,7 @@ button.middle {
 }
 
 button.small {
-	padding: 9px 12px;
+	padding: 10px 12px 9px 12px;
 
 	font-size: 0.9rem;
 }
@@ -96,7 +96,13 @@ button.btn-auth img {
 	cursor: pointer !important;
 }
 
-button.btn-auth span { display: inline-block; margin: 2px 6px 0 4px; }
+button.btn-auth span {
+	display: inline-block;
+	
+	margin: 0 6px 0 4px;
+
+	font-size: 1.1rem;
+}
 
 button span { cursor: pointer !important; }
 
