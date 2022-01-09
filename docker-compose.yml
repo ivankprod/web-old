@@ -64,6 +64,8 @@ services:
       - --web.external-url=https://${SERVER_HOST}/admin/monitor/prometheus/
       - --storage.tsdb.path=/etc/prometheus/data
     volumes:
+      - ./data/app_cert.pem:/etc/app_cert/app_cert.pem:ro
+      - ./data/app_key.pem:/etc/app_cert/app_key.pem:ro
       - ./data/certbot:/etc/letsencrypt
       - ./data/prometheus_cert:/etc/prometheus/cert
       - ./data/prometheus:/etc/prometheus/data

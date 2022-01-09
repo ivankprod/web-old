@@ -3,7 +3,8 @@ scrape_configs:
     scrape_interval: 10s
     scheme: https
     tls_config:
-      ca_file: /etc/letsencrypt/live/ivankprod.ru/fullchain.pem
+      cert_file: /etc/letsencrypt/live/ivankprod.ru/fullchain.pem
+      key_file: /etc/letsencrypt/live/ivankprod.ru/privkey.pem
     static_configs:
       - targets:
         - ivankprod.ru
