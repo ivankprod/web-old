@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -14,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	RequestLogger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
@@ -24,12 +25,15 @@ import (
 
 	"ivankprod.ru/src/server/internal/router"
 	"ivankprod.ru/src/server/pkg/db"
+	BaseLogger "ivankprod.ru/src/server/pkg/logger"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
 var (
 	MODE_DEV  bool
 	MODE_PROD bool
+
+	logger BaseLogger.ILogger
 )
 
 // App struct
@@ -44,28 +48,24 @@ type App struct {
 func loadSitemap(fileSitemapJSON *os.File) *string {
 	infoSitemapJSON, err := fileSitemapJSON.Stat()
 	if err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("Error reading sitemap.json file: %v\n", err)
-		log.Fatalln("-- Server starting failed")
+		logger.Printf("Error reading sitemap.json file: %v\n", err)
+		logger.Fatalln("-- Server starting failed")
 	}
 
 	bytesSitemapJSON := make([]byte, infoSitemapJSON.Size())
 	if _, err = fileSitemapJSON.Read(bytesSitemapJSON); err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("Error reading sitemap.json file: %v\n", err)
-		log.Fatalln("-- Server starting failed")
+		logger.Printf("Error reading sitemap.json file: %v\n", err)
+		logger.Fatalln("-- Server starting failed")
 	}
 
 	if err = fileSitemapJSON.Close(); err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("Error closing sitemap.json file: %v\n", err)
+		logger.Printf("Error closing sitemap.json file: %v\n", err)
 	}
 
 	sitemap := &utils.Sitemap{}
 	if err = json.Unmarshal(bytesSitemapJSON, sitemap); err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("Error unmarshalling sitemap.json file: %v\n", err)
-		log.Fatalln("-- Server starting failed")
+		logger.Printf("Error unmarshalling sitemap.json file: %v\n", err)
+		logger.Fatalln("-- Server starting failed")
 	}
 
 	return sitemap.Nest().ToHTMLString()
@@ -87,18 +87,14 @@ func main() {
 		}
 	}(f)
 
-	// Server base logging
-	log.SetFlags(0)
-	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-	log.SetOutput(f)
-	log.Println("-- Server starting...")
+	logger = BaseLogger.New(io.MultiWriter(f, os.Stdout))
+	logger.Println("-- Server starting...")
 
 	// Load .env configuration
 	err = godotenv.Load(".env")
 	if err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Println("Error loading .env file")
-		log.Fatalln("-- Server starting failed")
+		logger.Println("Error loading .env file")
+		logger.Fatalln("-- Server starting failed")
 	}
 
 	// Load STAGE_MODE configuration
@@ -113,9 +109,8 @@ func main() {
 	// Open sitemap.json file for reading
 	fileSitemapJSON, err := os.Open("./misc/sitemap.json")
 	if err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("Error opening sitemap.json file: %v\n", err)
-		log.Fatalln("-- Server starting failed")
+		logger.Printf("Error opening sitemap.json file: %v\n", err)
+		logger.Fatalln("-- Server starting failed")
 	}
 
 	// Templates engine
@@ -134,12 +129,10 @@ func main() {
 	// DB MySQL connect
 	/*dbm, err := db.ConnectMySQL()
 	if dbm == nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 		if err == nil {
-			log.Println("Failed connecting to MySQL database")
+			logger.Println("Failed connecting to MySQL database")
 		} else {
-			log.Printf("Error connecting to MySQL database: %v\n", err)
+			logger.Printf("Error connecting to MySQL database: %v\n", err)
 		}
 
 		app.fail("-- Server starting failed\n")
@@ -150,12 +143,10 @@ func main() {
 	// DB Tarantool connect
 	dbt, err := db.ConnectTarantool()
 	if dbt == nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 		if err == nil {
-			log.Println("Failed connecting to Tarantool database")
+			logger.Println("Failed connecting to Tarantool database")
 		} else {
-			log.Printf("Error connecting to Tarantool database: %v\n", err)
+			logger.Printf("Error connecting to Tarantool database: %v\n", err)
 		}
 
 		app.fail("-- Server starting failed\n")
@@ -167,7 +158,7 @@ func main() {
 	app.Use(recover.New())
 
 	// Logger
-	app.Use(logger.New(logger.Config{
+	app.Use(RequestLogger.New(RequestLogger.Config{
 		Format:     "${time} | ${method} | IP: ${ip} | STATUS: ${status} | URL: ${url}\n",
 		TimeFormat: "02.01.2006 15:04:05",
 		TimeZone:   "Europe/Moscow",
@@ -221,12 +212,10 @@ func main() {
 
 	// HTTP listener
 	go func() {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
+		logger.Printf("-- Attempt starting at %s:%s\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP"))
 
 		if err := app.Listen(":" + os.Getenv("SERVER_PORT_HTTP")); err != nil {
-			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-			log.Println(err)
+			logger.Println(err)
 			app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTP")))
 		}
 	}()
@@ -234,8 +223,7 @@ func main() {
 	// HTTPS certs
 	cer, err := tls.LoadX509KeyPair(os.Getenv("SERVER_SSL_CERT"), os.Getenv("SERVER_SSL_KEY"))
 	if err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Println(err)
+		logger.Println(err)
 		app.fail("-- Server starting failed\n")
 	}
 
@@ -243,8 +231,7 @@ func main() {
 	config := &tls.Config{Certificates: []tls.Certificate{cer}, MinVersion: tls.VersionTLS13}
 	ln, err := tls.Listen("tcp", ":"+os.Getenv("SERVER_PORT_HTTPS"), config)
 	if err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Println(err)
+		logger.Println(err)
 		app.fail("-- Server starting failed\n")
 	}
 
@@ -257,12 +244,10 @@ func main() {
 	}()
 
 	// LISTEN
-	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-	log.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS"))
+	logger.Println("-- Attempt starting at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT_HTTPS"))
 
 	if err = app.Listener(ln); err != nil {
-		log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-		log.Println(err)
+		logger.Println(err)
 		app.fail(fmt.Sprintf("-- Server starting at %s:%s failed\n", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT_HTTPS")))
 	}
 }
@@ -271,21 +256,17 @@ func main() {
 func (app *App) fail(msg ...string) {
 	if app.DBM != nil {
 		if err := app.DBM.Close(); err != nil {
-			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 	if app.DBT != nil {
 		if err := app.DBT.Close(); err != nil {
-			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 
-	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 	if len(msg) > 0 {
-		log.Fatalln(strings.Trim(fmt.Sprint(msg), "[]"))
+		logger.Fatalln(strings.Trim(fmt.Sprint(msg), "[]"))
 	} else {
 		os.Exit(1)
 	}
@@ -295,23 +276,19 @@ func (app *App) fail(msg ...string) {
 func (app *App) exit(msg ...string) {
 	if app.DBM != nil {
 		if err := app.DBM.Close(); err != nil {
-			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 	if app.DBT != nil {
 		if err := app.DBT.Close(); err != nil {
-			log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 
-	log.SetPrefix(utils.TimeMSK_ToLocaleString() + " ")
-
 	if len(msg) > 0 {
-		log.Println(strings.Trim(fmt.Sprint(msg), "[]"))
+		logger.Println(strings.Trim(fmt.Sprint(msg), "[]"))
 	}
 
-	log.Println("-- Server terminated")
+	logger.Println("-- Server terminated")
 	_ = app.Shutdown()
 }
