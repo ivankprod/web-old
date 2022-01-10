@@ -6,7 +6,7 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/ansrivas/fiberprometheus/v2 v2.1.2
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/fasthttp/websocket v1.4.3
+	github.com/fasthttp/websocket v1.4.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/adaptor/v2 v2.1.14 // indirect
 	github.com/gofiber/fiber/v2 v2.23.0
