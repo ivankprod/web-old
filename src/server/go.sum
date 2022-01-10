@@ -463,8 +463,8 @@ github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a/go.mod h1:v3UYOV
 github.com/valyala/tcplisten v1.0.0 h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVSA8=
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
-github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.1 h1:EppMh15qB7SZrJ98mLPw8NvhCuwoxKQFyKDfu8c+PVQ=
-github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.1/go.mod h1:Y34WjdgyQ3GWmR4EyCIBTHcYMR28VnVhKljMIk5xnkk=
+github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2 h1:w0kWuZ6NnfUrj+pDFZE096RLizo/dAYLUnJL0W/HNmI=
+github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2/go.mod h1:Y34WjdgyQ3GWmR4EyCIBTHcYMR28VnVhKljMIk5xnkk=
 github.com/yeqown/log v1.1.1 h1:DKw/ZeyJUTWPh4MDxYKXbBQeKHZJ69lndancmcQoERM=
 github.com/yeqown/log v1.1.1/go.mod h1:RTslXFTg+8Uj5AizIxdfichvBZi/OOKao6yP3tMtTns=
 github.com/yosssi/ace v0.0.5/go.mod h1:ALfIzm2vT7t5ZE7uoIZqF3TQ7SAOyupFZnkrF5id+K0=
