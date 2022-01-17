@@ -25,7 +25,10 @@ GRAFANA_ADMIN_USER=$GRAFANA_ADMIN_USER
 GRAFANA_ADMIN_PASSWORD=$GRAFANA_ADMIN_PASSWORD
 set +a
 
-docker-compose build app
+if [[ "$2" != "--nobuild" ]]; then
+	docker-compose build app
+fi
+
 docker-compose up -d
 
 echo "Composing webapp done!"

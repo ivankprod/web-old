@@ -14,14 +14,13 @@ require (
 	github.com/gofiber/template v1.6.21
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
-	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/klauspost/compress v1.14.1 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
-	github.com/valyala/fasthttp v1.32.0
 	github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309 // indirect
-	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
+	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.2
 )
