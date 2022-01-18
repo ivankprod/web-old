@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
-    "@babel/preset-env": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
     "autoprefixer": "^10.4.2",
     "babel-loader": "^8.2.3",
     "clean-webpack-plugin": "^4.0.0",
@@ -35,19 +35,19 @@
     "eslint": "^8.6.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^27.4.7",
-    "mini-css-extract-plugin": "^2.4.6",
+    "mini-css-extract-plugin": "^2.5.2",
     "postcss": "^8.4.5",
     "postcss-import": "^14.0.2",
     "postcss-loader": "^6.2.1",
     "postcss-preset-env": "^7.2.0",
     "sitemap-generator": "^8.5.1",
     "terser-webpack-plugin": "^5.3.0",
-    "webpack": "^5.65.0",
+    "webpack": "^5.66.0",
     "webpack-cli": "^4.9.1",
     "webpack-subresource-integrity": "^5.0.0"
   },
   "dependencies": {
-    "core-js": "^3.20.2",
+    "core-js": "^3.20.3",
     "normalize.css": "^8.0.1"
   }
 }
