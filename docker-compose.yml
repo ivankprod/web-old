@@ -19,7 +19,9 @@ services:
       TARANTOOL_PORT: ${DB_TARANTOOL_PORT:-3301}
       TARANTOOL_USER_NAME: ${DB_TARANTOOL_USER:-nothing}
       TARANTOOL_USER_PASSWORD: ${DB_TARANTOOL_PASSWORD:-nothing}
-    command: tarantool /usr/local/share/tarantool/app.lua
+    command: |
+      tarantool /usr/local/share/tarantool/app.lua
+      luarocks install metrics
     ports:
       - "${DB_TARANTOOL_PORT:-3301}:${DB_TARANTOOL_PORT:-3301}"
     volumes:

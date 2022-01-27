@@ -97,6 +97,18 @@ local function default_data()
 	}
 end
 
+-- Metrics
+local metrics = require('metrics')
+
+metrics.set_global_labels({alias = 'tarantool'})
+metrics.enable_default_metrics()
+
+local httpd = require('http.server')
+local http_handler = require('metrics.plugins.prometheus').collect_http
+
+httpd.new('0.0.0.0', 8088):route({path = '/metrics'}, http_handler):start()
+
+-- Box
 box.cfg{
 	checkpoint_interval = 3600,
 	checkpoint_count    = 10,

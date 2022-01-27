@@ -8,3 +8,10 @@ scrape_configs:
     static_configs:
       - targets:
         - ivankprod.ru
+
+  - job_name: ivankprodru_tarantool
+    scrape_interval: 10s
+    scheme: http
+    static_configs:
+      - targets:
+        - tarantool:8088
