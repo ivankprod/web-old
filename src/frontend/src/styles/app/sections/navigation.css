@@ -33,7 +33,7 @@
 	display: block;
 	width:   100%;
 	
-	padding-top: 35px;
+	padding-top: 38px;
 
 	border-bottom: 0 solid transparent;
 
@@ -46,14 +46,14 @@
 	border-color: var(--color-theme-green);
 	border-bottom-width: 3px;
 
-	padding-top: 32px;
+	padding-top: 35px;
 }
 
 .nav-container ul.mnav li a.nav-item-active:before { 
 	border-color: var(--color-theme-green);
 	border-bottom-width: 3px;
 
-	padding-top: 32px;
+	padding-top: 35px;
 }
 
 .nav-container ul.mnav li a.subnav:after {
@@ -67,7 +67,7 @@
 	margin-left: 4px;
 
 	font-family: 'Font Awesome 5 Free';
-	font-size:   0.9rem;
+	font-size:   1rem;
 	font-weight: 900;
 }
 
