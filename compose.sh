@@ -14,7 +14,7 @@ fi
 
 echo "MODE: $mode"
 
-. ./build_$mode/.env
+. ./$mode.env
 
 set -a
 STAGE_MODE=$STAGE_MODE

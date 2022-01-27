@@ -30,7 +30,8 @@ pkged.go
 .eslintcache
 
 logs
+logs_*
 
 /data
 
-/build_*
+build_*

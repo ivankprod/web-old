@@ -22,7 +22,7 @@ module.exports = {
 	},
 
 	output: {
-		path: path.resolve(__dirname, '../../build_' + (isDEV ? 'dev' : 'prod')),
+		path: path.resolve(__dirname, '../../build'),
 		filename: 'static/js/[name].[contenthash].js',
 		crossOriginLoading: 'anonymous'
 	},
@@ -41,6 +41,10 @@ module.exports = {
 	plugins: [
 		new CopyPlugin({
 			patterns: [
+				{
+					from: path.resolve(__dirname, './sitemap.xml'),
+					to:   './sitemap.xml'
+				},
 				{
 					from: path.resolve(__dirname, './src/favicon.ico'),
 					to:   './favicon.ico'
@@ -76,7 +80,7 @@ module.exports = {
 		}),
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
 		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false }),
-		new DotEnv({ path: path.resolve(__dirname, '../../' + (isDEV ? 'dev' : 'prod') + '.env') })
+		new DotEnv({ path: path.resolve(__dirname, './.env') })
 	],
 
 	module: {

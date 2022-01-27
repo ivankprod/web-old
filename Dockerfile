@@ -22,7 +22,8 @@ ARG STAGE_MODE=prod
 RUN apk update
 
 WORKDIR /app
-RUN mkdir -p ./build_$STAGE_MODE
+RUN mkdir -p ./build
+COPY ./src/server/views ./build/views
 COPY ./src/server/views ./src/server/views
 
 WORKDIR /app/src/frontend
@@ -31,8 +32,8 @@ RUN npm install
 
 ARG NODE_ENV=production
 
+COPY --from=backbuilder ./app/build/.env ./.env
 COPY ./src/frontend .
-COPY ./src/server/views ./build_$STAGE_MODE/views
 RUN NODE_ENV=$NODE_ENV npm run $STAGE_MODE
 
 FROM alpine:3
@@ -47,7 +48,7 @@ RUN update-ca-certificates
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY --from=backbuilder ./app/build /home/app
-COPY --from=frontbuilder ./app/build_$STAGE_MODE /home/app
+COPY --from=frontbuilder ./app/build /home/app
 COPY ./data/certbot /etc/letsencrypt
 
 RUN mkdir -p ./home/app/logs

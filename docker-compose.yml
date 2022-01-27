@@ -40,13 +40,13 @@ services:
     image: ivankprod/ivankprodru_app:latest
     restart: on-failure
     env_file:
-      - ./build_${STAGE_MODE:-prod}/.env
+      - ./${STAGE_MODE:-prod}.env
     command: /bin/sh -c "cd ./home/app && ./server"
     ports:
       - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
       - "${SERVER_PORT_HTTPS:-443}:${SERVER_PORT_HTTPS:-443}"
     volumes:
-      - ./build_${STAGE_MODE:-prod}:/home/app
+      - ./data/app/logs_${STAGE_MODE:-prod}:/home/app/logs
       - ./data/certbot:/etc/letsencrypt
     networks:
       - ivankprodru_net
