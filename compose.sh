@@ -1,10 +1,13 @@
 echo "Starting composing webapp..."
 
 mode="prod"
+env="production"
 if [[ "$1" == "dev" ]]; then
 	mode=$1
+	env="development"
 elif [[ "$1" == "prod" ]] || [[ "$1" == "" ]]; then
 	mode="prod"
+	env="production"
 else
 	echo "Error argument parsing"; exit
 fi
@@ -15,6 +18,7 @@ echo "MODE: $mode"
 
 set -a
 STAGE_MODE=$STAGE_MODE
+NODE_ENV=$env
 SERVER_HOST=$SERVER_HOST
 SERVER_PORT_HTTP=$SERVER_PORT_HTTP
 SERVER_PORT_HTTPS=$SERVER_PORT_HTTPS

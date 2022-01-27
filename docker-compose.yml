@@ -34,11 +34,12 @@ services:
       context: .
       args:
         STAGE_MODE: ${STAGE_MODE:-prod}
+        NODE_ENV: ${NODE_ENV:-production}
     image: ivankprod/ivankprodru_app:latest
     restart: on-failure
     env_file:
       - ./build_${STAGE_MODE:-prod}/.env
-    command: bash -c "cd ./home/app && ./server"
+    command: /bin/sh -c "cd ./home/app && ./server"
     ports:
       - "${SERVER_PORT_HTTP:-80}:${SERVER_PORT_HTTP:-80}"
       - "${SERVER_PORT_HTTPS:-443}:${SERVER_PORT_HTTPS:-443}"
