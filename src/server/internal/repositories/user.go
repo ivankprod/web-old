@@ -9,6 +9,7 @@ import (
 	"github.com/tarantool/go-tarantool"
 
 	"ivankprod.ru/src/server/internal/domain"
+	"ivankprod.ru/src/server/pkg/db"
 	"ivankprod.ru/src/server/pkg/utils"
 )
 
@@ -21,6 +22,8 @@ type UserRepository interface {
 	FindGroup(uGroup uint64) (*domain.Users, error)
 	FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error)
 	Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error)
+
+	Repository
 }
 
 type userRepository struct {
@@ -321,4 +324,10 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 	tuplesUsers[0].TypeDesc = tuplesTypes[0].Type
 
 	return &tuplesUsers[0], nil
+}
+
+func (r *userRepository) KeepAlive(dbc *tarantool.Connection) {
+	go func() {
+		r.db = db.KeepAliveTarantool(dbc)
+	}()
 }

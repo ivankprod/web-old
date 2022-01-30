@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/tarantool/go-tarantool"
+
+	BaseLogger "ivankprod.ru/src/server/pkg/logger"
 )
 
 // Connect to Tarantool
@@ -22,7 +25,57 @@ func ConnectTarantool() (*tarantool.Connection, error) {
 		return nil, err
 	}
 
+	if resp, err := conn.Ping(); resp == nil || err != nil {
+		return nil, err
+	}
+
 	return conn, nil
+}
+
+func KeepAliveTarantool(conn *tarantool.Connection) *tarantool.Connection {
+	var (
+		connNew *tarantool.Connection
+		mu      sync.Mutex
+		err     error
+	)
+
+	logger := BaseLogger.Get()
+
+	for {
+		time.Sleep(time.Second * 3)
+
+		lost := false
+
+		if conn == nil {
+			lost = true
+		} else if resp, err := conn.Ping(); resp == nil || err != nil {
+			lost = true
+		}
+
+		if !lost {
+			continue
+		}
+
+		logger.Println("Lost Tarantool connection. Restoring...")
+
+		if connNew, err = ConnectTarantool(); connNew == nil || err != nil {
+			if err == nil {
+				logger.Println("Failed connecting to Tarantool database")
+			} else {
+				logger.Printf("Error connecting to Tarantool database: %v\n", err)
+			}
+
+			continue
+		}
+
+		logger.Println("Tarantool connection restored")
+
+		mu.Lock()
+		conn = connNew
+		mu.Unlock()
+
+		return connNew
+	}
 }
 
 // Connect to MySQL

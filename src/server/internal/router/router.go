@@ -69,6 +69,9 @@ func Router(app *fiber.App, dbt *tarantool.Connection, sitemap *string) {
 	userRepository := repositories.NewUserRepository(dbt)
 	userService := services.NewUserService(userRepository)
 
+	// User repository KeepAlive
+	userRepository.KeepAlive(dbt)
+
 	// User authentication middleware
 	app.Use(auth.Middleware(userService))
 
