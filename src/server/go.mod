@@ -3,10 +3,9 @@ module ivankprod.ru/src/server
 go 1.16
 
 require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/ansrivas/fiberprometheus/v2 v2.1.2
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/fasthttp/websocket v1.4.5
+	github.com/fasthttp/websocket v1.4.6
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/adaptor/v2 v2.1.14 // indirect
 	github.com/gofiber/fiber/v2 v2.25.0
@@ -18,7 +17,6 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
-	github.com/valyala/fasthttp v1.33.0 // indirect
 	github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
