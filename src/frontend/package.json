@@ -42,7 +42,7 @@
     "postcss-preset-env": "^7.3.1",
     "sitemap-generator": "^8.5.1",
     "terser-webpack-plugin": "^5.3.1",
-    "webpack": "^5.68.0",
+    "webpack": "^5.69.1",
     "webpack-cli": "^4.9.2",
     "webpack-subresource-integrity": "^5.1.0"
   },
