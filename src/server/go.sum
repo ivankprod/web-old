@@ -188,8 +188,8 @@ github.com/gofiber/fiber/v2 v2.29.0 h1:wopU1kXxdD9XxvQqYd1vSWMGu2PiZN0yy+DojygTR
 github.com/gofiber/fiber/v2 v2.29.0/go.mod h1:1Ega6O199a3Y7yDGuM9FyXDPYQfv+7/y48wl6WCwUF4=
 github.com/gofiber/helmet/v2 v2.2.8 h1:WDQbxt/TBkuigj9AZY+DYPyZZzJQRMZ62A0BNCh7KII=
 github.com/gofiber/helmet/v2 v2.2.8/go.mod h1:sIjjPp68977InnSyUcbF1y1U+SUT24CZMFQgayKCuS8=
-github.com/gofiber/template v1.6.24 h1:FGSjH36IykjhCkPkh96jQj7FGpV/55IEqAAP7rlWM80=
-github.com/gofiber/template v1.6.24/go.mod h1:mUuurm5QODAS92Y3N588JOozN5MrGaF9pZ4N5biQxns=
+github.com/gofiber/template v1.6.25 h1:wAh92yCfP2XQvxBRK8VchbjAJnNz/y+p4uD94WBs1MI=
+github.com/gofiber/template v1.6.25/go.mod h1:/hE+mSK1VTEK9YVX1ySE2ix12xOXdgi28nrsVaRq2u4=
 github.com/gofiber/utils v0.1.2 h1:1SH2YEz4RlNS0tJlMJ0bGwO0JkqPqvq6TbHK9tXZKtk=
 github.com/gofiber/utils v0.1.2/go.mod h1:pacRFtghAE3UoknMOUiXh2Io/nLWSUHtQCi/3QASsOc=
 github.com/gogo/googleapis v1.1.0/go.mod h1:gf4bu3Q80BeJ6H1S1vYPm8/ELATdvryBaNFGgqEef3s=
