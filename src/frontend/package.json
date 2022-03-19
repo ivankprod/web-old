@@ -35,7 +35,7 @@
     "eslint": "^8.10.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^27.5.1",
-    "mini-css-extract-plugin": "^2.5.3",
+    "mini-css-extract-plugin": "^2.6.0",
     "postcss": "^8.4.8",
     "postcss-import": "^14.0.2",
     "postcss-loader": "^6.2.1",
