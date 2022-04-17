@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
-	"github.com/ivankprod/ivankprod.ru/src/server/internal/repositories"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/storage"
 	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
@@ -21,17 +21,17 @@ type UserService interface {
 }
 
 type userService struct {
-	repository repositories.UserRepository
+	storage storage.UserStorage
 }
 
-func NewUserService(r repositories.UserRepository) UserService {
+func NewUserService(r storage.UserStorage) UserService {
 	return &userService{
-		repository: r,
+		storage: r,
 	}
 }
 
 func (s *userService) Create(uDTO *domain.UserCreateDTO) (*domain.User, error) {
-	result, err := s.repository.Create(uDTO)
+	result, err := s.storage.Create(uDTO)
 
 	if result != nil {
 		result.AccessToken = ""
@@ -41,7 +41,7 @@ func (s *userService) Create(uDTO *domain.UserCreateDTO) (*domain.User, error) {
 }
 
 func (s *userService) FindOne(uID uint64, restricted bool) (*domain.User, error) {
-	result, err := s.repository.FindOne(uID)
+	result, err := s.storage.FindOne(uID)
 
 	if result != nil && restricted {
 		result.AccessToken = ""
@@ -51,7 +51,7 @@ func (s *userService) FindOne(uID uint64, restricted bool) (*domain.User, error)
 }
 
 func (s *userService) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error) {
-	result, err := s.repository.FindOneBySocialID(uDTO)
+	result, err := s.storage.FindOneBySocialID(uDTO)
 
 	if result != nil {
 		result.AccessToken = ""
@@ -61,7 +61,7 @@ func (s *userService) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (
 }
 
 func (s *userService) FindGroup(uGroup uint64) (*domain.Users, error) {
-	result, err := s.repository.FindGroup(uGroup)
+	result, err := s.storage.FindGroup(uGroup)
 
 	if result != nil {
 		for i := range *result {
@@ -73,7 +73,7 @@ func (s *userService) FindGroup(uGroup uint64) (*domain.Users, error) {
 }
 
 func (s *userService) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error) {
-	result, err := s.repository.FindAll(uDTO)
+	result, err := s.storage.FindAll(uDTO)
 
 	if result != nil {
 		for i := range *result {
@@ -85,7 +85,7 @@ func (s *userService) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error
 }
 
 func (s *userService) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error) {
-	result, err := s.repository.Update(uID, uDTO)
+	result, err := s.storage.Update(uID, uDTO)
 
 	if result != nil {
 		result.AccessToken = ""
@@ -97,7 +97,7 @@ func (s *userService) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.Us
 func (s *userService) UpdateLastAccessTime(uID uint64) (*domain.User, error) {
 	now := utils.TimeMSK_ToLocaleString()
 
-	result, err := s.repository.Update(uID, &domain.UserUpdateDTO{
+	result, err := s.storage.Update(uID, &domain.UserUpdateDTO{
 		LastAccess: &now,
 	})
 
@@ -111,7 +111,7 @@ func (s *userService) UpdateLastAccessTime(uID uint64) (*domain.User, error) {
 func (s *userService) SignIn(uID uint64, uDTO *domain.UserSignInDTO) (*domain.User, error) {
 	now := utils.TimeMSK_ToLocaleString()
 
-	result, err := s.repository.Update(uID, &domain.UserUpdateDTO{
+	result, err := s.storage.Update(uID, &domain.UserUpdateDTO{
 		NameFirst:   &uDTO.NameFirst,
 		NameLast:    &uDTO.NameLast,
 		AvatarPath:  &uDTO.AvatarPath,
@@ -136,7 +136,7 @@ func (s *userService) IsAuthenticated(uAuth string, uAgent string) (*domain.User
 		return nil, nil
 	}
 
-	result, err := s.repository.FindOne(uAuthParsed.ID)
+	result, err := s.storage.FindOne(uAuthParsed.ID)
 	if err != nil {
 		return nil, err
 	}

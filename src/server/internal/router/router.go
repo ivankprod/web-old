@@ -12,8 +12,8 @@ import (
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/handlers"
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/monitor"
-	"github.com/ivankprod/ivankprod.ru/src/server/internal/repositories"
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/services"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/storage"
 	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
@@ -66,11 +66,11 @@ func HandleError(c *fiber.Ctx, err error) error {
 // Router
 func Router(app *fiber.App, dbt *tarantool.Connection, sitemap *string) {
 	// User service
-	userRepository := repositories.NewUserRepository(dbt)
-	userService := services.NewUserService(userRepository)
+	userStorage := storage.NewUserStorage(dbt)
+	userService := services.NewUserService(userStorage)
 
 	// User repository KeepAlive
-	userRepository.KeepAlive(dbt)
+	userStorage.KeepAlive(dbt)
 
 	// User authentication middleware
 	app.Use(auth.Middleware(userService))

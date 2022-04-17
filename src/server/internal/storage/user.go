@@ -1,4 +1,4 @@
-package repositories
+package storage
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 
 type AX []interface{}
 
-type UserRepository interface {
+type UserStorage interface {
 	Create(uDTO *domain.UserCreateDTO) (*domain.User, error)
 	FindOne(uID uint64) (*domain.User, error)
 	FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error)
@@ -23,20 +23,20 @@ type UserRepository interface {
 	FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error)
 	Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error)
 
-	Repository
+	Storage
 }
 
-type userRepository struct {
+type userStorage struct {
 	db *tarantool.Connection
 }
 
-func NewUserRepository(dbc *tarantool.Connection) UserRepository {
-	return &userRepository{
+func NewUserStorage(dbc *tarantool.Connection) UserStorage {
+	return &userStorage{
 		db: dbc,
 	}
 }
 
-func (r *userRepository) Create(uDTO *domain.UserCreateDTO) (*domain.User, error) {
+func (r *userStorage) Create(uDTO *domain.UserCreateDTO) (*domain.User, error) {
 	var (
 		tuplesRoles domain.UserRoles
 		tuplesTypes domain.UserTypes
@@ -46,7 +46,7 @@ func (r *userRepository) Create(uDTO *domain.UserCreateDTO) (*domain.User, error
 	)
 
 	if uDTO == nil {
-		return nil, fmt.Errorf("UserRepository error: UserCreateDTO can't be empty")
+		return nil, fmt.Errorf("UserStorage error: UserCreateDTO can't be empty")
 	}
 
 	if uDTO.Role == 0 {
@@ -89,7 +89,7 @@ func (r *userRepository) Create(uDTO *domain.UserCreateDTO) (*domain.User, error
 	return &tuplesUsers[0], nil
 }
 
-func (r *userRepository) FindOne(uID uint64) (*domain.User, error) {
+func (r *userStorage) FindOne(uID uint64) (*domain.User, error) {
 	var (
 		tuplesRoles domain.UserRoles
 		tuplesTypes domain.UserTypes
@@ -123,7 +123,7 @@ func (r *userRepository) FindOne(uID uint64) (*domain.User, error) {
 	return &tuplesUsers[0], nil
 }
 
-func (r *userRepository) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error) {
+func (r *userStorage) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO) (*domain.User, error) {
 	var (
 		tuplesRoles domain.UserRoles
 		tuplesTypes domain.UserTypes
@@ -133,7 +133,7 @@ func (r *userRepository) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO
 	)
 
 	if uDTO == nil {
-		return nil, fmt.Errorf("UserRepository error: UserFindBySocialIDDTO can't be empty")
+		return nil, fmt.Errorf("UserStorage error: UserFindBySocialIDDTO can't be empty")
 	}
 
 	err = r.db.SelectTyped("users", "secondary_socialid_type", 0, 1, tarantool.IterEq, AX{uDTO.SocialID, uDTO.Type}, &tuplesUsers)
@@ -161,7 +161,7 @@ func (r *userRepository) FindOneBySocialID(uDTO *domain.UserFindOneBySocialIDDTO
 	return &tuplesUsers[0], nil
 }
 
-func (r *userRepository) FindGroup(uGroup uint64) (*domain.Users, error) {
+func (r *userStorage) FindGroup(uGroup uint64) (*domain.Users, error) {
 	var (
 		tuplesRoles domain.UserRoles
 		tuplesTypes domain.UserTypes
@@ -197,9 +197,9 @@ func (r *userRepository) FindGroup(uGroup uint64) (*domain.Users, error) {
 	return &tuplesUsers, nil
 }
 
-func (r *userRepository) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error) {
+func (r *userStorage) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, error) {
 	if uDTO == nil {
-		return nil, fmt.Errorf("UserRepository error: UserFindBySocialIDDTO can't be empty")
+		return nil, fmt.Errorf("UserStorage error: UserFindBySocialIDDTO can't be empty")
 	}
 
 	var (
@@ -248,13 +248,13 @@ func (r *userRepository) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, er
 	if len(respData) > 1 {
 		respError, _ := respData[1].([]interface{})[0].(string)
 		if respError != "" {
-			return nil, fmt.Errorf("UserRepository error: SQL error: %s", respError)
+			return nil, fmt.Errorf("UserStorage error: SQL error: %s", respError)
 		}
 	}
 
 	respParsed, ok := respData[0].([]interface{})[0].(map[interface{}]interface{})["rows"].([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("UserRepository error during parsing SQL response")
+		return nil, fmt.Errorf("UserStorage error during parsing SQL response")
 	}
 
 	for _, v := range respParsed {
@@ -280,7 +280,7 @@ func (r *userRepository) FindAll(uDTO *domain.UserFindAllDTO) (*domain.Users, er
 	return &tuplesUsers, nil
 }
 
-func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error) {
+func (r *userStorage) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain.User, error) {
 	var (
 		tuplesRoles domain.UserRoles
 		tuplesTypes domain.UserTypes
@@ -290,7 +290,7 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 	)
 
 	if uDTO == nil {
-		return nil, fmt.Errorf("UserRepository error: UserUpdateDTO can't be empty")
+		return nil, fmt.Errorf("UserStorage error: UserUpdateDTO can't be empty")
 	}
 
 	set := make([]interface{}, 0)
@@ -326,7 +326,7 @@ func (r *userRepository) Update(uID uint64, uDTO *domain.UserUpdateDTO) (*domain
 	return &tuplesUsers[0], nil
 }
 
-func (r *userRepository) KeepAlive(dbc *tarantool.Connection) {
+func (r *userStorage) KeepAlive(dbc *tarantool.Connection) {
 	go func() {
 		r.db = db.KeepAliveTarantool(dbc)
 	}()
