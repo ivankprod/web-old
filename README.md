@@ -1,9 +1,9 @@
 # ivankprod.ru
-IVANKPROD.RU website
-(go, webpack)
+IVANKPROD.RU website (golang, js, docker)
 
 [![CI](https://github.com/ivankprod/ivankprod.ru/actions/workflows/ci.yml/badge.svg)](https://github.com/ivankprod/ivankprod.ru/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ivankprod/ivankprod.ru/branch/main/graph/badge.svg?token=NLBM9MA475)](https://codecov.io/gh/ivankprod/ivankprod.ru)
+![Lines of code](https://img.shields.io/tokei/lines/github/ivankprod/ivankprod.ru)
 
 # Setup
 1. Setup
