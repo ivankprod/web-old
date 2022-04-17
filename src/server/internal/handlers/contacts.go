@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
 )
 
 func HandlerContactsIndex(c *fiber.Ctx) error {

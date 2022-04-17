@@ -5,9 +5,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"ivankprod.ru/src/server/internal/domain"
-	"ivankprod.ru/src/server/internal/services"
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/services"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 // Page access middleware

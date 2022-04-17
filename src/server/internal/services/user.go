@@ -3,9 +3,9 @@ package services
 import (
 	"strconv"
 
-	"ivankprod.ru/src/server/internal/domain"
-	"ivankprod.ru/src/server/internal/repositories"
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/repositories"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 type UserService interface {

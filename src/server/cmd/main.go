@@ -23,10 +23,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/internal/router"
-	"ivankprod.ru/src/server/pkg/db"
-	BaseLogger "ivankprod.ru/src/server/pkg/logger"
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/router"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/db"
+	BaseLogger "github.com/ivankprod/ivankprod.ru/src/server/pkg/logger"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 var (

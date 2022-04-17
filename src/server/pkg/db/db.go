@@ -11,7 +11,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/tarantool/go-tarantool"
 
-	BaseLogger "ivankprod.ru/src/server/pkg/logger"
+	BaseLogger "github.com/ivankprod/ivankprod.ru/src/server/pkg/logger"
 )
 
 // Connect to Tarantool

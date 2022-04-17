@@ -8,9 +8,9 @@ import (
 
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/internal/domain"
-	"ivankprod.ru/src/server/pkg/db"
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/db"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 type AX []interface{}

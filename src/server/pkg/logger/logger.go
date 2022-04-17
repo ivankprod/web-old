@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 // Logger interface

@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/handlebars"
 
-	"ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
 )
 
 func TestHandlerAboutIndex(t *testing.T) {

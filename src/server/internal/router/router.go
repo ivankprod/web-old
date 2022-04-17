@@ -7,14 +7,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tarantool/go-tarantool"
 
-	"ivankprod.ru/src/server/internal/admin"
-	"ivankprod.ru/src/server/internal/auth"
-	"ivankprod.ru/src/server/internal/domain"
-	"ivankprod.ru/src/server/internal/handlers"
-	"ivankprod.ru/src/server/internal/monitor"
-	"ivankprod.ru/src/server/internal/repositories"
-	"ivankprod.ru/src/server/internal/services"
-	"ivankprod.ru/src/server/pkg/utils"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/admin"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/auth"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/domain"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/handlers"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/monitor"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/repositories"
+	"github.com/ivankprod/ivankprod.ru/src/server/internal/services"
+	"github.com/ivankprod/ivankprod.ru/src/server/pkg/utils"
 )
 
 // All errors
