@@ -5,13 +5,19 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    commit-message:
+      prefix: "build(deps):"
     labels:
       - "dependencies"
+      - "server"
 
   - package-ecosystem: "npm"
     directory: "/src/frontend/"
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    commit-message:
+      prefix: "build(deps):"
     labels:
       - "dependencies"
+      - "frontend"
