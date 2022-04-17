@@ -14,16 +14,8 @@ IVANKPROD.RU website
 ```shell
 ./install.sh
 ```
-3. Build to /build_(dev|prod) dir
-```shell
-# development
-./build.sh dev [os] [arch]
 
-# production
-./build.sh [prod] [os] [arch]
-```
-
-4. Run in Docker
+3. Build and run in Docker
 ```shell
 # development build
 ./compose.sh dev
@@ -32,16 +24,20 @@ IVANKPROD.RU website
 ./compose.sh [prod]
 ```
 
-5. Generate sitemap.xml for (dev|prod) build (make shure website is running)
+4. Generate sitemap.xml (make shure website is running)
+```shell
+./sitemap.sh
+```
+
+5. Rebuild app image to catch sitemap.xml
 ```shell
 # development build
-./sitemap.sh dev
+./compose.sh dev
 
 # production build
-./sitemap.sh [prod]
+./compose.sh [prod]
 ```
 
 # TODOS:
 1. user profile page
 2. user auth cabinet
-
