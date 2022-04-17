@@ -10,7 +10,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.32.0
 	github.com/gofiber/helmet/v2 v2.2.11
 	github.com/gofiber/template v1.6.26
-	github.com/jmoiron/sqlx v1.3.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
