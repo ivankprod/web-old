@@ -83,7 +83,7 @@ button.btn-auth {
 
 	border: 1px solid #d8d8d8;
 
-	box-shadow: 0px 3px 0px #d8d8d8;
+	box-shadow: 0 3px 0 #d8d8d8;
 
 	overflow: hidden;
 }

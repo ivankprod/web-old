@@ -24,7 +24,7 @@
 }
 .slider-slide .slide-block { opacity: 0; }
 .slider-slide .slide-block-title { display: inline-block; opacity: 0; }
-.slider-slide .slide-block-desc { margin: 8px 0px 22px; font-size: 1.2rem; }
+.slider-slide .slide-block-desc { margin: 8px 0 22px; font-size: 1.2rem; }
 .slider-slide .slide-block-desc-wm { margin: 8px 0 22px 9px; font-size: 1.2rem; }
 .slider-slide button { opacity: 0; }
 
