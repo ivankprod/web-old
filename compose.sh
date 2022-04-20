@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Starting composing webapp..."
 
 mode="prod"
