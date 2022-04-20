@@ -28,9 +28,8 @@ time, mark, audio, video {
 
 	box-sizing: border-box;
 
-	font-size: 100%;
-	font:      inherit;
-	cursor:    default;
+	font:   inherit;
+	cursor: default;
 
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
