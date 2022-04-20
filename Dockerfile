@@ -2,24 +2,21 @@ FROM golang:1.16-alpine as backbuilder
 
 ARG STAGE_MODE=prod
 
-RUN apk update
-
 WORKDIR /app
 COPY ./src/server/go.mod ./src/server/go.sum ./
 RUN go mod download
 
 COPY ./src/server .
-RUN mkdir -p ./build
-RUN go build -o ./build/server -v -ldflags="-s -w" ./cmd/main.go
+RUN mkdir -p ./build &&\
+    go build -o ./build/server -v -ldflags="-s -w" ./cmd/main.go
 
 COPY ./$STAGE_MODE.env ./build/.env
-RUN mkdir -p ./build/misc && cp ./misc/sitemap.json ./build/misc/sitemap.json
+RUN mkdir -p ./build/misc &&\
+    cp ./misc/sitemap.json ./build/misc/sitemap.json
 
 FROM node:16.13-alpine as frontbuilder
 
 ARG STAGE_MODE=prod
-
-RUN apk update
 
 WORKDIR /app
 RUN mkdir -p ./build
@@ -41,11 +38,12 @@ FROM alpine:3
 ARG STAGE_MODE=prod
 ENV TZ=Europe/Moscow
 
-RUN apk update
-RUN apk --no-cache add ca-certificates tzdata
-RUN update-ca-certificates
+RUN apk update &&\
+    apk --no-cache add ca-certificates tzdata &&\
+    update-ca-certificates
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&\
+    echo $TZ > /etc/timezone
 
 COPY --from=backbuilder ./app/build /home/app
 COPY --from=frontbuilder ./app/build /home/app
