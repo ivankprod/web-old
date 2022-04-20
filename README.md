@@ -5,7 +5,7 @@ IVANKPROD.RU website (golang, js, docker)
 [![codecov](https://codecov.io/gh/ivankprod/ivankprod.ru/branch/main/graph/badge.svg?token=NLBM9MA475)](https://codecov.io/gh/ivankprod/ivankprod.ru)
 [![CodeFactor](https://www.codefactor.io/repository/github/ivankprod/ivankprod.ru/badge)](https://www.codefactor.io/repository/github/ivankprod/ivankprod.ru)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ivankprod/ivankprod.ru/src/server)](https://goreportcard.com/report/github.com/ivankprod/ivankprod.ru/src/server)
-![Lines of code](https://img.shields.io/tokei/lines/github/ivankprod/ivankprod.ru)
+[![](https://tokei.rs/b1/github/ivankprod/ivankprod.ru?category=code)](https://github.com/ivankprod/ivankprod.ru)
 
 # Setup
 1. Setup
