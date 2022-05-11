@@ -12,10 +12,11 @@ require (
 	github.com/gofiber/template v1.6.27
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.4.0
-	github.com/klauspost/compress v1.15.1 // indirect
+	github.com/klauspost/compress v1.15.4 // indirect
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
+	github.com/valyala/fasthttp v1.36.0 // indirect
 	github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
+	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.2
 )
