@@ -94,7 +94,6 @@ func main() {
 	err = godotenv.Load(".env")
 	if err != nil {
 		logger.Println("Error loading .env file")
-		logger.Fatalln("-- Server starting failed")
 	}
 
 	// Load STAGE_MODE configuration

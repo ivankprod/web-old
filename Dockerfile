@@ -10,7 +10,6 @@ COPY ./src/server .
 RUN mkdir -p ./build &&\
     go build -o ./build/server -v -ldflags="-s -w" ./cmd/main.go
 
-COPY ./$STAGE_MODE.env ./build/.env
 RUN mkdir -p ./build/misc &&\
     cp ./misc/sitemap.json ./build/misc/sitemap.json
 
@@ -29,9 +28,10 @@ RUN npm install
 
 ARG NODE_ENV=production
 
-COPY --from=backbuilder ./app/build/.env ./.env
+COPY ./$STAGE_MODE.env ./.env
 COPY ./src/frontend .
 RUN NODE_ENV=$NODE_ENV npm run $STAGE_MODE
+RUN rm .env
 
 FROM alpine:3
 
