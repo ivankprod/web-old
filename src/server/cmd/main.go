@@ -20,7 +20,6 @@ import (
 	"github.com/gofiber/helmet/v2"
 	"github.com/gofiber/template/handlebars"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	"github.com/tarantool/go-tarantool"
 
 	"github.com/ivankprod/ivankprod.ru/src/server/internal/router"
@@ -90,12 +89,6 @@ func main() {
 	logger = BaseLogger.New(io.MultiWriter(f, os.Stdout))
 	logger.Println("-- Server starting...")
 
-	// Load .env configuration
-	err = godotenv.Load(".env")
-	if err != nil {
-		logger.Println("Error loading .env file")
-	}
-
 	// Load STAGE_MODE configuration
 	if os.Getenv("STAGE_MODE") == "dev" {
 		MODE_DEV = true
@@ -148,7 +141,7 @@ func main() {
 			logger.Printf("Error connecting to Tarantool database: %v\n", err)
 		}
 
-		app.fail("-- Server starting failed\n")
+		app.fail("-- Server starting failed")
 	} else {
 		app.DBT = dbt
 	}
