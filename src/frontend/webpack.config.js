@@ -6,7 +6,6 @@ const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
-const DotEnv = require('dotenv-webpack');
 const babelConfig = require('./babel.config');
 const postcssConfig = require('./postcss.config');
 
@@ -79,8 +78,7 @@ module.exports = {
 			minify: false
 		}),
 		new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['./static/js/*', './static/css/*'] }),
-		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false }),
-		new DotEnv({ path: path.resolve(__dirname, './.env') })
+		new MiniCssExtractPlugin({ filename: 'static/css/[name].[contenthash].css', ignoreOrder: false })
 	],
 
 	module: {

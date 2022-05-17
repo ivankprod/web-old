@@ -28,10 +28,8 @@ RUN npm install
 
 ARG NODE_ENV=production
 
-COPY ./$STAGE_MODE.env ./.env
 COPY ./src/frontend .
 RUN NODE_ENV=$NODE_ENV npm run $STAGE_MODE
-RUN rm .env
 
 FROM alpine:3
 

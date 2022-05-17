@@ -7,21 +7,16 @@
 import { newAjax, ajaxErr, ProgressBar } from './ajax.js';
 import { sleep, fadeOut, queryParse, queryStringify, getMeta, setMeta, rewriteMetas } from './utils.js';
 
-//  Hostname var
-const strServerHost = String('https://' + (process.env.SERVER_HOST != '' ? process.env.SERVER_HOST : 'ivankprod.ru'));
-
 //  Extras Data
 let dataExtras = null;
 
 //  HistoryAPI: state
-const intHrefStart = strServerHost.length;
-const loc     = window.location.href;
-const locHref = loc.substring(intHrefStart + 1, (loc.indexOf('?') !== -1 ? loc.indexOf('?') : loc.length));
+const url = new URL(String(window.location.href));
 const hState  = {
-	href:   '/' + locHref,
-	params: queryParse(loc.substring(intHrefStart + 1).replace(locHref, '').substring(1)),
+	href:   url.pathname,
+	params: queryParse(url.searchParams.toString()),
 	title:  document.title,
-	url:    loc.substring(intHrefStart)
+	url:    url.href
 };
 
 //  Loads ajax page
@@ -74,7 +69,7 @@ export async function loadPage(strHref, params = {}, changeAddress = false, call
 	hState.href   = strHref;
 	hState.params = params;
 	hState.title  = oDoc.title;
-	hState.url    = strHref + queryStringify(params);
+	hState.url    = url.origin + strHref + queryStringify(params);
 
 	if (changeAddress) window.history.pushState(hState, hState.title, hState.url);
 
