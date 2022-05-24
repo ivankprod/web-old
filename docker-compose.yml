@@ -76,7 +76,7 @@ services:
       - app
 
   grafana:
-    image: grafana/grafana-enterprise:latest
+    image: grafana/grafana-enterprise:8.3.4
     container_name: ikpru_grafana
     volumes:
       - ./data/grafana_cert:/etc/grafana/cert
