@@ -9,7 +9,7 @@ require (
 	github.com/gofiber/adaptor/v2 v2.1.20 // indirect
 	github.com/gofiber/fiber/v2 v2.34.0
 	github.com/gofiber/helmet/v2 v2.2.12
-	github.com/gofiber/template v1.6.27
+	github.com/gofiber/template v1.6.28
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/klauspost/compress v1.15.4 // indirect
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
