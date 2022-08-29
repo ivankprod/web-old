@@ -3,10 +3,9 @@ module github.com/ivankprod/ivankprod.ru/src/server
 go 1.16
 
 require (
-	github.com/ansrivas/fiberprometheus/v2 v2.3.0
+	github.com/ansrivas/fiberprometheus/v2 v2.4.1
 	github.com/fasthttp/websocket v1.5.0
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gofiber/adaptor/v2 v2.1.25 // indirect
 	github.com/gofiber/fiber/v2 v2.36.0
 	github.com/gofiber/helmet/v2 v2.2.15
 	github.com/gofiber/template v1.6.30
