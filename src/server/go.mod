@@ -7,8 +7,8 @@ require (
 	github.com/fasthttp/websocket v1.5.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/adaptor/v2 v2.1.25 // indirect
-	github.com/gofiber/fiber/v2 v2.36.0
-	github.com/gofiber/helmet/v2 v2.2.15
+	github.com/gofiber/fiber/v2 v2.38.1
+	github.com/gofiber/helmet/v2 v2.2.17
 	github.com/gofiber/template v1.6.30
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/klauspost/compress v1.15.9 // indirect
