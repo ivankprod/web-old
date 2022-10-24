@@ -7,8 +7,8 @@ require (
 	github.com/fasthttp/websocket v1.5.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofiber/adaptor/v2 v2.1.25 // indirect
-	github.com/gofiber/fiber/v2 v2.36.0
-	github.com/gofiber/helmet/v2 v2.2.15
+	github.com/gofiber/fiber/v2 v2.39.0
+	github.com/gofiber/helmet/v2 v2.2.18
 	github.com/gofiber/template v1.6.30
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/klauspost/compress v1.15.9 // indirect
@@ -17,7 +17,6 @@ require (
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
 	github.com/tarantool/go-tarantool v0.0.0-20210330210617-56fe55c5fa5c
 	github.com/yeqown/fasthttp-reverse-proxy/v2 v2.2.2
-	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/vmihailenco/msgpack.v2 v2.9.2
 )
